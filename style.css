@@ -1,0 +1,110 @@
+/* --- Style Général --- */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    background-color: #f0f2f5;
+    color: #333;
+    display: flex;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0 40px; /* Ajustement du padding */
+    box-sizing: border-box;
+    overflow: hidden;
+}
+
+/* --- Année Verticale (Pivotée) --- */
+#year-display {
+    position: absolute;
+    /* Ancien : left: -15px; */
+    /* NOUVEAU : Plus à gauche */
+    left: -12%; 
+    top: 80%;
+    font-size: clamp(110px, 10vw, 280px);
+    font-weight: 900;
+    color: #e0e0e0;
+    margin: 0;
+    line-height: 1;
+    white-space: nowrap;
+    transform-origin: 0 0;
+    /* Le transform: translateX(50%) compense la rotation, assurez-vous de le garder */
+    transform: translateX(50%) rotate(-90deg); 
+    user-select: none;
+}
+
+/* --- Conteneur du Classement --- */
+.chart-container {
+    flex: 1;
+    height: 100%;
+    margin-left: 100px;
+    /* Ajout d'une marge pour descendre légèrement le classement */
+    margin-top: 40px;
+}
+
+#ranking-chart {
+    position: relative;
+}
+
+/* --- Ligne d'un pays --- */
+.country-row {
+    position: absolute;
+    width: 70%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.country-info {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.country-name {
+    position: absolute;
+    /* Rapproché de la barre de progression */
+    top: 0px;
+    left: 60px;
+    font-size: 0.9em;
+    font-weight: bold;
+    color: #444;
+    white-space: nowrap;
+}
+
+.flag {
+    width: 50px; /* NOUVEAU : Agrandit la largeur */
+    height: 50px; /* NOUVEAU : Agrandit la hauteur */
+    border-radius: 50%;
+    object-fit: fill;
+    border: 3px solid #fff;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    margin-right: 2px; /* Ajuste la marge pour le plus grand drapeau */
+    flex-shrink: 0;
+}
+
+.progress-container {
+    flex-grow: 1;
+    height: 10px;
+    background-color: #e9ecef;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #4e73df, #224abe);
+    border-radius: 5px;
+}
+
+.trophy-count {
+    font-size: 1.7em;
+    font-weight: bold;
+    color: #1e3a5f;
+    margin-left: 20px;
+    width: 60px;
+    text-align: center;
+    flex-shrink: 0;
+}

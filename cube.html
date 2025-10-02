@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cube CSS 3D</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #282c34;
+            margin: 0;
+            font-family: sans-serif;
+            overflow: hidden; /* Empêche le défilement si le cube dépasse un peu */
+        }
+
+        /* 1. La scène: Le conteneur parent qui définit la perspective */
+        .scene {
+            width: 200px;
+            height: 200px;
+            perspective: 1000px; /* Plus grand = moins d'effet fisheye */
+            margin: 50px;
+            position: relative;
+        }
+
+        /* 2. Le cube: Contient toutes les faces et définit l'espace 3D interne */
+        .cube {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            transform-style: preserve-3d; /* TRES IMPORTANT pour positionner les faces en 3D */
+            transform: translateZ(-100px); /* Recule un peu le cube pour qu'il soit bien visible */
+            transition: transform 1s ease-in-out; /* Animation douce pour la rotation */
+        }
+
+        /* Animation de rotation du cube au survol */
+        .scene:hover .cube {
+            transform: translateZ(-100px) rotateX(160deg) rotateY(180deg) rotateZ(30deg); 
+            /* On garde le translateZ pour le maintenir au centre visuellement */
+        }
+
+        /* Les faces du cube */
+        .face {
+            position: absolute;
+            width: 200px;
+            height: 200px;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2em;
+            color: #fff;
+            backface-visibility: hidden; /* Cache l'arrière des faces pour éviter les chevauchements */
+        }
+
+        /* Positionnement de chaque face */
+        .face-front {
+            background: rgba(255, 99, 71, 0.7); /* Tomato */
+            transform: rotateY(0deg) translateZ(100px); /* 100px = moitié de la largeur/hauteur du cube */
+        }
+
+        .face-back {
+            background: rgba(60, 179, 113, 0.7); /* MediumSeaGreen */
+            transform: rotateY(180deg) translateZ(100px);
+        }
+
+        .face-right {
+            background: rgba(65, 105, 225, 0.7); /* RoyalBlue */
+            transform: rotateY(90deg) translateZ(100px);
+        }
+
+        .face-left {
+            background: rgba(255, 215, 0, 0.7); /* Gold */
+            transform: rotateY(-90deg) translateZ(100px);
+        }
+
+        .face-top {
+            background: rgba(128, 0, 128, 0.7); /* Purple */
+            transform: rotateX(90deg) translateZ(100px);
+        }
+
+        .face-bottom {
+            background: rgba(255, 165, 0, 0.7); /* Orange */
+            transform: rotateX(-90deg) translateZ(100px);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="scene">
+        <div class="cube">
+            <div class="face face-front">1</div>
+            <div class="face face-back">2</div>
+            <div class="face face-right">3</div>
+            <div class="face face-left">4</div>
+            <div class="face face-top">5</div>
+            <div class="face face-bottom">6</div>
+        </div>
+    </div>
+
+</body>
+</html>

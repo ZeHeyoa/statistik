@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classement Dynamique des Trophées et Palmarès Annuel Compact</title>
+    
+    <style>
+        /* --- Style Général (RÉDUIT) --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5; 
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 3px 20px 10px 20px; 
+            box-sizing: border-box;
+            overflow-x: hidden;
+            font-size: 0.8em; 
+        }
+
+        /* Conteneur principal pour les deux colonnes (RÉDUIT) */
+        .main-content-wrapper {
+            display: flex;
+            gap: 15px; 
+            width: 100%;
+            align-items: flex-start;
+        }
+        
+        /* --- Colonne de Gauche: Compétitions et Année --- */
+        .competitions-column {
+            width: 110px; 
+            flex-shrink: 0;
+            padding-top: 3px; 
+        }
+        
+        #year-display-in-column {
+            /* MIS À JOUR: Taille augmentée de 15% (1.5em * 1.15 = 1.725em) */
+            font-size: 1.725em; 
+            color: #1e3a5f;
+            margin: 0 0 5px 0; 
+            font-weight: 800;
+            text-align: center;
+            line-height: 1; 
+        }
+
+        /* Conteneur des compétitions - Gère l'espacement vertical (inchangé) */
+        .competitions-display {
+            display: flex;
+            flex-direction: column; 
+            gap: 6px; 
+            min-height: 150px; 
+            align-items: flex-start;
+            position: relative; 
+        }
+        
+        /* --- STRUCTURE DE LA BOÎTE DE COMPÉTITION --- */
+        .competition-box {
+            position: relative; 
+            width: 100%;
+            height: 38px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            border-radius: 3px; 
+            overflow: hidden; 
+            transition: transform 0.2s ease;
+            display: flex; 
+        }
+
+        .competition-box:hover {
+            transform: scale(1.03); 
+            z-index: 5;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        /* --- 1. Colonne du Drapeau (Gauche - ÉTIRÉ) --- */
+        #flag-column {
+            width: 35%; 
+            flex-shrink: 0;
+            background-color: #000; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        #flag-column img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            padding: 0; 
+        }
+
+        /* --- 2. Colonne de Droite (Info) --- */
+        #right-column {
+            width: 65%; 
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column; 
+            height: 100%;
+        }
+
+        /* --- 2a. Nom de la Compétition (Haut) --- */
+        #comp-info-case {
+            height: 50%; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6em; 
+            font-weight: bold;
+            color: #fff;
+            padding: 0 1px; 
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        /* --- 2b. Nom du Vainqueur (Bas) --- */
+        #winner-name-case {
+            height: 50%; 
+            background-color: #000; 
+            color: #ccc; 
+            font-size: 0.6em; 
+            font-weight: 600; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 1px; 
+            text-align: center;
+            line-height: 1.1; 
+        }
+
+        /* --- CLASSEMENT --- */
+        .no-competitions { font-size: 0.7em; margin-top: 5px; }
+        .chart-container { flex-grow: 1; max-width: 600px; flex-shrink: 0; padding-top: 0; }
+        #ranking-chart { position: relative; width: 100%; }
+
+        /* Ligne d'un pays */
+        .country-row {
+            position: absolute;
+            width: 100%;
+            height: 35px; 
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px; 
+            opacity: 0; 
+            visibility: hidden; 
+            background-color: transparent; 
+            border-radius: 0; 
+            box-shadow: none; 
+            padding-right: 8px; 
+        }
+        
+        .country-info { position: relative; width: 100%; display: flex; align-items: center; }
+        .country-name { 
+            position: absolute; top: 0px; left: 40px; font-size: 0.7em; font-weight: bold; color: #444; white-space: nowrap; 
+        }
+        
+        .flag { 
+            width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            margin-right: 1px; flex-shrink: 0; 
+        }
+        
+        .progress-container { 
+            flex-grow: 1; height: 6px; background-color: #ddd; border-radius: 3px; overflow: hidden; margin-top: 15px; 
+        }
+        .progress-bar { width: 0%; height: 100%; background: linear-gradient(90deg, #4e73df, #224abe); border-radius: 3px; }
+        
+        .trophy-count { 
+            font-size: 1.1em; font-weight: bold; color: #1e3a5f; margin-left: 10px; width: 40px; text-align: center; flex-shrink: 0; 
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="main-content-wrapper">
+        
+        <div class="competitions-column">
+            <h2 id="year-display-in-column">1956</h2> 
+            <div id="competitions-display" class="competitions-display">
+                <p class="no-competitions">Chargement des données de compétition...</p>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div id="ranking-chart">
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- CONFIGURATION ---
+            const JSON_PATH = 'data/export_competitions_par_annee.json';
+            const SECONDS_PER_YEAR = 1;
+            const ROW_HEIGHT = 38; 
+            const COMP_BOX_HEIGHT = 38;
+            const COMP_BOX_GAP = 6;
+            
+            // COULEURS DÉDIÉES AUX COMPÉTITIONS
+            const COMPETITION_COLORS = [
+                '#1e3a5f', '#991b1b', '#15803d', '#92400e', '#4c1d95'
+            ];
+            let competitionColorMap = {}; 
+            let colorIndex = 0;
+
+            // --- ÉLÉMENTS DU DOM ---
+            const chart = document.getElementById('ranking-chart');
+            const yearDisplay = document.getElementById('year-display-in-column'); 
+            const competitionsDisplayContainer = document.getElementById('competitions-display'); 
+            
+            let allCountries = {};
+            let yearlyWins = {};
+            let rawYearlyData = {}; 
+            let sortedYears = [];
+            let allCompetitions = new Set(); 
+            const countryNameMap = {
+                'EGYPTE': { name: 'Égypte', code: 'EG' }, 'ETHIOPIE': { name: 'Éthiopie', code: 'ET' },
+                'GHANA': { name: 'Ghana', code: 'GH' }, 'CAMEROUN': { name: 'Cameroun', code: 'CM' },
+                'COTE IVOIRE': { name: 'Côte d\'Ivoire', code: 'CI' }, 'RD CONGO': { name: 'RD Congo', code: 'CD' },
+                'SOUDAN': { name: 'Soudan', code: 'SD' }, 'CONGO BRAZA': { name: 'Congo', code: 'CG' },
+                'GUINEE CONAKRY': { name: 'Guinée', code: 'GN' }, 'MAROC': { name: 'Maroc', code: 'MA' },
+                'ALGERIE': { name: 'Algérie', code: 'DZ' }, 'NIGERIA': { name: 'Nigéria', code: 'NG' },
+                'KENYA': { name: 'Kenya', code: 'KE' }, 'TUNISIE': { name: 'Tunisie', code: 'TN' },
+                'ZAMBIE': { name: 'Zambie', code: 'ZM' }, 'AFS': { name: 'Afrique du Sud', code: 'ZA' },
+                'ANGOLA': { name: 'Angola', code: 'AO' }, 'GAMBIE': { name: 'Gambie', code: 'GM' },
+                'GUINEE EQUATORIALE': { name: 'Guinée Équatoriale', code: 'GQ' }, 'LIBYE': { name: 'Libye', code: 'LY' },
+                'MALI': { name: 'Mali', code: 'ML' }, 'GABON': { name: 'Gabon', code: 'GA' },
+                'BURKINA FASO': { name: 'Burkina Faso', code: 'BF' }, 'MADAGASCAR': { name: 'Madagascar', code: 'MG' },
+                'SENEGAL': { name: 'Sénégal', code: 'SN' }
+            };
+
+            function getWinnerInfo(winnerString) {
+                if (!winnerString) return { countryKey: null, clubName: null, code: null, count: 0, displayCount: '' };
+                const parts = winnerString.trim().split('\n');
+                const rawClubName = parts[0].trim(); 
+                let countryKeyClean = null;
+                if (parts.length > 1) { countryKeyClean = parts.pop().trim().toUpperCase().replace(/ \(X\d+\)$/, ''); } else { countryKeyClean = rawClubName.toUpperCase().replace(/ \(X\d+\)$/, ''); }
+                const info = countryNameMap[countryKeyClean];
+                let count = parseInt((winnerString.match(/\(x(\d+)\)/) || [0, 1])[1]); 
+                const displayCount = count > 1 ? ` (x${count})` : '';
+                return { countryKey: countryKeyClean, clubName: rawClubName, code: info ? info.code : null, count: count, displayCount: displayCount };
+            }
+            function cleanCompetitionName(name) { return name.replace(/\n/g, ' ').trim(); }
+            function getCompetitionColor(compName) {
+                if (!competitionColorMap[compName]) {
+                    competitionColorMap[compName] = COMPETITION_COLORS[colorIndex % COMPETITION_COLORS.length];
+                    colorIndex++;
+                }
+                return competitionColorMap[compName];
+            }
+            async function init() {
+                try {
+                    await parseData();
+                    createDOMElements();
+                    startAnimation();
+                } catch (error) {
+                    yearDisplay.textContent = "Erreur de chargement des données.";
+                    console.error("Erreur d'initialisation:", error);
+                }
+            }
+            async function parseData() {
+                const response = await fetch(JSON_PATH); 
+                if (!response.ok) { throw new Error(`Le fichier JSON n'a pas été trouvé à ${JSON_PATH}`); }
+                const data = await response.json();
+                data.Annees.forEach(yearData => {
+                    const year = yearData.Annee;
+                    rawYearlyData[year] = yearData.competition; 
+                    const winsThisYear = {};
+                    for (const comp in yearData.competition) {
+                        const winnerInfo = getWinnerInfo(yearData.competition[comp]);
+                        const countryKey = winnerInfo.countryKey;
+                        const count = winnerInfo.count;
+                        if (countryKey && countryNameMap[countryKey]) {
+                            if (!allCountries[countryKey]) {
+                                const info = countryNameMap[countryKey];
+                                allCountries[countryKey] = { key: countryKey, name: info.name, code: info.code, totalTrophies: 0, element: null, hasAppeared: false };
+                            }
+                            winsThisYear[countryKey] = (winsThisYear[countryKey] || 0) + count;
+                        }
+                    }
+                    if (Object.keys(winsThisYear).length > 0) { yearlyWins[year] = winsThisYear; }
+                });
+                sortedYears = Object.keys(rawYearlyData).sort((a, b) => parseInt(a) - parseInt(b));
+            }
+            function createDOMElements() {
+                const countriesArray = Object.values(allCountries).sort((a, b) => a.name.localeCompare(b.name));
+                
+                countriesArray.forEach((country, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'country-row';
+                    gsap.set(row, { opacity: 0, visibility: 'hidden' }); 
+                    row.innerHTML = `<div class="country-info">
+                            <img src="https://flagcdn.com/${country.code.toLowerCase()}.svg" alt="Drapeau ${country.name}" class="flag">
+                            <span class="country-name">${country.name}</span>
+                            <div class="progress-container"><div class="progress-bar"></div></div>
+                            <span class="trophy-count">0</span>
+                        </div>`;
+                    chart.appendChild(row);
+                    allCountries[country.key].element = row;
+                });
+            }
+            function startAnimation() {
+                let yearIndex = 0;
+                if (sortedYears.length > 0) { updateCompetitionsDisplay(sortedYears[yearIndex]); }
+                
+                updateRankingForYear(sortedYears[yearIndex]);
+
+                const timer = setInterval(() => {
+                    if (yearIndex >= sortedYears.length) {
+                        clearInterval(timer);
+                        yearDisplay.textContent = `FINAL`;
+                        // Afficher le message d'absence de compétition si nécessaire
+                        if (!rawYearlyData[sortedYears[sortedYears.length - 1]] || Object.keys(rawYearlyData[sortedYears[sortedYears.length - 1]]).length === 0) {
+                            competitionsDisplayContainer.innerHTML = `<p class="no-competitions">Pas de compétitions enregistrées.</p>`;
+                        }
+                        return;
+                    }
+                    const currentYear = sortedYears[yearIndex];
+                    updateRankingForYear(currentYear);
+                    updateCompetitionsDisplay(currentYear); 
+                    yearIndex++;
+                }, SECONDS_PER_YEAR * 1000);
+            }
+
+            function updateRankingForYear(year) {
+                yearDisplay.textContent = `${year}`; 
+                
+                if (yearlyWins[year]) {
+                    for (const countryKey in yearlyWins[year]) { allCountries[countryKey].totalTrophies += yearlyWins[year][countryKey]; }
+                }
+
+                const rankedCountries = Object.values(allCountries)
+                    .filter(country => country.totalTrophies > 0) 
+                    .sort((a, b) => b.totalTrophies - a.totalTrophies);
+                
+                const maxTrophies = Math.max(1, rankedCountries[0] ? rankedCountries[0].totalTrophies : 0);
+                
+                chart.style.height = `${rankedCountries.length * ROW_HEIGHT}px`;
+
+                rankedCountries.forEach((country, index) => {
+                    const countryRow = country.element;
+                    if (!countryRow) return;
+
+                    const progressBar = countryRow.querySelector('.progress-bar');
+                    const trophyCount = countryRow.querySelector('.trophy-count');
+                    const newY = index * ROW_HEIGHT;
+
+                    if (country.totalTrophies > 0 && !country.hasAppeared) {
+                        country.hasAppeared = true;
+                        gsap.fromTo(countryRow, {
+                            y: newY, 
+                            opacity: 0,
+                            visibility: 'visible'
+                        }, {
+                            y: newY,
+                            opacity: 1,
+                            duration: 0.8,
+                            ease: 'power3.out'
+                        });
+                    } 
+                    else if (country.hasAppeared) {
+                        gsap.to(countryRow, {
+                            y: newY,
+                            duration: .5,
+                            ease: 'power3.inOut'
+                        });
+                        gsap.set(countryRow, { visibility: 'visible', opacity: 1 });
+                    }
+
+                    if (country.hasAppeared) {
+                        gsap.to(progressBar, {
+                            width: `${(country.totalTrophies / maxTrophies) * 100}%`,
+                            duration: 0.5,
+                            ease: 'power3.inOut'
+                        });
+                        gsap.to(trophyCount, {
+                            innerText: country.totalTrophies,
+                            duration: 0.5,
+                            snap: { innerText: 1 },
+                            ease: 'power1.in'
+                        });
+                    }
+                });
+
+                Object.values(allCountries).forEach(country => {
+                    if (country.totalTrophies === 0 && country.element) {
+                        gsap.set(country.element, { opacity: 0, visibility: 'hidden' });
+                    }
+                });
+            }
+
+            // Mise à jour instantanée de la colonne des compétitions
+            function updateCompetitionsDisplay(year) {
+                const competitions = rawYearlyData[year] || {};
+                const compKeys = Object.keys(competitions);
+                
+                let htmlContent = '';
+                let totalHeight = 0;
+
+                if (compKeys.length === 0) {
+                    htmlContent = `<p class="no-competitions">Aucune compétition majeure enregistrée en ${year}.</p>`;
+                    totalHeight = 0;
+                } else {
+                    compKeys.forEach((compName, index) => {
+                        const winnerRaw = competitions[compName];
+                        const winnerInfo = getWinnerInfo(winnerRaw);
+                        const cleanCompName = cleanCompetitionName(compName);
+                        const competitionColor = getCompetitionColor(cleanCompName);
+                        const winnerClubName = `${winnerInfo.clubName}${winnerInfo.displayCount}`;
+                        
+                        let flagHtml = `
+                            <div id="flag-column">
+                                <img src="https://flagcdn.com/${winnerInfo.code ? winnerInfo.code.toLowerCase() : 'xx'}.svg" alt="Drapeau ${winnerInfo.countryKey || 'N/A'}">
+                            </div>
+                        `;
+
+                        // Calcul de la hauteur pour ajuster le conteneur parent
+                        totalHeight = (index + 1) * COMP_BOX_HEIGHT + index * COMP_BOX_GAP;
+
+                        htmlContent += `
+                            <div class="competition-box">
+                                ${flagHtml}
+                                <div id="right-column">
+                                    <div id="comp-info-case" style="background-color: ${competitionColor};">
+                                        ${cleanCompName}
+                                    </div>
+                                    <div id="winner-name-case">
+                                        <span>${winnerClubName}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                }
+                
+                // Mise à jour instantanée du contenu et de la hauteur du conteneur
+                competitionsDisplayContainer.innerHTML = htmlContent;
+                competitionsDisplayContainer.style.height = totalHeight > 0 ? `${totalHeight}px` : `auto`;
+            }
+
+            init();
+        });
+    </script>
+</body>
+</html>

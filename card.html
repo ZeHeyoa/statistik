@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte 3D avec Axe Virtuel et Coins</title>
+    <style>
+        body { margin: 0; padding: 20px; background: #1a1a2e; font-family: Arial, sans-serif; color: #fff; display: flex; gap: 20px; height: 100vh; box-sizing: border-box; }
+        #controls-column { flex: 0 0 450px; overflow-y: auto; padding-right: 10px; box-sizing: border-box; }
+        #controls { padding: 10px; background: #0f3460; border-radius: 10px; }
+        .section { background: #1a1a2e; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .section h3 { margin: 0 0 15px 0; color: #667eea; border-bottom: 1px solid rgba(102, 126, 234, 0.3); padding-bottom: 5px; }
+        .control-group { margin: 10px 0; display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
+        .input-group { display: flex; align-items: center; gap: 5px; }
+        label { display: inline-block; width: 120px; }
+        #container { flex: 1; position: relative; background: #16213e; border: 2px solid #0f3460; border-radius: 10px; overflow: hidden; perspective: 1000px; display: flex; align-items: center; justify-content: center; }
+        #card { position: absolute; width: 150px; height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 10px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; transform-style: preserve-3d; }
+        #pivot { position: absolute; width: 20px; height: 20px; background: #ff6b6b; border-radius: 50%; border: 3px solid #fff; cursor: move; z-index: 10; }
+        #pivot2 { position: absolute; width: 20px; height: 20px; background: #53cbf1; border-radius: 50%; border: 3px solid #fff; cursor: move; z-index: 10; opacity: 0.7; }
+        input[type="number"] { width: 80px; padding: 5px; background: #16213e; border: 1px solid #667eea; color: #fff; border-radius: 3px; }
+        .increment-btn, #resetBtn, #rotateAroundAxisBtn, #rotateAroundAxisNegBtn { background: #667eea; color: white; border: none; height: 35px; padding: 5px 15px; border-radius: 5px; cursor: pointer; font-size: 18px; font-weight: bold; }
+        .increment-btn { width: 35px; }
+        .increment-btn:hover, #resetBtn:hover, #rotateAroundAxisBtn:hover, #rotateAroundAxisNegBtn:hover { background: #764ba2; }
+        .coord-display { background: #1a1a2e; padding: 15px; border-radius: 5px; margin: 15px 0; }
+        .coord-display h3 { margin: 0 0 10px 0; color: #667eea; }
+        .coord-item { margin: 5px 0; font-family: monospace; }
+        .checkbox-group { display: flex; align-items: center; gap: 10px; margin: 10px 0; }
+    </style>
+</head>
+<body>
+    <div id="controls-column">
+        <div id="controls">
+            <div class="section">
+                <h3>Position du Pivot 1 (Rouge)</h3>
+                <p style="font-size: 12px; color: #aaa; margin-bottom: 10px;">💡 Glisser le pivot: XY normal, Z avec Shift</p>
+                <div class="control-group"> <label>Pivot X:</label> <div class="input-group"> <button class="increment-btn" onclick="changePivot('x', -10, 1)">-</button> <input type="number" id="pivotX" value="0" step="1"> <button class="increment-btn" onclick="changePivot('x', 10, 1)">+</button> </div> </div>
+                <div class="control-group"> <label>Pivot Y:</label> <div class="input-group"> <button class="increment-btn" onclick="changePivot('y', -10, 1)">-</button> <input type="number" id="pivotY" value="0" step="1"> <button class="increment-btn" onclick="changePivot('y', 10, 1)">+</button> </div> </div>
+                <div class="control-group"> <label>Pivot Z:</label> <div class="input-group"> <button class="increment-btn" onclick="changePivot('z', -10, 1)">-</button> <input type="number" id="pivotZ" value="0" step="1"> <button class="increment-btn" onclick="changePivot('z', 10, 1)">+</button> </div> </div>
+            </div>
+            <div class="section">
+                <h3>Position du Pivot 2 (Bleu)</h3>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="disableVirtualAxisCheckbox" checked>
+                    <label for="disableVirtualAxisCheckbox">Désactiver axe temporaire</label>
+                </div>
+                <div class="control-group"> <label>Pivot 2 X:</label> <div class="input-group"> <button class="increment-btn" onclick="changePivot('x', -10, 2)">-</button> <input type="number" id="pivot2X" value="150" step="1"> <button class="increment-btn" onclick="changePivot('x', 10, 2)">+</button> </div> </div>
+                <div class="control-group"> <label>Pivot 2 Y:</label> <div class="input-group"> <button class="increment-btn" onclick="changePivot('y', -10, 2)">-</button> <input type="number" id="pivot2Y" value="0" step="1"> <button class="increment-btn" onclick="changePivot('y', 10, 2)">+</button> </div> </div>
+                <div class="control-group"> <label>Pivot 2 Z:</label> <div class="input-group"> <button class="increment-btn" onclick="changePivot('z', -10, 2)">-</button> <input type="number" id="pivot2Z" value="0" step="1"> <button class="increment-btn" onclick="changePivot('z', 10, 2)">+</button> </div> </div>
+            </div>
+            <div class="section">
+                <h3>Rotation autour de l'axe</h3>
+                <div class="control-group" style="justify-content: center; margin-top: 20px; gap: 10px;">
+                    <button id="rotateAroundAxisNegBtn" onclick="rotateAroundVirtualAxis(-5)">Tourner autour de l'axe (-5°)</button>
+                    <button id="rotateAroundAxisBtn" onclick="rotateAroundVirtualAxis(5)">Tourner autour de l'axe (+5°)</button>
+                </div>
+            </div>
+            <div class="section">
+                <h3>Rotation (autour du pivot 1)</h3>
+                <div class="control-group"> <label>Rotate X:</label> <div class="input-group"> <button class="increment-btn" onclick="applyWorldRotation('x', -5)">-</button> <input type="number" id="rotX" value="0" readonly> <button class="increment-btn" onclick="applyWorldRotation('x', 5)">+</button> </div> </div>
+                <div class="control-group"> <label>Rotate Y:</label> <div class="input-group"> <button class="increment-btn" onclick="applyWorldRotation('y', -5)">-</button> <input type="number" id="rotY" value="0" readonly> <button class="increment-btn" onclick="applyWorldRotation('y', 5)">+</button> </div> </div>
+                <div class="control-group"> <label>Rotate Z:</label> <div class="input-group"> <button class="increment-btn" onclick="applyWorldRotation('z', -5)">-</button> <input type="number" id="rotZ" value="0" readonly> <button class="increment-btn" onclick="applyWorldRotation('z', 5)">+</button> </div> </div>
+                <div class="control-group" style="justify-content: center; margin-top: 20px;"> <button id="resetBtn" onclick="resetAll()">Reset</button> </div>
+            </div>
+            <div class="section">
+                <h3>Translation de la Carte (World)</h3>
+                <div class="control-group"> <label>Translate X:</label> <div class="input-group"> <button class="increment-btn" onclick="changeTranslation('x', -10)">-</button> <input type="number" id="transX" value="0" step="1"> <button class="increment-btn" onclick="changeTranslation('x', 10)">+</button> </div> </div>
+                <div class="control-group"> <label>Translate Y:</label> <div class="input-group"> <button class="increment-btn" onclick="changeTranslation('y', -10)">-</button> <input type="number" id="transY" value="0" step="1"> <button class="increment-btn" onclick="changeTranslation('y', 10)">+</button> </div> </div>
+                <div class="control-group"> <label>Translate Z:</label> <div class="input-group"> <button class="increment-btn" onclick="changeTranslation('z', -10)">-</button> <input type="number" id="transZ" value="0" step="1"> <button class="increment-btn" onclick="changeTranslation('z', 10)">+</button> </div> </div>
+            </div>
+            <div class="coord-display">
+                <h3>Informations</h3>
+                <div class="coord-item">Centre Carte: <span id="cardCenterDisplay"></span></div>
+                <div class="coord-item">Rotation: <span id="cardRotDisplay"></span></div>
+                <div class="coord-item">Coin 1: <span id="corner1Display"></span></div>
+                <div class="coord-item">Coin 2: <span id="corner2Display"></span></div>
+                <div class="coord-item">Coin 3: <span id="corner3Display"></span></div>
+                <div class="coord-item">Coin 4: <span id="corner4Display"></span></div>
+            </div>
+        </div>
+    </div>
+    <div id="container">
+        <div id="pivot"></div>
+        <div id="pivot2"></div>
+        <div id="card">CARTE</div>
+    </div>
+    <script>
+        const container = document.getElementById('container');
+        let CONTAINER_CENTER_X = 0, CONTAINER_CENTER_Y = 0;
+        const card = document.getElementById('card');
+        const pivot = document.getElementById('pivot');
+        const pivot2 = document.getElementById('pivot2');
+        const disableVirtualAxisCheckbox = document.getElementById('disableVirtualAxisCheckbox');
+
+        function updateContainerSize() {
+            const rect = container.getBoundingClientRect();
+            CONTAINER_CENTER_X = rect.width / 2;
+            CONTAINER_CENTER_Y = rect.height / 2;
+            renderScene();
+        }
+        window.addEventListener('load', updateContainerSize);
+        window.addEventListener('resize', updateContainerSize);
+
+        class Quaternion {
+            constructor(w, x, y, z) { this.w = w; this.x = x; this.y = y; this.z = z; }
+            static fromAxisAngle(axis, angle) {
+                const s = Math.sin(angle / 2);
+                return new Quaternion(Math.cos(angle / 2), axis.x * s, axis.y * s, axis.z * s);
+            }
+            multiply(q) {
+                return new Quaternion(
+                    this.w*q.w-this.x*q.x-this.y*q.y-this.z*q.z,
+                    this.w*q.x+this.x*q.w+this.y*q.z-this.z*q.y,
+                    this.w*q.y-this.x*q.z+this.y*q.w+this.z*q.x,
+                    this.w*q.z+this.x*q.y-this.y*q.x+this.z*q.w
+                );
+            }
+            rotatePoint(p) {
+                const qp = new Quaternion(0, p.x, p.y, p.z);
+                const res = this.multiply(qp).multiply(new Quaternion(this.w, -this.x, -this.y, -this.z));
+                return { x: res.x, y: res.y, z: res.z };
+            }
+            toEuler() {
+                const sinr_cosp=2*(this.w*this.x+this.y*this.z),
+                      cosr_cosp=1-2*(this.x*this.x+this.y*this.y),
+                      sinp=2*(this.w*this.y-this.z*this.x),
+                      siny_cosp=2*(this.w*this.z+this.x*this.y),
+                      cosy_cosp=1-2*(this.y*this.y+this.z*this.z);
+                return {
+                    x: Math.atan2(sinr_cosp, cosr_cosp),
+                    y: Math.abs(sinp) >= 1 ? Math.sign(sinp)*Math.PI/2 : Math.asin(sinp),
+                    z: Math.atan2(siny_cosp, cosy_cosp)
+                };
+            }
+            toMatrix4() {
+                const w=this.w, x=this.x, y=this.y, z=this.z,
+                      x2=x+x, y2=y+y, z2=z+z,
+                      xx=x*x2, xy=x*y2, xz=x*z2,
+                      yy=y*y2, yz=y*z2, zz=z*z2,
+                      wx=w*x2, wy=w*y2, wz=w*z2;
+                return `matrix3d(${[1-(yy+zz),xy+wz,xz-wy,0,xy-wz,1-(xx+zz),yz+wx,0,xz+wy,yz-wx,1-(xx+yy),0,0,0,0,1].join(',')})`;
+            }
+        }
+
+        class Card3DTransform {
+            constructor() {
+                this.pivotPos = { x: 0, y: 0, z: 0 };
+                this.pivot2Pos = { x: 150, y: 0, z: 0 };
+                this.cardCenter = { x: 0, y: 0, z: 0 };
+                this.orientation = new Quaternion(1, 0, 0, 0);
+                this.cardSize = { width: 150, height: 200 };
+                this.virtualAxisEnabled = true;
+            }
+
+            setTranslation(x, y, z) {
+                this.cardCenter = { x, y, z };
+            }
+
+            setPivotPosition(x, y, z, pivotNum) {
+                if (pivotNum === 1) this.pivotPos = { x, y, z };
+                else this.pivot2Pos = { x, y, z };
+            }
+
+            applyWorldRotation(axis, angle) {
+                const relativePos = {
+                    x: this.cardCenter.x - this.pivotPos.x,
+                    y: this.cardCenter.y - this.pivotPos.y,
+                    z: this.cardCenter.z - this.pivotPos.z
+                };
+                const rotQuat = Quaternion.fromAxisAngle({x:0, y:0, z:0, [axis]:1}, angle);
+                const rotatedPos = rotQuat.rotatePoint(relativePos);
+                this.cardCenter = {
+                    x: this.pivotPos.x + rotatedPos.x,
+                    y: this.pivotPos.y + rotatedPos.y,
+                    z: this.pivotPos.z + rotatedPos.z
+                };
+                this.orientation = rotQuat.multiply(this.orientation);
+            }
+
+            rotateAroundVirtualAxis(angleDeg) {
+                if (!this.virtualAxisEnabled) return;
+
+                // 1. Calculer l'axe entre les deux pivots
+                const dx = this.pivot2Pos.x - this.pivotPos.x;
+                const dy = this.pivot2Pos.y - this.pivotPos.y;
+                const dz = this.pivot2Pos.z - this.pivotPos.z;
+                const length = Math.sqrt(dx*dx + dy*dy + dz*dz);
+                const axis = { x: dx/length, y: dy/length, z: dz/length };
+
+                // 2. Calculer la position relative de la carte par rapport au pivot1
+                const relativePos = {
+                    x: this.cardCenter.x - this.pivotPos.x,
+                    y: this.cardCenter.y - this.pivotPos.y,
+                    z: this.cardCenter.z - this.pivotPos.z
+                };
+
+                // 3. Créer un quaternion pour la rotation autour de cet axe
+                const angleRad = angleDeg * Math.PI / 180;
+                const rotQuat = Quaternion.fromAxisAngle(axis, angleRad);
+
+                // 4. Tourner le vecteur carte-pivot
+                const rotatedPos = rotQuat.rotatePoint(relativePos);
+
+                // 5. Calculer la nouvelle position du centre de la carte
+                this.cardCenter = {
+                    x: this.pivotPos.x + rotatedPos.x,
+                    y: this.pivotPos.y + rotatedPos.y,
+                    z: this.pivotPos.z + rotatedPos.z
+                };
+
+                // 6. Mettre à jour l'orientation globale de la carte
+                this.orientation = rotQuat.multiply(this.orientation);
+            }
+
+            getCardCorners() {
+                // Coins locaux (avant rotation/translation)
+                const halfW = this.cardSize.width / 2;
+                const halfH = this.cardSize.height / 2;
+                const corners = [
+                    { x: -halfW, y: -halfH, z: 0 }, // Coin 1
+                    { x: halfW, y: -halfH, z: 0 },  // Coin 2
+                    { x: halfW, y: halfH, z: 0 },  // Coin 3
+                    { x: -halfW, y: halfH, z: 0 }   // Coin 4
+                ];
+                // Appliquer la rotation
+                const rotatedCorners = corners.map(corner => this.orientation.rotatePoint(corner));
+                // Appliquer la translation
+                return rotatedCorners.map(corner => ({
+                    x: this.cardCenter.x + corner.x,
+                    y: this.cardCenter.y + corner.y,
+                    z: this.cardCenter.z + corner.z
+                }));
+            }
+        }
+
+        const transform = new Card3DTransform();
+
+        function renderScene() {
+            if (CONTAINER_CENTER_X === 0) return;
+
+            // Gestion de l'opacité du pivot 2
+            pivot2.style.opacity = transform.virtualAxisEnabled ? 0.7 : 0.2;
+
+            // --- Rendu de la CARTE ---
+            card.style.left = `${CONTAINER_CENTER_X}px`;
+            card.style.top = `${CONTAINER_CENTER_Y}px`;
+            card.style.transform = `
+                translate3d(
+                    ${transform.cardCenter.x - transform.cardSize.width/2}px,
+                    ${transform.cardCenter.y - transform.cardSize.height/2}px,
+                    ${transform.cardCenter.z}px
+                )
+                ${transform.orientation.toMatrix4()}
+            `;
+            // --- Rendu des PIVOTS ---
+            pivot.style.left = `${CONTAINER_CENTER_X}px`;
+            pivot.style.top = `${CONTAINER_CENTER_Y}px`;
+            pivot.style.transform = `translate3d(${transform.pivotPos.x - 10}px, ${transform.pivotPos.y - 10}px, ${transform.pivotPos.z}px)`;
+
+            pivot2.style.left = `${CONTAINER_CENTER_X}px`;
+            pivot2.style.top = `${CONTAINER_CENTER_Y}px`;
+            pivot2.style.transform = `translate3d(${transform.pivot2Pos.x - 10}px, ${transform.pivot2Pos.y - 10}px, ${transform.pivot2Pos.z}px)`;
+
+            // --- Affichage des infos ---
+            const euler = transform.orientation.toEuler();
+            document.getElementById('cardCenterDisplay').textContent = `
+                X:${transform.cardCenter.x.toFixed(0)},
+                Y:${transform.cardCenter.y.toFixed(0)},
+                Z:${transform.cardCenter.z.toFixed(0)}
+            `;
+            document.getElementById('cardRotDisplay').textContent = `
+                X:${(euler.x*180/Math.PI).toFixed(0)}°,
+                Y:${(euler.y*180/Math.PI).toFixed(0)}°,
+                Z:${(euler.z*180/Math.PI).toFixed(0)}°
+            `;
+
+            // Mettre à jour les coins de la carte
+            const corners = transform.getCardCorners();
+            document.getElementById('corner1Display').textContent = `X:${corners[0].x.toFixed(0)}, Y:${corners[0].y.toFixed(0)}, Z:${corners[0].z.toFixed(0)}`;
+            document.getElementById('corner2Display').textContent = `X:${corners[1].x.toFixed(0)}, Y:${corners[1].y.toFixed(0)}, Z:${corners[1].z.toFixed(0)}`;
+            document.getElementById('corner3Display').textContent = `X:${corners[2].x.toFixed(0)}, Y:${corners[2].y.toFixed(0)}, Z:${corners[2].z.toFixed(0)}`;
+            document.getElementById('corner4Display').textContent = `X:${corners[3].x.toFixed(0)}, Y:${corners[3].y.toFixed(0)}, Z:${corners[3].z.toFixed(0)}`;
+
+            // Mettre à jour les inputs de lecture seule
+            document.getElementById('rotX').value = (euler.x*180/Math.PI).toFixed(0);
+            document.getElementById('rotY').value = (euler.y*180/Math.PI).toFixed(0);
+            document.getElementById('rotZ').value = (euler.z*180/Math.PI).toFixed(0);
+        }
+
+        // --- Fonctions de contrôle ---
+        function changePivot(axis, delta, pivotNum) {
+            const input = document.getElementById(`pivot${pivotNum === 2 ? '2' : ''}${axis.toUpperCase()}`);
+            input.value = parseFloat(input.value) + delta;
+            updatePivot(pivotNum);
+        }
+
+        function updatePivot(pivotNum) {
+            const x = parseFloat(document.getElementById(`pivot${pivotNum === 2 ? '2' : ''}X`).value);
+            const y = parseFloat(document.getElementById(`pivot${pivotNum === 2 ? '2' : ''}Y`).value);
+            const z = parseFloat(document.getElementById(`pivot${pivotNum === 2 ? '2' : ''}Z`).value);
+            transform.setPivotPosition(x, y, z, pivotNum);
+            renderScene();
+        }
+
+        function changeTranslation(axis, delta) {
+            const input = document.getElementById('trans' + axis.toUpperCase());
+            input.value = parseFloat(input.value) + delta;
+            updateTranslation();
+        }
+
+        function updateTranslation() {
+            const x = parseFloat(document.getElementById('transX').value);
+            const y = parseFloat(document.getElementById('transY').value);
+            const z = parseFloat(document.getElementById('transZ').value);
+            transform.setTranslation(x, y, z);
+            renderScene();
+        }
+
+        function applyWorldRotation(axis, deltaDegrees) {
+            transform.applyWorldRotation(axis, deltaDegrees * Math.PI / 180);
+            document.getElementById('transX').value = transform.cardCenter.x.toFixed(0);
+            document.getElementById('transY').value = transform.cardCenter.y.toFixed(0);
+            document.getElementById('transZ').value = transform.cardCenter.z.toFixed(0);
+            renderScene();
+        }
+
+        function rotateAroundVirtualAxis(angleDeg) {
+            transform.rotateAroundVirtualAxis(angleDeg);
+            document.getElementById('transX').value = transform.cardCenter.x.toFixed(0);
+            document.getElementById('transY').value = transform.cardCenter.y.toFixed(0);
+            document.getElementById('transZ').value = transform.cardCenter.z.toFixed(0);
+            renderScene();
+        }
+
+        function resetAll() {
+            document.getElementById('pivotX').value = 0;
+            document.getElementById('pivotY').value = 0;
+            document.getElementById('pivotZ').value = 0;
+            document.getElementById('pivot2X').value = 150;
+            document.getElementById('pivot2Y').value = 0;
+            document.getElementById('pivot2Z').value = 0;
+            document.getElementById('transX').value = 0;
+            document.getElementById('transY').value = 0;
+            document.getElementById('transZ').value = 0;
+            transform.setPivotPosition(0, 0, 0, 1);
+            transform.setPivotPosition(150, 0, 0, 2);
+            transform.setTranslation(0, 0, 0);
+            transform.orientation = new Quaternion(1, 0, 0, 0);
+            transform.virtualAxisEnabled = true;
+            disableVirtualAxisCheckbox.checked = true;
+            renderScene();
+        }
+
+        // Initialisation
+        document.querySelectorAll('#pivotX, #pivotY, #pivotZ, #pivot2X, #pivot2Y, #pivot2Z').forEach(el => {
+            el.addEventListener('input', (e) => {
+                const pivotNum = e.target.id.startsWith('pivot2') ? 2 : 1;
+                updatePivot(pivotNum);
+            });
+        });
+        document.querySelectorAll('#transX, #transY, #transZ').forEach(el => {
+            el.addEventListener('input', updateTranslation);
+        });
+        disableVirtualAxisCheckbox.addEventListener('change', (e) => {
+            transform.virtualAxisEnabled = e.target.checked;
+            renderScene();
+        });
+
+        let isDragging = false;
+        let dragMode = 'xy';
+        let dragStartMouse = { x: 0, y: 0 };
+        let dragStartPivot = { x: 0, y: 0, z: 0 };
+        let currentPivot = null;
+
+        [pivot, pivot2].forEach((p, i) => {
+            p.addEventListener('mousedown', (e) => {
+                if (i === 1 && !transform.virtualAxisEnabled) return;
+                isDragging = true;
+                dragMode = e.shiftKey ? 'z' : 'xy';
+                dragStartMouse = { x: e.clientX, y: e.clientY };
+                dragStartPivot = { ...(i === 0 ? transform.pivotPos : transform.pivot2Pos) };
+                currentPivot = i + 1;
+                e.preventDefault();
+            });
+        });
+
+        document.addEventListener('mousemove', (e) => {
+            if (isDragging) {
+                const deltaX = e.clientX - dragStartMouse.x;
+                const deltaY = e.clientY - dragStartMouse.y;
+
+                if (dragMode === 'xy') {
+                    const newX = dragStartPivot.x + deltaX;
+                    const newY = dragStartPivot.y + deltaY;
+                    document.getElementById(`pivot${currentPivot === 2 ? '2' : ''}X`).value = newX.toFixed(0);
+                    document.getElementById(`pivot${currentPivot === 2 ? '2' : ''}Y`).value = newY.toFixed(0);
+                } else {
+                    const newZ = dragStartPivot.z - deltaY;
+                    document.getElementById(`pivot${currentPivot === 2 ? '2' : ''}Z`).value = newZ.toFixed(0);
+                }
+                updatePivot(currentPivot);
+            }
+        });
+
+        document.addEventListener('mouseup', () => { isDragging = false; });
+
+        updateContainerSize();
+        resetAll();
+    </script>
+</body>
+</html>

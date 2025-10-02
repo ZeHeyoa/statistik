@@ -1,0 +1,477 @@
+{
+  "1930": {
+    "poules": true,
+    "demis": [
+      { "home": "Argentine", "away": "États-Unis", "score": "6-1" },
+      { "home": "Uruguay", "away": "Yougoslavie", "score": "6-1" }
+    ],
+    "finale": [
+      { "home": "Uruguay", "away": "Argentine", "score": "4-2" }
+    ]
+  },
+  "1934": {
+    "huitiemes": [
+      { "home": "Italie", "away": "États-Unis", "score": "7-1" },
+      { "home": "Espagne", "away": "Brésil", "score": "3-1" },
+      { "home": "Autriche", "away": "France", "score": "3-2 ap" },
+      { "home": "Hongrie", "away": "Égypte", "score": "4-2" },
+      { "home": "Tchécoslovaquie", "away": "Roumanie", "score": "2-1" },
+      { "home": "Suisse", "away": "Pays-Bas", "score": "3-2" },
+      { "home": "Suède", "away": "Argentine", "score": "3-2" },
+      { "home": "Allemagne", "away": "Belgique", "score": "5-2" }
+    ],
+    "quarts": [
+      { "home": "Italie", "away": "Espagne", "score": "1-1" },
+      { "home": "Italie", "away": "Espagne (rejoué)", "score": "1-0" },
+      { "home": "Autriche", "away": "Hongrie", "score": "2-1" },
+      { "home": "Tchécoslovaquie", "away": "Suisse", "score": "3-2" },
+      { "home": "Allemagne", "away": "Suède", "score": "2-1" }
+    ],
+    "demis": [
+      { "home": "Italie", "away": "Autriche", "score": "1-0" },
+      { "home": "Tchécoslovaquie", "away": "Allemagne", "score": "3-1" }
+    ],
+    "petite_finale": [
+      { "home": "Allemagne", "away": "Autriche", "score": "3-2" }
+    ],
+    "finale": [
+      { "home": "Italie", "away": "Tchécoslovaquie", "score": "2-1 ap" }
+    ]
+  },
+  "1938": {
+    "huitiemes": [
+      { "home": "Suisse", "away": "Allemagne", "score": "4-2 (rejoué)" },
+      { "home": "Hongrie", "away": "Indes néerlandaises", "score": "6-0" },
+      { "home": "Suède", "away": "Autriche (forfait)", "score": "W.O." },
+      { "home": "Cuba", "away": "Roumanie", "score": "2-1 (rejoué)" },
+      { "home": "France", "away": "Belgique", "score": "3-1" },
+      { "home": "Italie", "away": "Norvège", "score": "2-1 ap" },
+      { "home": "Brésil", "away": "Pologne", "score": "6-5 ap" },
+      { "home": "Tchécoslovaquie", "away": "Pays-Bas", "score": "3-0 ap" }
+    ],
+    "quarts": [
+      { "home": "Hongrie", "away": "Suisse", "score": "2-0" },
+      { "home": "Suède", "away": "Cuba", "score": "8-0" },
+      { "home": "France", "away": "Italie", "score": "1-3" },
+      { "home": "Brésil", "away": "Tchécoslovaquie", "score": "2-1 (rejoué)" }
+    ],
+    "demis": [
+      { "home": "Hongrie", "away": "Suède", "score": "5-1" },
+      { "home": "Italie", "away": "Brésil", "score": "2-1" }
+    ],
+    "petite_finale": [
+      { "home": "Brésil", "away": "Suède", "score": "4-2" }
+    ],
+    "finale": [
+      { "home": "Italie", "away": "Hongrie", "score": "4-2" }
+    ]
+  },
+  "1950": {
+    "final_round": [
+      { "home": "Brésil", "away": "Suède", "score": "7-1" },
+      { "home": "Uruguay", "away": "Espagne", "score": "3-2" },
+      { "home": "Brésil", "away": "Espagne", "score": "6-1" },
+      { "home": "Uruguay", "away": "Suède", "score": "3-2" },
+      { "home": "Suède", "away": "Espagne", "score": "3-1" },
+      { "home": "Uruguay", "away": "Brésil", "score": "2-1" }
+    ]
+  },
+  "1954": {
+    "quarts": [
+      { "home": "Allemagne de l'Ouest", "away": "Yougoslavie", "score": "2-0" },
+      { "home": "Autriche", "away": "Suisse", "score": "7-5" },
+      { "home": "Hongrie", "away": "Brésil", "score": "4-2" },
+      { "home": "Uruguay", "away": "Angleterre", "score": "4-2" }
+    ],
+    "demis": [
+      { "home": "Allemagne de l'Ouest", "away": "Autriche", "score": "6-1" },
+      { "home": "Hongrie", "away": "Uruguay", "score": "4-2 ap" }
+    ],
+    "petite_finale": [
+      { "home": "Autriche", "away": "Uruguay", "score": "3-1" }
+    ],
+    "finale": [
+      { "home": "Allemagne de l'Ouest", "away": "Hongrie", "score": "3-2" }
+    ]
+  },
+  "1958": {
+    "quarts": [
+      { "home": "Brésil", "away": "Pays de Galles", "score": "1-0" },
+      { "home": "France", "away": "Irlande du Nord", "score": "4-0" },
+      { "home": "Suède", "away": "Union Soviétique", "score": "2-0" },
+      { "home": "Allemagne de l'Ouest", "away": "Yougoslavie", "score": "1-0" }
+    ],
+    "demis": [
+      { "home": "Brésil", "away": "France", "score": "5-2" },
+      { "home": "Suède", "away": "Allemagne de l'Ouest", "score": "3-1" }
+    ],
+    "petite_finale": [
+      { "home": "France", "away": "Allemagne de l'Ouest", "score": "6-3" }
+    ],
+    "finale": [
+      { "home": "Brésil", "away": "Suède", "score": "5-2" }
+    ]
+  },
+  "1962": {
+    "quarts": [
+      { "home": "Chili", "away": "Union Soviétique", "score": "2-1" },
+      { "home": "Tchécoslovaquie", "away": "Hongrie", "score": "1-0" },
+      { "home": "Brésil", "away": "Angleterre", "score": "3-1" },
+      { "home": "Yougoslavie", "away": "Allemagne de l'Ouest", "score": "1-0" }
+    ],
+    "demis": [
+      { "home": "Tchécoslovaquie", "away": "Yougoslavie", "score": "3-1" },
+      { "home": "Brésil", "away": "Chili", "score": "4-2" }
+    ],
+    "petite_finale": [
+      { "home": "Chili", "away": "Yougoslavie", "score": "1-0" }
+    ],
+    "finale": [
+      { "home": "Brésil", "away": "Tchécoslovaquie", "score": "3-1" }
+    ]
+  },
+  "1966": {
+    "quarts": [
+      { "home": "Angleterre", "away": "Argentine", "score": "1-0" },
+      { "home": "Allemagne de l'Ouest", "away": "Uruguay", "score": "4-0" },
+      { "home": "Union Soviétique", "away": "Hongrie", "score": "2-1" },
+      { "home": "Portugal", "away": "Corée du Nord", "score": "5-3" }
+    ],
+    "demis": [
+      { "home": "Allemagne de l'Ouest", "away": "Union Soviétique", "score": "2-1" },
+      { "home": "Angleterre", "away": "Portugal", "score": "2-1" }
+    ],
+    "petite_finale": [
+      { "home": "Portugal", "away": "Union Soviétique", "score": "2-1" }
+    ],
+    "finale": [
+      { "home": "Angleterre", "away": "Allemagne de l'Ouest", "score": "4-2 ap" }
+    ]
+  },
+  "1970": {
+    "quarts": [
+      { "home": "Brésil", "away": "Pérou", "score": "4-2" },
+      { "home": "Uruguay", "away": "Union Soviétique", "score": "1-0 ap" },
+      { "home": "Italie", "away": "Mexique", "score": "4-1" },
+      { "home": "Allemagne de l'Ouest", "away": "Angleterre", "score": "3-2 ap" }
+    ],
+    "demis": [
+      { "home": "Brésil", "away": "Uruguay", "score": "3-1" },
+      { "home": "Italie", "away": "Allemagne de l'Ouest", "score": "4-3 ap" }
+    ],
+    "petite_finale": [
+      { "home": "Allemagne de l'Ouest", "away": "Uruguay", "score": "1-0" }
+    ],
+    "finale": [
+      { "home": "Brésil", "away": "Italie", "score": "4-1" }
+    ]
+  },
+  "1974": {
+    "finale": [
+      { "home": "Allemagne de l'Ouest", "away": "Pays-Bas", "score": "2-1" }
+    ],
+    "petite_finale": [
+      { "home": "Pologne", "away": "Brésil", "score": "1-0" }
+    ]
+  },
+  "1978": {
+    "finale": [
+      { "home": "Argentine", "away": "Pays-Bas", "score": "3-1 ap" }
+    ],
+    "petite_finale": [
+      { "home": "Brésil", "away": "Italie", "score": "2-1" }
+    ]
+  },
+  "1982": {
+    "demis": [
+      { "home": "Italie", "away": "Pologne", "score": "2-0" },
+      { "home": "Allemagne de l'Ouest", "away": "France", "score": "3-3 (5-4 tab)" }
+    ],
+    "petite_finale": [
+      { "home": "Pologne", "away": "France", "score": "3-2" }
+    ],
+    "finale": [
+      { "home": "Italie", "away": "Allemagne de l'Ouest", "score": "3-1" }
+    ]
+  },
+  "1986": {
+    "huitiemes": [
+      { "home": "Mexique", "away": "Bulgarie", "score": "2-0" },
+      { "home": "Belgique", "away": "Union Soviétique", "score": "4-3 ap" },
+      { "home": "Brésil", "away": "Pologne", "score": "4-0" },
+      { "home": "Argentine", "away": "Uruguay", "score": "1-0" },
+      { "home": "France", "away": "Italie", "score": "2-0" },
+      { "home": "Allemagne de l'Ouest", "away": "Maroc", "score": "1-0" },
+      { "home": "Espagne", "away": "Danemark", "score": "5-1" },
+      { "home": "Angleterre", "away": "Paraguay", "score": "3-0" }
+    ],
+    "quarts": [
+      { "home": "France", "away": "Brésil", "score": "1-1 (4-3 tab)" },
+      { "home": "Allemagne de l'Ouest", "away": "Mexique", "score": "0-0 (4-1 tab)" },
+      { "home": "Argentine", "away": "Angleterre", "score": "2-1" },
+      { "home": "Belgique", "away": "Espagne", "score": "1-1 (5-4 tab)" }
+    ],
+    "demis": [
+      { "home": "Argentine", "away": "Belgique", "score": "2-0" },
+      { "home": "Allemagne de l'Ouest", "away": "France", "score": "2-0" }
+    ],
+    "petite_finale": [
+      { "home": "France", "away": "Belgique", "score": "4-2 ap" }
+    ],
+    "finale": [
+      { "home": "Argentine", "away": "Allemagne de l'Ouest", "score": "3-2" }
+    ]
+  },
+  "1990": {
+    "huitiemes": [
+      { "home": "Cameroun", "away": "Colombie", "score": "2-1 ap" },
+      { "home": "Tchécoslovaquie", "away": "Costa Rica", "score": "4-1" },
+      { "home": "Brésil", "away": "Argentine", "score": "0-1" },
+      { "home": "Allemagne de l'Ouest", "away": "Pays-Bas", "score": "2-1" },
+      { "home": "Yougoslavie", "away": "Espagne", "score": "2-1 ap" },
+      { "home": "Italie", "away": "Uruguay", "score": "2-0" },
+      { "home": "Angleterre", "away": "Belgique", "score": "1-0 ap" },
+      { "home": "Irlande", "away": "Roumanie", "score": "0-0 (5-4 tab)" }
+    ],
+    "quarts": [
+      { "home": "Argentine", "away": "Yougoslavie", "score": "0-0 (3-2 tab)" },
+      { "home": "Italie", "away": "Irlande", "score": "1-0" },
+      { "home": "Allemagne de l'Ouest", "away": "Tchécoslovaquie", "score": "1-0" },
+      { "home": "Angleterre", "away": "Cameroun", "score": "3-2 ap" }
+    ],
+    "demis": [
+      { "home": "Argentine", "away": "Italie", "score": "1-1 (4-3 tab)" },
+      { "home": "Allemagne de l'Ouest", "away": "Angleterre", "score": "1-1 (4-3 tab)" }
+    ],
+    "petite_finale": [
+      { "home": "Italie", "away": "Angleterre", "score": "2-1" }
+    ],
+    "finale": [
+      { "home": "Allemagne de l'Ouest", "away": "Argentine", "score": "1-0" }
+    ]
+  },
+  "1994": {
+    "huitiemes": [
+      { "home": "Allemagne", "away": "Belgique", "score": "3-2" },
+      { "home": "Espagne", "away": "Suisse", "score": "3-0" },
+      { "home": "Pays-Bas", "away": "République d'Irlande", "score": "2-0" },
+      { "home": "Brésil", "away": "États-Unis", "score": "1-0" },
+      { "home": "Italie", "away": "Nigeria", "score": "2-1 ap" },
+      { "home": "Argentine", "away": "Roumanie", "score": "2-3" },
+      { "home": "Suède", "away": "Arabie Saoudite", "score": "3-1" },
+      { "home": "Mexique", "away": "Bulgarie", "score": "1-1 (1-3 tab)" }
+    ],
+    "quarts": [
+      { "home": "Italie", "away": "Espagne", "score": "2-1" },
+      { "home": "Brésil", "away": "Pays-Bas", "score": "3-2" },
+      { "home": "Allemagne", "away": "Bulgarie", "score": "1-2" },
+      { "home": "Roumanie", "away": "Suède", "score": "2-2 (4-5 tab)" }
+    ],
+    "demis": [
+      { "home": "Italie", "away": "Bulgarie", "score": "2-1" },
+      { "home": "Brésil", "away": "Suède", "score": "1-0" }
+    ],
+    "petite_finale": [
+      { "home": "Suède", "away": "Bulgarie", "score": "4-0" }
+    ],
+    "finale": [
+      { "home": "Brésil", "away": "Italie", "score": "0-0 (3-2 tab)" }
+    ]
+  },
+  "1998": {
+    "huitiemes": [
+      { "home": "Brésil", "away": "Chili", "score": "4-1" },
+      { "home": "France", "away": "Paraguay", "score": "1-0 ap" },
+      { "home": "Nigeria", "away": "Danemark", "score": "1-4" },
+      { "home": "Italie", "away": "Norvège", "score": "1-0" },
+      { "home": "Allemagne", "away": "Mexique", "score": "2-1" },
+      { "home": "Pays-Bas", "away": "Yougoslavie", "score": "2-1" },
+      { "home": "Roumanie", "away": "Croatie", "score": "0-1" },
+      { "home": "Argentine", "away": "Angleterre", "score": "2-2 (4-3 tab)" }
+    ],
+    "quarts": [
+      { "home": "Italie", "away": "France", "score": "0-0 (3-4 tab)" },
+      { "home": "Brésil", "away": "Danemark", "score": "3-2" },
+      { "home": "Pays-Bas", "away": "Argentine", "score": "2-1" },
+      { "home": "Allemagne", "away": "Croatie", "score": "0-3" }
+    ],
+    "demis": [
+      { "home": "Brésil", "away": "Pays-Bas", "score": "1-1 (4-2 tab)" },
+      { "home": "France", "away": "Croatie", "score": "2-1" }
+    ],
+    "petite_finale": [
+      { "home": "Pays-Bas", "away": "Croatie", "score": "1-2" }
+    ],
+    "finale": [
+      { "home": "Brésil", "away": "France", "score": "0-3" }
+    ]
+  },
+  "2002": {
+    "huitiemes": [
+      { "home": "Allemagne", "away": "Paraguay", "score": "1-0" },
+      { "home": "Danemark", "away": "Angleterre", "score": "0-3" },
+      { "home": "Suède", "away": "Sénégal", "score": "1-2 ap" },
+      { "home": "Espagne", "away": "République d'Irlande", "score": "1-1 (3-2 tab)" },
+      { "home": "Mexique", "away": "États-Unis", "score": "0-2" },
+      { "home": "Brésil", "away": "Belgique", "score": "2-0" },
+      { "home": "Japon", "away": "Turquie", "score": "0-1" },
+      { "home": "Corée du Sud", "away": "Italie", "score": "2-1 ap" }
+    ],
+    "quarts": [
+      { "home": "Allemagne", "away": "États-Unis", "score": "1-0" },
+      { "home": "Espagne", "away": "Corée du Sud", "score": "0-0 (3-5 tab)" },
+      { "home": "Angleterre", "away": "Brésil", "score": "1-2" },
+      { "home": "Sénégal", "away": "Turquie", "score": "0-1 ap" }
+    ],
+    "demis": [
+      { "home": "Allemagne", "away": "Corée du Sud", "score": "1-0" },
+      { "home": "Brésil", "away": "Turquie", "score": "1-0" }
+    ],
+    "petite_finale": [
+      { "home": "Corée du Sud", "away": "Turquie", "score": "2-3" }
+    ],
+    "finale": [
+      { "home": "Allemagne", "away": "Brésil", "score": "0-2" }
+    ]
+  },
+  "2006": {
+    "huitiemes": [
+      { "home": "Allemagne", "away": "Suède", "score": "2-0" },
+      { "home": "Argentine", "away": "Mexique", "score": "2-1 ap" },
+      { "home": "Italie", "away": "Australie", "score": "1-0" },
+      { "home": "Suisse", "away": "Ukraine", "score": "0-0 (0-3 tab)" },
+      { "home": "Angleterre", "away": "Équateur", "score": "1-0" },
+      { "home": "Portugal", "away": "Pays-Bas", "score": "1-0" },
+      { "home": "Brésil", "away": "Ghana", "score": "3-0" },
+      { "home": "France", "away": "Espagne", "score": "3-1" }
+    ],
+    "quarts": [
+      { "home": "Allemagne", "away": "Argentine", "score": "1-1 (4-2 tab)" },
+      { "home": "Italie", "away": "Ukraine", "score": "3-0" },
+      { "home": "Angleterre", "away": "Portugal", "score": "0-0 (1-3 tab)" },
+      { "home": "Brésil", "away": "France", "score": "0-1" }
+    ],
+    "demis": [
+      { "home": "Allemagne", "away": "Italie", "score": "0-2 ap" },
+      { "home": "Portugal", "away": "France", "score": "0-1" }
+    ],
+    "petite_finale": [
+      { "home": "Allemagne", "away": "Portugal", "score": "3-1" }
+    ],
+    "finale": [
+      { "home": "Italie", "away": "France", "score": "1-1 (5-3 tab)" }
+    ]
+  },
+  "2010": {
+    "huitiemes": [
+      { "home": "Uruguay", "away": "Corée du Sud", "score": "2-1" },
+      { "home": "États-Unis", "away": "Ghana", "score": "1-2 ap" },
+      { "home": "Allemagne", "away": "Angleterre", "score": "4-1" },
+      { "home": "Argentine", "away": "Mexique", "score": "3-1" },
+      { "home": "Pays-Bas", "away": "Slovaquie", "score": "2-1" },
+      { "home": "Brésil", "away": "Chili", "score": "3-0" },
+      { "home": "Paraguay", "away": "Japon", "score": "0-0 (5-3 tab)" },
+      { "home": "Espagne", "away": "Portugal", "score": "1-0" }
+    ],
+    "quarts": [
+      { "home": "Pays-Bas", "away": "Brésil", "score": "2-1" },
+      { "home": "Uruguay", "away": "Ghana", "score": "1-1 (4-2 tab)" },
+      { "home": "Argentine", "away": "Allemagne", "score": "0-4" },
+      { "home": "Paraguay", "away": "Espagne", "score": "0-1" }
+    ],
+    "demis": [
+      { "home": "Uruguay", "away": "Pays-Bas", "score": "2-3" },
+      { "home": "Allemagne", "away": "Espagne", "score": "0-1" }
+    ],
+    "petite_finale": [
+      { "home": "Uruguay", "away": "Allemagne", "score": "2-3" }
+    ],
+    "finale": [
+      { "home": "Pays-Bas", "away": "Espagne", "score": "0-1 ap" }
+    ]
+  },
+  "2014": {
+    "huitiemes": [
+      { "home": "Brésil", "away": "Chili", "score": "1-1 (3-2 tab)" },
+      { "home": "Colombie", "away": "Uruguay", "score": "2-0" },
+      { "home": "Pays-Bas", "away": "Mexique", "score": "2-1" },
+      { "home": "Costa Rica", "away": "Grèce", "score": "1-1 (5-3 tab)" },
+      { "home": "France", "away": "Nigeria", "score": "2-0" },
+      { "home": "Allemagne", "away": "Algérie", "score": "2-1 ap" },
+      { "home": "Argentine", "away": "Suisse", "score": "1-0 ap" },
+      { "home": "Belgique", "away": "États-Unis", "score": "2-1 ap" }
+    ],
+    "quarts": [
+      { "home": "Brésil", "away": "Colombie", "score": "2-1" },
+      { "home": "Pays-Bas", "away": "Costa Rica", "score": "0-0 (4-3 tab)" },
+      { "home": "France", "away": "Allemagne", "score": "0-1" },
+      { "home": "Argentine", "away": "Belgique", "score": "1-0" }
+    ],
+    "demis": [
+      { "home": "Brésil", "away": "Allemagne", "score": "1-7" },
+      { "home": "Pays-Bas", "away": "Argentine", "score": "0-0 (2-4 tab)" }
+    ],
+    "petite_finale": [
+      { "home": "Brésil", "away": "Pays-Bas", "score": "0-3" }
+    ],
+    "finale": [
+      { "home": "Allemagne", "away": "Argentine", "score": "1-0 ap" }
+    ]
+  },
+  "2018": {
+    "huitiemes": [
+      { "home": "France", "away": "Argentine", "score": "4-3" },
+      { "home": "Uruguay", "away": "Portugal", "score": "2-1" },
+      { "home": "Espagne", "away": "Russie", "score": "1-1 (3-4 tab)" },
+      { "home": "Croatie", "away": "Danemark", "score": "1-1 (3-2 tab)" },
+      { "home": "Brésil", "away": "Mexique", "score": "2-0" },
+      { "home": "Belgique", "away": "Japon", "score": "3-2" },
+      { "home": "Suède", "away": "Suisse", "score": "1-0" },
+      { "home": "Colombie", "away": "Angleterre", "score": "1-1 (3-4 tab)" }
+    ],
+    "quarts": [
+      { "home": "Uruguay", "away": "France", "score": "0-2" },
+      { "home": "Brésil", "away": "Belgique", "score": "1-2" },
+      { "home": "Suède", "away": "Angleterre", "score": "0-2" },
+      { "home": "Russie", "away": "Croatie", "score": "2-2 (3-4 tab)" }
+    ],
+    "demis": [
+      { "home": "France", "away": "Belgique", "score": "1-0" },
+      { "home": "Croatie", "away": "Angleterre", "score": "2-1 ap" }
+    ],
+    "petite_finale": [
+      { "home": "Belgique", "away": "Angleterre", "score": "2-0" }
+    ],
+    "finale": [
+      { "home": "France", "away": "Croatie", "score": "4-2" }
+    ]
+  },
+  "2022": {
+    "huitiemes": [
+      { "home": "Pays-Bas", "away": "États-Unis", "score": "3-1" },
+      { "home": "Argentine", "away": "Australie", "score": "2-1" },
+      { "home": "France", "away": "Pologne", "score": "3-1" },
+      { "home": "Angleterre", "away": "Sénégal", "score": "3-0" },
+      { "home": "Japon", "away": "Croatie", "score": "1-1 (1-3 tab)" },
+      { "home": "Brésil", "away": "Corée du Sud", "score": "4-1" },
+      { "home": "Maroc", "away": "Espagne", "score": "0-0 (3-0 tab)" },
+      { "home": "Portugal", "away": "Suisse", "score": "6-1" }
+    ],
+    "quarts": [
+      { "home": "Croatie", "away": "Brésil", "score": "1-1 (4-2 tab)" },
+      { "home": "Pays-Bas", "away": "Argentine", "score": "2-2 (3-4 tab)" },
+      { "home": "Maroc", "away": "Portugal", "score": "1-0" },
+      { "home": "Angleterre", "away": "France", "score": "1-2" }
+    ],
+    "demis": [
+      { "home": "Argentine", "away": "Croatie", "score": "3-0" },
+      { "home": "France", "away": "Maroc", "score": "2-0" }
+    ],
+    "petite_finale": [
+      { "home": "Croatie", "away": "Maroc", "score": "2-1" }
+    ],
+    "finale": [
+      { "home": "Argentine", "away": "France", "score": "3-3 (4-2 tab)" }
+    ]
+  }
+}
