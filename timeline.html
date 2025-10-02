@@ -11,19 +11,27 @@
             --bg-color: #0d0c1d;
             --primary-glow: #00e5ff; /* Cyan */
             --secondary-glow: #ff4700; /* Orange */
-            --duration-bar-color: #90ff00; /* Vert pâle */
             --marker-color: #fffa7a; /* Jaune pâle */
             --widget-bg: #1f1e33;
             --text-color: #f0f0f0;
             --border-color: rgba(0, 229, 255, 0.4);
+            --danger-color: #ff3366;
 
-            /* Couleurs pour les axes */
+            /* Couleurs pour les axes (Pastilles) */
             --color-axex: #ff0077; 
             --color-axey: #00ffaa; 
             --color-axez: #00aaff; 
             --color-rotx: #ffaa00; 
             --color-roty: #aa00ff; 
             --color-rotz: #ff0000; 
+
+            /* NOUVEAU: Couleurs des barres (plus pâles / transparentes) */
+            --bar-color-axex: rgba(255, 0, 119, 0.4); 
+            --bar-color-axey: rgba(0, 255, 170, 0.4); 
+            --bar-color-axez: rgba(0, 170, 255, 0.4); 
+            --bar-color-rotx: rgba(255, 170, 0, 0.4); 
+            --bar-color-roty: rgba(170, 0, 255, 0.4); 
+            --bar-color-rotz: rgba(255, 0, 0, 0.4); 
         }
 
         * {
@@ -45,12 +53,15 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 20%; 
+            height: 60px; 
             z-index: 1000;
             display: flex;
             align-items: center;
             padding: 0 20px;
             gap: 20px;
+            background: rgba(13, 12, 29, 0.8);
+            backdrop-filter: blur(5px);
+            border-bottom: 1px solid var(--border-color);
         }
 
         #reference-pastille {
@@ -60,36 +71,90 @@
             border-radius: 50%;
             cursor: grab;
             box-shadow: 0 0 10px var(--secondary-glow), 0 0 20px var(--secondary-glow);
-            transition: transform 0.2s;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        #reference-pastille:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px var(--secondary-glow), 0 0 30px var(--secondary-glow);
+        }
+        /* NOUVEAU: Agrandissement au drag */
+        #reference-pastille.dragging {
+            transform: scale(1.5);
+            opacity: 0.8; 
+            box-shadow: 0 0 20px var(--secondary-glow), 0 0 40px var(--secondary-glow);
+            cursor: grabbing;
         }
 
-        #play-btn {
-            background-color: var(--duration-bar-color);
-            color: var(--bg-color);
-            border: none;
-            padding: 8px 15px;
+        /* --- Styles globaux pour les contrôles --- */
+        button, select, input {
+            background-color: var(--widget-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
             border-radius: 4px;
+            padding: 8px 12px;
+            font-family: 'Roboto Mono', monospace;
+            transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+        }
+
+        select {
+            cursor: pointer;
+        }
+        
+        button {
             cursor: pointer;
             font-weight: bold;
-            box-shadow: 0 0 10px var(--duration-bar-color);
+        }
+
+        button:hover {
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 8px var(--primary-glow);
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-glow);
+            box-shadow: 0 0 8px var(--primary-glow);
+        }
+        
+        #play-btn {
+            background-color: var(--color-axey); 
+            color: var(--bg-color);
+            border-color: var(--color-axey);
+            box-shadow: 0 0 10px var(--color-axey);
+        }
+        #play-btn:hover {
+             box-shadow: 0 0 15px var(--color-axey), 0 0 25px var(--color-axey);
         }
 
         /* --- Timeline (Restylisée) --- */
         #timeline-container {
             position: absolute;
-            top: 20%; 
+            top: 60px; 
             left: 0;
             width: 100%;
-            height: 80%;
+            height: calc(100% - 60px);
             background: #0a0918;
             overflow: auto;
         }
+        /* Style de la scrollbar */
+        #timeline-container::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+        #timeline-container::-webkit-scrollbar-track {
+            background: #0a0918;
+        }
+        #timeline-container::-webkit-scrollbar-thumb {
+            background-color: var(--primary-glow);
+            border-radius: 10px;
+            border: 2px solid #0a0918;
+        }
+
 
         #timeline {
             position: relative;
             width: 3000px;
             height: 100%;
-            /* Grille plus subtile */
             background-image: 
                 linear-gradient(rgba(0, 229, 255, 0.05) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
@@ -106,25 +171,48 @@
             border-radius: 50%;
             transform: translate(-50%, -50%);
             cursor: grab;
-            transition: box-shadow 0.2s, background-color 0.2s, left 0.5s ease; /* Ajout transition left pour le tri */
+            transition: top 0.6s cubic-bezier(.17,.89,.32,1.45), left 0.6s cubic-bezier(.17,.89,.32,1.45), box-shadow 0.2s, background-color 0.2s;
             z-index: 10;
         }
 
-        .duration-bar {
-            position: absolute;
-            /* NOUVEAU: Fine barre verte sous la pastille, s'étendant à droite */
-            left: 50%;
-            top: calc(50% + 20px); /* 50% + 15px (moitié pastille) + 5px (marge) */
-            transform: translateY(-50%);
-            height: 2px; /* Très fin */
-            background-color: var(--duration-bar-color);
-            border-radius: 1px;
-            box-shadow: 0 0 4px var(--duration-bar-color);
-            transition: width 0.5s ease-in-out;
-            z-index: 9; /* En dessous de la pastille */
+        /* Définition des animations de rebond (DROP) */
+        @keyframes bounce-in {
+            0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.5; } 
+            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; } 
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        
+        /* Définition des animations (DRAG START) */
+        @keyframes squish-and-lift {
+            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            50% { transform: translate(-50%, -50%) scale(0.8, 1.2); box-shadow: 0 0 5px var(--secondary-glow); } 
+            100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.5; box-shadow: 0 0 20px var(--secondary-glow); } 
         }
 
-        /* --- Repères de Temps (inchangés) --- */
+        .pastille-drop-bounce {
+            animation: bounce-in 0.6s cubic-bezier(.17,.89,.32,1.45); 
+        }
+
+        .pastille-drag-squish {
+            animation: squish-and-lift 0.2s forwards; 
+            cursor: grabbing;
+        }
+        
+        .duration-bar {
+            position: absolute;
+            /* COMMENCE AU CENTRE HORIZONTAL DE LA PASTILLE (30px/2) */
+            left: 15px; 
+            /* COMMENCE AU CENTRE VERTICAL DE LA PASTILLE (30px/2) */
+            top: 15px; 
+            /* CENTRE VERTICALEMENT LA BARRE (2px de haut) SUR LA LIGNE DE 15px */
+            transform: translateY(-50%); 
+            height: 2px;
+            border-radius: 1px;
+            transition: width 0.5s ease-in-out;
+            z-index: 9;
+        }
+
+        /* --- Repères de Temps --- */
         .time-marker {
             position: absolute;
             width: 1px;
@@ -134,7 +222,6 @@
             z-index: 1;
         }
         .time-label {
-            /* styles labels (inchangés) */
             position: absolute;
             font-size: 8px; 
             display: flex;
@@ -156,40 +243,112 @@
         .marker-end .time-label { top: -40px; left: 0; transform: translateX(0); }
 
 
-        /* --- Éditeur de Temps (#time-editor) - DÉPLAÇABLE (Restylisé) --- */
+        /* --- Éditeur de Temps (#time-editor) --- */
         #time-editor {
             position: fixed; 
             display: none;
             width: 650px; 
             background-color: var(--widget-bg);
             border: 1px solid var(--border-color);
-            border-radius: 8px;
             box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
             z-index: 2000; 
-            cursor: move; 
+            overflow: hidden; 
         }
         .editor-header {
             display: flex; justify-content: space-between; align-items: center;
             padding: 8px 12px; border-bottom: 1px solid var(--border-color);
             cursor: grab; 
+            background: rgba(0,0,0,0.2);
         }
-        /* ... (styles fieldset, input-group, input, select, etc. inchangés) ... */
 
-        /* --- Courbe de Bézier (Correction d'Affichage) --- */
+        .editor-body {
+            display: flex;
+            gap: 20px;
+            padding: 15px;
+        }
+
+        .editor-controls {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            color: var(--text-color);
+            width: 25px;
+            height: 25px;
+            line-height: 25px;
+            text-align: center;
+            padding: 0;
+            border-radius: 50%;
+        }
+        .close-btn:hover {
+            background-color: var(--danger-color);
+            color: white;
+            box-shadow: 0 0 8px var(--danger-color);
+        }
+
+        fieldset {
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 10px;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        legend {
+            padding: 0 5px;
+            font-size: 12px;
+            color: var(--primary-glow);
+        }
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .input-group label {
+            font-size: 10px;
+            opacity: 0.8;
+        }
+        .input-group input {
+            width: 50px;
+            padding: 5px;
+        }
+        input[type="text"]{
+             width: 80px;
+        }
+
+        .editor-footer {
+            padding: 10px 15px;
+            border-top: 1px solid var(--border-color);
+            text-align: right;
+            background: rgba(0,0,0,0.2);
+        }
+
+        #ok-editor-btn {
+            background-color: var(--primary-glow);
+            border-color: var(--primary-glow);
+            color: var(--bg-color);
+        }
+
+        /* --- Courbe de Bézier --- */
         #curve-area {
-            flex-basis: 300px;
-            height: 300px;
+            flex-basis: 250px; 
+            height: 250px;
             border: 1px solid var(--border-color);
             border-radius: 4px;
             position: relative;
             background-image: 
                 linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
                 linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
-            background-size: 30px 30px;
+            background-size: 25px 25px;
             overflow: hidden;
             z-index: 200; 
         }
-        /* Le canvas doit être un block et remplir l'espace */
         #curve-canvas {
             display: block; 
             width: 100%;
@@ -201,24 +360,24 @@
             height: 10px;
             border-radius: 50%;
             cursor: grab;
-            z-index: 210; /* Doit être au-dessus du canvas */
+            z-index: 210;
             transform: translate(-50%, -50%);
             background-color: var(--secondary-glow);
             box-shadow: 0 0 5px var(--secondary-glow);
         }
         .curve-control-point.start-end {
-            background-color: var(--duration-bar-color); 
-            box-shadow: 0 0 5px var(--duration-bar-color);
+            background-color: var(--color-axey); 
+            box-shadow: 0 0 5px var(--color-axey);
         }
         
-        /* --- Card de Prévisualisation (inchangée) --- */
+        /* --- Card de Prévisualisation --- */
         #preview-card {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 20%;
-            height: 40%;
+            width: 200px;
+            height: 350px;
             background-color: var(--widget-bg);
             border: 2px solid var(--primary-glow);
             border-radius: 12px;
@@ -227,16 +386,64 @@
             display: none; 
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: space-around; 
             padding: 20px;
+            perspective: 800px;
+            background-image: url("Psg.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
         }
+        
+        #preview-card h3 {
+            font-size: 16px;
+            color: var(--primary-glow);
+            text-align: center;
+        }
+
+        /* PARENT: Gère la Translation */
+        #preview-object {
+            width: 200px;
+            height: 300px;
+            /* Maintenir transform-style pour que l'enfant soit 3D */
+            transform-style: preserve-3d; 
+            
+            /* Utilisé uniquement pour centrer l'enfant */
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ENFANT: Gère la Rotation et le style visuel */
+        #preview-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            color: var(--color-axey);
+            border: 2px dashed var(--color-axey);
+            border-radius: 8px;
+            transform-style: preserve-3d; 
+            background-image: url("neuf.jpg");
+            background-size: cover;      
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
+        #current-time-display {
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
     </style>
 </head>
 <body>
 
     <div id="top-header">
         <div id="reference-pastille" draggable="true"></div>
-        <select id="axis-selector" style="padding: 5px; background: var(--widget-bg); color: var(--text-color); border: 1px solid var(--border-color);">
+        <select id="axis-selector">
             <option value="Axe X">Axe X</option>
             <option value="Axe Y">Axe Y</option>
             <option value="Axe Z">Axe Z</option>
@@ -252,16 +459,18 @@
     </div>
 
     <div id="preview-card">
-        <button id="close-preview-btn">×</button>
-        <h3>Simulation d'Animation</h3>
-        <div id="preview-object">OBJET</div>
+        <h3>Simulation</h3>
+        <div id="preview-object">
+            <div id="preview-inner">OBJET</div>
+        </div>
         <span id="current-time-display">00:00:00:000</span>
+        <button id="close-preview-btn" class="close-btn" style="position: absolute; top: 5px; right: 5px;">×</button>
     </div>
 
     <div id="time-editor">
         <div class="editor-header">
             <span>Définir l'Animation</span>
-            <button id="close-editor-btn">×</button>
+            <button id="close-editor-btn" class="close-btn">×</button>
         </div>
         <div class="editor-body">
             
@@ -276,7 +485,7 @@
             <div class="editor-controls">
                 <div class="input-group" style="align-self: center;">
                     <label for="editor-axis-selector" style="width: auto;">Axe :</label>
-                    <select id="editor-axis-selector" style="width: 120px;">
+                    <select id="editor-axis-selector" style="width: 150px;">
                         <option value="Axe X">Axe X</option>
                         <option value="Axe Y">Axe Y</option>
                         <option value="Axe Z">Axe Z</option>
@@ -286,31 +495,28 @@
                     </select>
                 </div>
                 
-                <div class="value-fields">
+                <div>
                     <fieldset>
-                        <legend>Valeur Début</legend>
-                        <div class="input-group"><label>Val</label><input type="text" id="start-value" value="0"></div>
-                    </fieldset>
-                    <fieldset>
-                        <legend>Valeur Fin</legend>
-                        <div class="input-group"><label>Val</label><input type="text" id="end-value" value="100"></div>
+                        <legend>Valeurs</legend>
+                        <div class="input-group"><label>Début</label><input type="text" id="start-value" value="0"></div>
+                        <div class="input-group"><label>Fin</label><input type="text" id="end-value" value="100"></div>
                     </fieldset>
                 </div>
 
-                <div class="time-fields">
+                <div>
                     <fieldset>
                         <legend>Début (HH:MM:SS:ms)</legend>
-                        <div class="input-group"><label for="start-h">HH</label><input type="number" id="start-h" min="0"></div>
-                        <div class="input-group"><label for="start-m">MM</label><input type="number" id="start-m" min="0" max="59"></div>
-                        <div class="input-group"><label for="start-s">SS</label><input type="number" id="start-s" min="0" max="59"></div>
-                        <div class="input-group"><label for="start-ms">ms</label><input type="number" id="start-ms" min="0" max="999"></div>
+                        <div class="input-group"><label for="start-h">HH</label><input type="number" id="start-h" min="0" value="0"></div>
+                        <div class="input-group"><label for="start-m">MM</label><input type="number" id="start-m" min="0" max="59" value="0"></div>
+                        <div class="input-group"><label for="start-s">SS</label><input type="number" id="start-s" min="0" max="59" value="0"></div>
+                        <div class="input-group"><label for="start-ms">ms</label><input type="number" id="start-ms" min="0" max="999" value="0"></div>
                     </fieldset>
                     <fieldset>
                         <legend>Fin (HH:MM:SS:ms)</legend>
-                        <div class="input-group"><label for="end-h">HH</label><input type="number" id="end-h" min="0"></div>
-                        <div class="input-group"><label for="end-m">MM</label><input type="number" id="end-m" min="0" max="59"></div>
-                        <div class="input-group"><label for="end-s">SS</label><input type="number" id="end-s" min="0" max="59"></div>
-                        <div class="input-group"><label for="end-ms">ms</label><input type="number" id="end-ms" min="0" max="999"></div>
+                        <div class="input-group"><label for="end-h">HH</label><input type="number" id="end-h" min="0" value="0"></div>
+                        <div class="input-group"><label for="end-m">MM</label><input type="number" id="end-m" min="0" max="59" value="0"></div>
+                        <div class="input-group"><label for="end-s">SS</label><input type="number" id="end-s" min="0" max="59" value="0"></div>
+                        <div class="input-group"><label for="end-ms">ms</label><input type="number" id="end-ms" min="0" max="999" value="0"></div>
                     </fieldset>
                 </div>
             </div>
@@ -339,7 +545,8 @@
         const playBtn = document.getElementById('play-btn');
         const previewCard = document.getElementById('preview-card');
         const closePreviewBtn = document.getElementById('close-preview-btn');
-        const previewObject = document.getElementById('preview-object');
+        const previewObject = document.getElementById('preview-object'); // Parent (Translation)
+        const previewInner = document.getElementById('preview-inner');   // Enfant (Rotation)
         const currentTimeDisplay = document.getElementById('current-time-display');
         let animationFrame = null;
         let animationStartTime = 0;
@@ -352,11 +559,12 @@
         const ctx = canvas.getContext('2d');
         const curvePoints = Array.from(document.querySelectorAll('.curve-control-point'));
 
-        // --- Logique de Déplacement de l'Éditeur (inchangée) ---
+        // --- Logique de Déplacement de l'Éditeur ---
         let isDraggingEditor = false;
         let editorOffsetX, editorOffsetY;
 
         editorHeader.addEventListener('mousedown', (e) => {
+            if (e.target.classList.contains('close-btn')) return;
             isDraggingEditor = true;
             editorHeader.style.cursor = 'grabbing';
             editorOffsetX = e.clientX - timeEditor.getBoundingClientRect().left;
@@ -386,7 +594,7 @@
             document.removeEventListener('mouseup', stopDragEditor);
         };
 
-        // --- Fonctions Utilitaires (inchangées) ---
+        // --- Fonctions Utilitaires ---
         const timeToMilliseconds = (h, m, s, ms) => (parseInt(h||0)*3600+parseInt(m||0)*60+parseInt(s||0))*1000+parseInt(ms||0);
         const millisecondsToTime = (totalMs) => {
             if (isNaN(totalMs) || totalMs < 0) return { h:0,m:0,s:0,ms:0 };
@@ -408,6 +616,7 @@
                 <span>${String(t.ms).padStart(3,'0')}ms</span>
             </div>`;
         };
+        
         const getAxisColor = (axis) => {
             switch(axis) {
                 case "Axe X": return "var(--color-axex)";
@@ -420,7 +629,20 @@
             }
         };
 
-        // --- Logique Courbe de Bézier (pour l'éditeur) ---
+        const getBarColor = (axis) => {
+            switch(axis) {
+                case "Axe X": return "var(--bar-color-axex)";
+                case "Axe Y": return "var(--bar-color-axey)";
+                case "Axe Z": return "var(--bar-color-axez)";
+                case "rotation X": return "var(--bar-color-rotx)";
+                case "rotation Y": return "var(--bar-color-roty)";
+                case "rotation Z": return "var(--bar-color-rotz)";
+                default: return "var(--border-color)";
+            }
+        };
+
+
+        // --- Logique Courbe de Bézier ---
         const updateCanvasSize = () => {
             canvas.width = curveArea.clientWidth;
             canvas.height = curveArea.clientHeight;
@@ -435,12 +657,10 @@
             const getPointCoords = (index) => {
                 const style = curvePoints[index].style;
                 const x = parseFloat(style.left) * w / 100;
-                // Y est inversé car top 0% = haut (valeur 1 de la courbe)
                 const y = h - (parseFloat(style.top) * h / 100); 
                 return { x, y };
             };
             
-            // Correction: Si l'éditeur est caché, le canvas peut avoir 0px. On utilise les pourcentages directement.
             if (w === 0 || h === 0) return;
 
             const p0 = getPointCoords(0);
@@ -448,7 +668,6 @@
             const p2 = getPointCoords(2);
             const p3 = getPointCoords(3);
 
-            // Lignes de contrôle (gris transparent)
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
             ctx.lineWidth = 1;
             ctx.setLineDash([5, 5]);
@@ -460,9 +679,7 @@
             ctx.stroke();
             ctx.setLineDash([]); 
 
-            // Courbe de Bézier (cyan-orangé)
-            // NOUVEAU: La courbe doit être visible même si P0 ou P3 est en blanc (vert)
-            ctx.strokeStyle = 'var(--secondary-glow)'; // Reste la couleur secondaire
+            ctx.strokeStyle = 'var(--secondary-glow)';
             ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(p0.x, p0.y);
@@ -471,69 +688,55 @@
         };
 
         let draggingCurvePoint = null;
-        let startCurveX, startCurveY, startCurveLeft, startCurveTop;
 
         const startDragCurve = (e) => {
             if (isDraggingEditor) return;
             
             draggingCurvePoint = e.target;
-            startCurveX = e.clientX;
-            startCurveY = e.clientY;
-            startCurveLeft = parseFloat(draggingCurvePoint.style.left);
-            startCurveTop = parseFloat(draggingCurvePoint.style.top);
+            const rect = curveArea.getBoundingClientRect();
 
-            document.addEventListener('mousemove', dragCurve);
-            document.addEventListener('mouseup', stopDragCurve);
+            const moveHandler = (moveEvent) => {
+                if (!draggingCurvePoint) return;
+                
+                let x = moveEvent.clientX - rect.left;
+                let y = moveEvent.clientY - rect.top;
+
+                let newLeft = (x / rect.width) * 100;
+                let newTop = (y / rect.height) * 100;
+
+                const index = parseInt(draggingCurvePoint.dataset.index);
+
+                newLeft = Math.max(0, Math.min(100, newLeft));
+                newTop = Math.max(0, Math.min(100, newTop));
+
+                if (index === 1 || index === 2) {
+                    draggingCurvePoint.style.left = `${newLeft}%`;
+                    draggingCurvePoint.style.top = `${newTop}%`;
+                } else if (index === 0) {
+                    draggingCurvePoint.style.left = `0%`; 
+                    draggingCurvePoint.style.top = `${newTop}%`;
+                } else if (index === 3) {
+                    draggingCurvePoint.style.left = `100%`; 
+                    draggingCurvePoint.style.top = `${newTop}%`;
+                }
+
+                drawBezierCurve();
+            };
+
+            const stopHandler = () => {
+                 if (activePastille && draggingCurvePoint) {
+                    const pointIndex = draggingCurvePoint.dataset.index;
+                    activePastille.dataset[`curveP${pointIndex}Left`] = draggingCurvePoint.style.left;
+                    activePastille.dataset[`curveP${pointIndex}Top`] = draggingCurvePoint.style.top;
+                }
+                draggingCurvePoint = null;
+                document.removeEventListener('mousemove', moveHandler);
+                document.removeEventListener('mouseup', stopHandler);
+            };
+
+            document.addEventListener('mousemove', moveHandler);
+            document.addEventListener('mouseup', stopHandler);
             e.preventDefault();
-        };
-
-        const dragCurve = (e) => {
-            if (!draggingCurvePoint) return;
-
-            const dx = e.clientX - startCurveX;
-            const dy = e.clientY - startCurveY;
-
-            const areaW = curveArea.clientWidth;
-            const areaH = curveArea.clientHeight;
-
-            let newLeft = startCurveLeft + (dx / areaW) * 100;
-            let newTop = startCurveTop + (dy / areaH) * 100;
-            const index = parseInt(draggingCurvePoint.dataset.index);
-
-            newLeft = Math.max(0, Math.min(100, newLeft));
-            newTop = Math.max(0, Math.min(100, newTop));
-
-            // P1 & P2: X et Y libres
-            if (index === 1 || index === 2) {
-                draggingCurvePoint.style.left = `${newLeft}%`;
-                draggingCurvePoint.style.top = `${newTop}%`;
-            } 
-            // P0 (Début): X fixé à 0%
-            else if (index === 0) {
-                draggingCurvePoint.style.left = `0%`; 
-                draggingCurvePoint.style.top = `${newTop}%`;
-            } 
-            // P3 (Fin): X fixé à 100%
-            else if (index === 3) {
-                draggingCurvePoint.style.left = `100%`; 
-                draggingCurvePoint.style.top = `${newTop}%`;
-            }
-
-            drawBezierCurve();
-        };
-
-        const stopDragCurve = () => {
-            if (!draggingCurvePoint) return;
-
-            if (activePastille) {
-                const pointIndex = draggingCurvePoint.dataset.index;
-                activePastille.dataset[`curveP${pointIndex}Left`] = draggingCurvePoint.style.left;
-                activePastille.dataset[`curveP${pointIndex}Top`] = draggingCurvePoint.style.top;
-            }
-
-            draggingCurvePoint = null;
-            document.removeEventListener('mousemove', dragCurve);
-            document.removeEventListener('mouseup', stopDragCurve);
         };
 
         curvePoints.forEach(p => p.addEventListener('mousedown', startDragCurve));
@@ -542,10 +745,9 @@
         // --- Fonctions Principales ---
         const createPastille = (x, y) => {
             const pastille = document.createElement('div');
-            pastille.className = 'pastille';
+            pastille.className = 'pastille pastille-drop-bounce'; 
             pastille.id = `pastille-${Date.now()}`;
             
-            // Contrainte de 1% (1% de 3000px = 30px)
             const minX = 30; 
             const finalX = Math.max(minX, x);
 
@@ -558,7 +760,6 @@
             pastille.dataset.axis = axisSelector.value;
             pastille.draggable = true;
 
-            // Initialiser les données de courbe par défaut
             pastille.dataset.curveP0Left = '0%'; pastille.dataset.curveP0Top = '100%';
             pastille.dataset.curveP1Left = '33%'; pastille.dataset.curveP1Top = '50%';
             pastille.dataset.curveP2Left = '66%'; pastille.dataset.curveP2Top = '50%';
@@ -566,30 +767,36 @@
             
             const durationBar = document.createElement('div');
             durationBar.className = 'duration-bar';
-            pastille.appendChild(durationBar);
+            pastille.appendChild(durationBar); // Le bar est enfant de la pastille
             timeline.appendChild(pastille);
 
+            pastille.addEventListener('animationend', (e) => {
+                if (e.animationName === 'bounce-in') {
+                    pastille.classList.remove('pastille-drop-bounce');
+                }
+            });
+
             const initialColor = getAxisColor(pastille.dataset.axis);
+            const initialBarColor = getBarColor(pastille.dataset.axis);
+
             pastille.style.setProperty('background-color', initialColor);
             pastille.style.setProperty('box-shadow', `0 0 8px ${initialColor}, 0 0 15px ${initialColor}`);
+            
+            durationBar.style.setProperty('background-color', initialBarColor);
+            durationBar.style.setProperty('box-shadow', `0 0 4px ${initialColor}`); 
 
             pastille.addEventListener('click', (e) => {
-                if (e.detail === 0) return; 
                 showTimeEditor(pastille);
             });
 
             pastille.addEventListener('dragstart', (e) => {
                 e.dataTransfer.setData('text/plain', e.target.id);
                 e.dataTransfer.effectAllowed = 'move';
-                setTimeout(() => e.target.style.opacity = '0.5', 0);
+                e.target.classList.add('pastille-drag-squish'); 
             });
             pastille.addEventListener('dragend', (e) => {
-                e.target.style.opacity = '1';
-                const currentLeft = parseFloat(e.target.style.left);
-                if (currentLeft < minX) {
-                     e.target.style.left = `${minX}px`;
-                }
-                updateAndDrawMarkers(); // Mettre à jour après déplacement
+                e.target.classList.remove('pastille-drag-squish'); 
+                updateAndDrawMarkers();
             });
             return pastille;
         };
@@ -597,7 +804,6 @@
         const showTimeEditor = (p) => {
             activePastille = p;
             
-            // 1. Charger les valeurs de temps et de valeur
             const startTime = millisecondsToTime(parseInt(p.dataset.startTimeMs));
             const endTime = millisecondsToTime(parseInt(p.dataset.endTimeMs));
             
@@ -610,79 +816,62 @@
             startValueInput.value = p.dataset.startValue;
             endValueInput.value = p.dataset.endValue;
 
-            // 2. Charger l'axe et la courbe
             editorAxisSelector.value = p.dataset.axis;
             curvePoints.forEach((cp, index) => {
-                cp.style.left = p.dataset[`curveP${index}Left`];
-                cp.style.top = p.dataset[`curveP${index}Top`];
+                cp.style.left = p.dataset[`curveP${index}Left`] || cp.style.left;
+                cp.style.top = p.dataset[`curveP${index}Top`] || cp.style.top;
             });
             
-            // 3. Afficher et positionner l'éditeur (initialement centré)
-            const editorWidth = timeEditor.offsetWidth;
-            const editorHeight = timeEditor.offsetHeight;
-
-            timeEditor.style.left = `${(window.innerWidth - editorWidth) / 2}px`;
-            timeEditor.style.top = `${(window.innerHeight - editorHeight) / 2}px`;
+            if (timeEditor.style.display !== 'block') {
+                 timeEditor.style.left = `${(window.innerWidth - timeEditor.offsetWidth) / 2}px`;
+                 timeEditor.style.top = `${(window.innerHeight - timeEditor.offsetHeight) / 2}px`;
+            }
 
             timeEditor.style.display = 'block';
-            updateCanvasSize(); // Assure que la courbe est dessinée après l'affichage
+            updateCanvasSize();
         };
-
+        
         const updateAndDrawMarkers = () => {
             document.querySelectorAll('.time-marker').forEach(m => m.remove());
 
-            let pastilles = Array.from(timeline.querySelectorAll('.pastille'))
-                .filter(p => parseInt(p.dataset.endTimeMs) >= 0); // Inclure pastilles non configurées
+            let pastilles = Array.from(timeline.querySelectorAll('.pastille'));
             
-            // NOUVEAU: Tri des pastilles par temps de début (ancienne à gauche)
-            pastilles.sort((a, b) => {
-                const startA = parseInt(a.dataset.startTimeMs);
-                const startB = parseInt(b.dataset.startTimeMs);
-                return startA - startB;
-            });
+            pastilles.sort((a, b) => parseInt(a.dataset.startTimeMs) - parseInt(b.dataset.startTimeMs));
             
-            if (pastilles.length < 1) {
+            if (pastilles.length === 0) {
                 totalTimelineDuration = 0;
                 return;
             }
 
-            let minTime = Infinity, maxTime = -Infinity;
-            // Calculer la durée totale basée sur toutes les pastilles configurées
+            let maxTime = 0;
             pastilles.forEach(p => {
-                minTime = Math.min(minTime, parseInt(p.dataset.startTimeMs));
                 maxTime = Math.max(maxTime, parseInt(p.dataset.endTimeMs));
             });
 
-            // Si aucune pastille n'a de temps de fin valide (toutes à 0), on prend le temps de début min
-            if (maxTime <= 0 && pastilles.length > 0) {
-                 maxTime = parseInt(pastilles[pastilles.length - 1].dataset.startTimeMs);
-            }
-            if (maxTime <= 0) maxTime = 1; // Évite la division par zéro si tout est à 0
+            if (maxTime <= 0) maxTime = 1000;
 
             totalTimelineDuration = maxTime;
 
-            const totalMs = maxTime; 
             const timelineWidth = timeline.scrollWidth;
-            const pixelsPerMs = totalMs > 0 ? timelineWidth / totalMs : 0;
-            const minX = 30; // 1% de 3000px
+            const pixelsPerMs = timelineWidth / totalTimelineDuration;
+            const minX = 30;
 
             pastilles.forEach(p => {
                 const startMs = parseInt(p.dataset.startTimeMs);
                 const endMs = parseInt(p.dataset.endTimeMs);
-                const durationMs = endMs - startMs;
+                const durationMs = Math.max(0, endMs - startMs);
 
-                // Position X calculée à partir du temps de début
-                const posX = (startMs * pixelsPerMs) + minX; 
-                p.style.left = `${posX}px`;
+                const posX = (startMs * pixelsPerMs);
+                p.style.left = `${posX + minX}px`;
                 
                 const bar = p.querySelector('.duration-bar');
                 if (bar) bar.style.width = `${durationMs * pixelsPerMs}px`;
+                
 
-                // Créer les repères
-                createMarker(posX, formatTimeVertical(startMs), 'top');
-                createMarker(posX, formatTimeVertical(startMs), 'bottom');
+                createMarker(posX + minX, formatTimeVertical(startMs), 'top');
+                createMarker(posX + minX, formatTimeVertical(startMs), 'bottom');
                 if (durationMs > 0) {
-                    createMarker(posX + (durationMs * pixelsPerMs), formatTimeVertical(endMs), 'end', p.style.top);
+                    createMarker(posX + minX + (durationMs * pixelsPerMs), formatTimeVertical(endMs), 'end', p.style.top);
                 }
             });
         };
@@ -696,29 +885,30 @@
             timeline.appendChild(marker);
         };
 
-        // --- Logique d'Animation (inchangée) ---
-
+        // --- Logique d'Animation ---
         const getBezierValue = (t, P0_y, P1_y, P2_y, P3_y) => {
-            return (1 - t) ** 3 * P0_y +
-                   3 * (1 - t) ** 2 * t * P1_y +
-                   3 * (1 - t) * t ** 2 * P2_y +
-                   t ** 3 * P3_y;
+            const t2 = t * t;
+            const t3 = t2 * t;
+            const mt = 1 - t;
+            const mt2 = mt * mt;
+            const mt3 = mt2 * mt;
+            return P0_y * mt3 + 3 * P1_y * mt2 * t + 3 * P2_y * mt * t2 + P3_y * t3;
         };
 
         const applyTransform = (timeMs) => {
-            if (totalTimelineDuration === 0) return;
-            
-            previewObject.style.transform = '';
-            
-            const pastilles = Array.from(timeline.querySelectorAll('.pastille'))
-                .filter(p => parseInt(p.dataset.endTimeMs) > 0);
+            let transforms = {
+                translateX: 0, translateY: 0, translateZ: 0,
+                rotateX: 0, rotateY: 0, rotateZ: 0
+            };
+
+            const pastilles = timeline.querySelectorAll('.pastille');
 
             pastilles.forEach(p => {
                 const startMs = parseInt(p.dataset.startTimeMs);
                 const endMs = parseInt(p.dataset.endTimeMs);
                 const durationMs = endMs - startMs;
 
-                if (timeMs >= startMs && timeMs <= endMs) {
+                if (durationMs > 0 && timeMs >= startMs && timeMs <= endMs) {
                     const t_progression = (timeMs - startMs) / durationMs;
                     
                     const P0_y = 1 - (parseFloat(p.dataset.curveP0Top) / 100);
@@ -733,32 +923,48 @@
                     const final_value = startVal + (endVal - startVal) * curve_value;
                     
                     const axis = p.dataset.axis;
-                    let transform = '';
-
-                    if (axis.startsWith('Axe')) {
-                        const unit = 'px';
-                        if (axis === 'Axe X') transform = `translateX(${final_value}${unit})`;
-                        if (axis === 'Axe Y') transform = `translateY(${final_value}${unit})`;
-                        if (axis === 'Axe Z') transform = `translateZ(${final_value}${unit})`;
-                    } else if (axis.startsWith('rotation')) {
-                        const unit = 'deg';
-                        if (axis === 'rotation X') transform = `rotateX(${final_value}${unit})`;
-                        if (axis === 'rotation Y') transform = `rotateY(${final_value}${unit})`;
-                        if (axis === 'rotation Z') transform = `rotateZ(${final_value}${unit})`;
-                    }
-
-                    previewObject.style.transform += ' ' + transform;
+                    if (axis === 'Axe X') transforms.translateX += final_value;
+                    if (axis === 'Axe Y') transforms.translateY += final_value;
+                    if (axis === 'Axe Z') transforms.translateZ += final_value;
+                    if (axis === 'rotation X') transforms.rotateX += final_value;
+                    if (axis === 'rotation Y') transforms.rotateY += final_value;
+                    if (axis === 'rotation Z') transforms.rotateZ += final_value;
                 }
             });
-            previewObject.textContent = Math.floor(currentTimelineTime / 1000) + 's';
+            
+            // CORRECTION CLÉ : Séparation des transformations sur deux éléments.
+            
+            // 1. Appliquer la ROTATION à l'élément ENFANT (previewInner).
+            // L'objet lui-même est tourné.
+            previewInner.style.transform = `
+                rotateX(${transforms.rotateX}deg) 
+                rotateY(${transforms.rotateY}deg) 
+                rotateZ(${transforms.rotateZ}deg)
+            `;
+            
+            // 2. Appliquer la TRANSLATION à l'élément PARENT (previewObject).
+            // Le parent est toujours aligné sur les axes du monde (car il n'a pas de rotation), 
+            // garantissant que translateX se fait horizontalement sur l'écran.
+            previewObject.style.transform = `
+                translateX(${transforms.translateX}px) 
+                translateY(${transforms.translateY}px) 
+                translateZ(${transforms.translateZ}px) 
+            `;
+
+            previewInner.textContent = `OBJET`;
         };
 
         const animateTimeline = (timestamp) => {
             if (!animationStartTime) animationStartTime = timestamp;
             const elapsed = timestamp - animationStartTime;
             
-            currentTimelineTime = elapsed % totalTimelineDuration;
+            currentTimelineTime = elapsed;
             
+            if(currentTimelineTime > totalTimelineDuration){
+                animationStartTime = timestamp; // loop
+                currentTimelineTime = 0;
+            }
+
             currentTimeDisplay.textContent = formatTimeDisplay(currentTimelineTime);
             applyTransform(currentTimelineTime);
             
@@ -771,16 +977,23 @@
             animationStartTime = 0;
             currentTimelineTime = 0;
             previewCard.style.display = 'none';
+            // Réinitialiser les deux éléments
             previewObject.style.transform = ''; 
+            previewInner.style.transform = ''; 
             currentTimeDisplay.textContent = formatTimeDisplay(0); 
         };
 
-        // --- Gestionnaires d'Événements (inchangés) ---
+        // --- Gestionnaires d'Événements ---
 
-        // Drag and Drop Timeline 
         referencePastille.addEventListener('dragstart', (e) => {
-            e.dataTransfer.setData('text/plain', e.target.id);
-            e.dataTransfer.effectAllowed = 'copy';
+            e.dataTransfer.setData('text/plain', 'reference-pastille');
+            // AJOUT: Agrandir au début du glissement
+            e.target.classList.add('dragging'); 
+        });
+
+        referencePastille.addEventListener('dragend', (e) => {
+            // AJOUT: Revenir à la taille normale à la fin du glissement
+            e.target.classList.remove('dragging');
         });
 
         timeline.addEventListener('dragover', (e) => e.preventDefault());
@@ -790,19 +1003,28 @@
             const draggedElement = document.getElementById(id);
 
             const rect = timeline.getBoundingClientRect();
-            const x = e.clientX - rect.left + timeline.scrollLeft;
-            const y = e.clientY - rect.top + timeline.scrollTop;
+            const x = e.clientX - rect.left + timelineContainer.scrollLeft;
+            const y = e.clientY - rect.top + timelineContainer.scrollTop;
 
-            if (draggedElement && draggedElement.id === 'reference-pastille') {
-                createPastille(x, y); 
-                updateAndDrawMarkers(); // Ajout pour s'assurer qu'une nouvelle pastille est triée
+            if (id === 'reference-pastille') {
+                const newPastille = createPastille(x, y);
+                showTimeEditor(newPastille);
             } else if (draggedElement && draggedElement.classList.contains('pastille')) {
+                draggedElement.classList.remove('pastille-drop-bounce'); 
+                void draggedElement.offsetWidth; 
+                draggedElement.classList.add('pastille-drop-bounce');
+                
                 draggedElement.style.left = `${x}px`;
                 draggedElement.style.top = `${y}px`;
+                
+                const startMs = (x-30) * (totalTimelineDuration / timeline.scrollWidth);
+                const endMs = parseInt(draggedElement.dataset.endTimeMs) - parseInt(draggedElement.dataset.startTimeMs) + startMs;
+                draggedElement.dataset.startTimeMs = Math.max(0, startMs);
+                draggedElement.dataset.endTimeMs = Math.max(0, endMs);
+                updateAndDrawMarkers();
             }
         });
 
-        // Boutons de l'éditeur
         okEditorBtn.addEventListener('click', () => {
             if (!activePastille) return;
             const getMs = (type) => timeToMilliseconds(
@@ -818,8 +1040,16 @@
             activePastille.dataset.endValue = endValueInput.value;
             
             const newColor = getAxisColor(newAxis);
+            const newBarColor = getBarColor(newAxis); 
+            
             activePastille.style.setProperty('background-color', newColor);
             activePastille.style.setProperty('box-shadow', `0 0 8px ${newColor}, 0 0 15px ${newColor}`);
+            
+            const bar = activePastille.querySelector('.duration-bar');
+            if (bar) {
+                bar.style.setProperty('background-color', newBarColor);
+                bar.style.setProperty('box-shadow', `0 0 4px ${newColor}`);
+            }
 
             curvePoints.forEach((cp, index) => {
                 activePastille.dataset[`curveP${index}Left`] = cp.style.left;
@@ -827,37 +1057,37 @@
             });
             
             timeEditor.style.display = 'none';
-            updateAndDrawMarkers(); // Doit être appelé pour trier après la mise à jour des temps
+            updateAndDrawMarkers();
             activePastille = null;
         });
 
         closeEditorBtn.addEventListener('click', () => {
-            if (activePastille && confirm("Voulez-vous supprimer cette animation ?")) {
+            if (activePastille && (parseInt(activePastille.dataset.startTimeMs) === 0 && parseInt(activePastille.dataset.endTimeMs) === 0)) {
+                activePastille.remove();
+            } else if (activePastille && confirm("Voulez-vous supprimer cette animation ?")) {
                 activePastille.remove();
                 updateAndDrawMarkers();
-                activePastille = null;
             }
             timeEditor.style.display = 'none';
+            activePastille = null;
         });
 
-        // Gestionnaires de la Simulation
         playBtn.addEventListener('click', () => {
-            if (totalTimelineDuration === 0) {
-                alert("Veuillez créer et configurer au moins une pastille d'animation !");
+            if (totalTimelineDuration <= 1) {
+                alert("Veuillez créer et configurer au moins une animation avec une durée !");
                 return;
             }
             previewCard.style.display = 'flex';
+            // Réinitialiser les deux éléments
             previewObject.style.transform = ''; 
-            previewObject.style.transition = 'none'; 
+            previewInner.style.transform = '';
             animationFrame = requestAnimationFrame(animateTimeline);
         });
 
         closePreviewBtn.addEventListener('click', stopAnimation);
 
-        // Initialisation
         updateCanvasSize();
         updateAndDrawMarkers();
-        
     });
     </script>
 </body>
