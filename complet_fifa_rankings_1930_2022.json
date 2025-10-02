@@ -1,0 +1,4367 @@
+{
+  "Coupe du Monde": [
+    {
+      "edition": "1930",
+      "pays_hote": "Uruguay",
+      "resultats": [
+        {
+          "equipe": "Uruguay",
+          "V": 4,
+          "N": 0,
+          "D": 0,
+          "score": 12,
+          "tour_atteint": "Vainqueur",
+          "total_points": 812
+        },
+        {
+          "equipe": "Argentine",
+          "V": 4,
+          "N": 0,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Finale",
+          "total_points": 412
+        },
+        {
+          "equipe": "États-Unis",
+          "V": 2,
+          "N": 0,
+          "D": 1,
+          "score": 6,
+          "tour_atteint": "Demi-finales",
+          "total_points": 206
+        },
+        {
+          "equipe": "Yougoslavie",
+          "V": 2,
+          "N": 0,
+          "D": 1,
+          "score": 6,
+          "tour_atteint": "Demi-finales",
+          "total_points": 206
+        },
+        {
+          "equipe": "Chili",
+          "V": 2,
+          "N": 0,
+          "D": 1,
+          "score": 6,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 6
+        },
+        {
+          "equipe": "Brésil",
+          "V": 1,
+          "N": 0,
+          "D": 1,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "France",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Roumanie",
+          "V": 1,
+          "N": 0,
+          "D": 1,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Paraguay",
+          "V": 1,
+          "N": 0,
+          "D": 1,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Pérou",
+          "V": 0,
+          "N": 0,
+          "D": 2,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Belgique",
+          "V": 0,
+          "N": 0,
+          "D": 2,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Bolivie",
+          "V": 0,
+          "N": 0,
+          "D": 2,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Mexique",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        }
+      ]
+    },
+    {
+      "edition": "1934",
+      "pays_hote": "Italie",
+      "resultats": [
+        {
+          "equipe": "Italie",
+          "V": 4,
+          "N": 1,
+          "D": 0,
+          "score": 13,
+          "tour_atteint": "Vainqueur",
+          "total_points": 1613
+        },
+        {
+          "equipe": "Tchécoslovaquie",
+          "V": 3,
+          "N": 0,
+          "D": 1,
+          "score": 9,
+          "tour_atteint": "Finale",
+          "total_points": 809
+        },
+        {
+          "equipe": "Allemagne",
+          "V": 3,
+          "N": 0,
+          "D": 1,
+          "score": 9,
+          "tour_atteint": "Demi-finales",
+          "total_points": 409
+        },
+        {
+          "equipe": "Autriche",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Demi-finales",
+          "total_points": 406
+        },
+        {
+          "equipe": "Espagne",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Hongrie",
+          "V": 1,
+          "N": 0,
+          "D": 1,
+          "score": 3,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 203
+        },
+        {
+          "equipe": "Suisse",
+          "V": 1,
+          "N": 0,
+          "D": 1,
+          "score": 3,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 203
+        },
+        {
+          "equipe": "Suède",
+          "V": 1,
+          "N": 0,
+          "D": 1,
+          "score": 3,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 203
+        },
+        {
+          "equipe": "Brésil",
+          "V": 0,
+          "N": 0,
+          "D": 1,
+          "score": 0,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 200
+        },
+        {
+          "equipe": "Argentine",
+          "V": 0,
+          "N": 0,
+          "D": 1,
+          "score": 0,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 200
+        },
+        {
+          "equipe": "Roumanie",
+          "V": 0,
+          "N": 0,
+          "D": 1,
+          "score": 0,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 200
+        },
+        {
+          "equipe": "Pays-Bas",
+          "V": 0,
+          "N": 0,
+          "D": 1,
+          "score": 0,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 200
+        },
+        {
+          "equipe": "Belgique",
+          "V": 0,
+          "N": 0,
+          "D": 1,
+          "score": 0,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 200
+        },
+        {
+          "equipe": "États-Unis",
+          "V": 0,
+          "N": 0,
+          "D": 1,
+          "score": 0,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 200
+        },
+        {
+          "equipe": "France",
+          "V": 0,
+          "N": 0,
+          "D": 1,
+          "score": 0,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 200
+        },
+        {
+          "equipe": "Égypte",
+          "V": 0,
+          "N": 0,
+          "D": 1,
+          "score": 0,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 200
+        }
+      ]
+    },
+    {
+      "edition": "1938",
+      "pays_hote": "France",
+      "resultats": [
+        {
+          "equipe": "Italie",
+          "V": 4,
+          "N": 0,
+          "D": 0,
+          "score": 12,
+          "tour_atteint": "Vainqueur",
+          "total_points": 1612
+        },
+        {
+          "equipe": "Hongrie",
+          "V": 3,
+          "N": 0,
+          "D": 1,
+          "score": 9,
+          "tour_atteint": "Finale",
+          "total_points": 809
+        },
+        {
+          "equipe": "Brésil",
+          "V": 3,
+          "N": 0,
+          "D": 1,
+          "score": 9,
+          "tour_atteint": "Demi-finales",
+          "total_points": 409
+        },
+        {
+          "equipe": "Suède",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Demi-finales",
+          "total_points": 406
+        },
+        {
+          "equipe": "Tchécoslovaquie",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Suisse",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "France",
+          "V": 1,
+          "N": 0,
+          "D": 1,
+          "score": 3,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 203
+        },
+        {
+          "equipe": "Cuba",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Allemagne",
+          "V": 0,
+          "N": 1,
+          "D": 1,
+          "score": 1,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 201
+        },
+        {
+          "equipe": "Pologne",
+          "V": 0,
+          "N": 0,
+          "D": 1,
+          "score": 0,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 200
+        },
+        {
+          "equipe": "Norvège",
+          "V": 0,
+          "N": 0,
+          "D": 1,
+          "score": 0,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 200
+        },
+        {
+          "equipe": "Belgique",
+          "V": 0,
+          "N": 0,
+          "D": 1,
+          "score": 0,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 200
+        },
+        {
+          "equipe": "Roumanie",
+          "V": 0,
+          "N": 1,
+          "D": 1,
+          "score": 1,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 201
+        },
+        {
+          "equipe": "Pays-Bas",
+          "V": 0,
+          "N": 0,
+          "D": 1,
+          "score": 0,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 200
+        },
+        {
+          "equipe": "Indes orientales néerlandaises",
+          "V": 0,
+          "N": 0,
+          "D": 1,
+          "score": 0,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 200
+        },
+        {
+          "equipe": "Argentine",
+          "V": 0,
+          "N": 0,
+          "D": 0,
+          "score": 0,
+          "tour_atteint": "Non qualifié",
+          "total_points": 0
+        }
+      ]
+    },
+    {
+      "edition": "1950",
+      "pays_hote": "Brésil",
+      "resultats": [
+        {
+          "equipe": "Uruguay",
+          "V": 3,
+          "N": 1,
+          "D": 0,
+          "score": 10,
+          "tour_atteint": "Vainqueur",
+          "total_points": 810
+        },
+        {
+          "equipe": "Brésil",
+          "V": 4,
+          "N": 0,
+          "D": 2,
+          "score": 12,
+          "tour_atteint": "Groupe final",
+          "total_points": 412
+        },
+        {
+          "equipe": "Suède",
+          "V": 2,
+          "N": 0,
+          "D": 3,
+          "score": 6,
+          "tour_atteint": "Groupe final",
+          "total_points": 306
+        },
+        {
+          "equipe": "Espagne",
+          "V": 1,
+          "N": 2,
+          "D": 2,
+          "score": 5,
+          "tour_atteint": "Groupe final",
+          "total_points": 205
+        },
+        {
+          "equipe": "Yougoslavie",
+          "V": 2,
+          "N": 0,
+          "D": 1,
+          "score": 6,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 6
+        },
+        {
+          "equipe": "Suisse",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Italie",
+          "V": 1,
+          "N": 0,
+          "D": 1,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Chili",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Allemagne de l'Ouest",
+          "V": 0,
+          "N": 0,
+          "D": 0,
+          "score": 0,
+          "tour_atteint": "Non qualifié",
+          "total_points": 0
+        }
+      ]
+    },
+    {
+      "edition": "1954",
+      "pays_hote": "Suisse",
+      "resultats": [
+        {
+          "equipe": "Allemagne de l'Ouest",
+          "V": 5,
+          "N": 0,
+          "D": 1,
+          "score": 15,
+          "tour_atteint": "Vainqueur",
+          "total_points": 1615
+        },
+        {
+          "equipe": "Hongrie",
+          "V": 4,
+          "N": 0,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Finale",
+          "total_points": 812
+        },
+        {
+          "equipe": "Autriche",
+          "V": 4,
+          "N": 0,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Demi-finales",
+          "total_points": 412
+        },
+        {
+          "equipe": "Uruguay",
+          "V": 2,
+          "N": 0,
+          "D": 3,
+          "score": 6,
+          "tour_atteint": "Demi-finales",
+          "total_points": 406
+        },
+        {
+          "equipe": "Brésil",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Yougoslavie",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Suisse",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Turquie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Italie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Belgique",
+          "V": 0,
+          "N": 1,
+          "D": 1,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Mexique",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Écosse",
+          "V": 0,
+          "N": 0,
+          "D": 2,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Corée du Sud",
+          "V": 0,
+          "N": 0,
+          "D": 2,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "France",
+          "V": 1,
+          "N": 1,
+          "D": 0,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Tchécoslovaquie",
+          "V": 0,
+          "N": 1,
+          "D": 1,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        }
+      ]
+    },
+    {
+      "edition": "1958",
+      "pays_hote": "Suède",
+      "resultats": [
+        {
+          "equipe": "Brésil",
+          "V": 5,
+          "N": 1,
+          "D": 0,
+          "score": 16,
+          "tour_atteint": "Vainqueur",
+          "total_points": 1616
+        },
+        {
+          "equipe": "Suède",
+          "V": 4,
+          "N": 1,
+          "D": 1,
+          "score": 13,
+          "tour_atteint": "Finale",
+          "total_points": 813
+        },
+        {
+          "equipe": "France",
+          "V": 4,
+          "N": 0,
+          "D": 2,
+          "score": 12,
+          "tour_atteint": "Demi-finales",
+          "total_points": 412
+        },
+        {
+          "equipe": "Allemagne de l'Ouest",
+          "V": 2,
+          "N": 2,
+          "D": 2,
+          "score": 8,
+          "tour_atteint": "Demi-finales",
+          "total_points": 408
+        },
+        {
+          "equipe": "Pays de Galles",
+          "V": 1,
+          "N": 3,
+          "D": 1,
+          "score": 6,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Suisse",
+          "V": 1,
+          "N": 3,
+          "D": 1,
+          "score": 6,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Union soviétique",
+          "V": 2,
+          "N": 1,
+          "D": 2,
+          "score": 7,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Irlande du Nord",
+          "V": 1,
+          "N": 2,
+          "D": 2,
+          "score": 5,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Tchécoslovaquie",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Hongrie",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Écosse",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Mexique",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 0,
+          "N": 3,
+          "D": 1,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Argentine",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Autriche",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Corée du Sud",
+          "V": 0,
+          "N": 0,
+          "D": 0,
+          "score": 0,
+          "tour_atteint": "Non qualifié",
+          "total_points": 0
+        }
+      ]
+    },
+    {
+      "edition": "1962",
+      "pays_hote": "Chili",
+      "resultats": [
+        {
+          "equipe": "Brésil",
+          "V": 5,
+          "N": 1,
+          "D": 0,
+          "score": 16,
+          "tour_atteint": "Vainqueur",
+          "total_points": 1616
+        },
+        {
+          "equipe": "Tchécoslovaquie",
+          "V": 3,
+          "N": 1,
+          "D": 2,
+          "score": 10,
+          "tour_atteint": "Finale",
+          "total_points": 810
+        },
+        {
+          "equipe": "Chili",
+          "V": 4,
+          "N": 0,
+          "D": 2,
+          "score": 12,
+          "tour_atteint": "Demi-finales",
+          "total_points": 412
+        },
+        {
+          "equipe": "Yougoslavie",
+          "V": 3,
+          "N": 0,
+          "D": 3,
+          "score": 9,
+          "tour_atteint": "Demi-finales",
+          "total_points": 409
+        },
+        {
+          "equipe": "Hongrie",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Union soviétique",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Allemagne de l'Ouest",
+          "V": 2,
+          "N": 2,
+          "D": 0,
+          "score": 8,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 208
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Italie",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Argentine",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Brésil",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Mexique",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Espagne",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Uruguay",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Colombie",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Suisse",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        }
+      ]
+    },
+    {
+      "edition": "1966",
+      "pays_hote": "Angleterre",
+      "resultats": [
+        {
+          "equipe": "Angleterre",
+          "V": 5,
+          "N": 1,
+          "D": 0,
+          "score": 16,
+          "tour_atteint": "Vainqueur",
+          "total_points": 1616
+        },
+        {
+          "equipe": "Allemagne de l'Ouest",
+          "V": 4,
+          "N": 1,
+          "D": 1,
+          "score": 13,
+          "tour_atteint": "Finale",
+          "total_points": 813
+        },
+        {
+          "equipe": "Portugal",
+          "V": 5,
+          "N": 0,
+          "D": 1,
+          "score": 15,
+          "tour_atteint": "Demi-finales",
+          "total_points": 415
+        },
+        {
+          "equipe": "Union soviétique",
+          "V": 4,
+          "N": 0,
+          "D": 2,
+          "score": 12,
+          "tour_atteint": "Demi-finales",
+          "total_points": 412
+        },
+        {
+          "equipe": "Argentine",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Hongrie",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Uruguay",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Corée du Nord",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Brésil",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Italie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Espagne",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "France",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Mexique",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Chili",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Suisse",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Brésil",
+          "V": 0,
+          "N": 0,
+          "D": 0,
+          "score": 0,
+          "tour_atteint": "Non qualifié",
+          "total_points": 0
+        }
+      ]
+    },
+    {
+      "edition": "1970",
+      "pays_hote": "Mexique",
+      "resultats": [
+        {
+          "equipe": "Brésil",
+          "V": 6,
+          "N": 0,
+          "D": 0,
+          "score": 18,
+          "tour_atteint": "Vainqueur",
+          "total_points": 818
+        },
+        {
+          "equipe": "Italie",
+          "V": 3,
+          "N": 2,
+          "D": 1,
+          "score": 11,
+          "tour_atteint": "Finale",
+          "total_points": 411
+        },
+        {
+          "equipe": "Allemagne de l'Ouest",
+          "V": 5,
+          "N": 0,
+          "D": 1,
+          "score": 15,
+          "tour_atteint": "Demi-finales",
+          "total_points": 215
+        },
+        {
+          "equipe": "Uruguay",
+          "V": 2,
+          "N": 1,
+          "D": 3,
+          "score": 7,
+          "tour_atteint": "Demi-finales",
+          "total_points": 207
+        },
+        {
+          "equipe": "Union soviétique",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 7
+        },
+        {
+          "equipe": "Mexique",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 7
+        },
+        {
+          "equipe": "Pérou",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 6
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 6
+        },
+        {
+          "equipe": "Suède",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Belgique",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Roumanie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Salvador",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Tchécoslovaquie",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Maroc",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Israël",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Bulgarie",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        }
+      ]
+    },
+    {
+      "edition": "1974",
+      "pays_hote": "Allemagne de l'Ouest",
+      "resultats": [
+        {
+          "equipe": "Allemagne de l'Ouest",
+          "V": 6,
+          "N": 0,
+          "D": 1,
+          "score": 18,
+          "tour_atteint": "Vainqueur",
+          "total_points": 818
+        },
+        {
+          "equipe": "Pays-Bas",
+          "V": 5,
+          "N": 0,
+          "D": 2,
+          "score": 15,
+          "tour_atteint": "Finale",
+          "total_points": 415
+        },
+        {
+          "equipe": "Pologne",
+          "V": 6,
+          "N": 0,
+          "D": 1,
+          "score": 18,
+          "tour_atteint": "Demi-finales",
+          "total_points": 218
+        },
+        {
+          "equipe": "Brésil",
+          "V": 3,
+          "N": 2,
+          "D": 2,
+          "score": 11,
+          "tour_atteint": "Demi-finales",
+          "total_points": 211
+        },
+        {
+          "equipe": "Allemagne de l'Est",
+          "V": 2,
+          "N": 2,
+          "D": 2,
+          "score": 8,
+          "tour_atteint": "Second tour",
+          "total_points": 8
+        },
+        {
+          "equipe": "Argentine",
+          "V": 1,
+          "N": 2,
+          "D": 3,
+          "score": 5,
+          "tour_atteint": "Second tour",
+          "total_points": 5
+        },
+        {
+          "equipe": "Suède",
+          "V": 2,
+          "N": 2,
+          "D": 2,
+          "score": 8,
+          "tour_atteint": "Second tour",
+          "total_points": 8
+        },
+        {
+          "equipe": "Yougoslavie",
+          "V": 1,
+          "N": 2,
+          "D": 3,
+          "score": 5,
+          "tour_atteint": "Second tour",
+          "total_points": 5
+        },
+        {
+          "equipe": "Écosse",
+          "V": 1,
+          "N": 2,
+          "D": 0,
+          "score": 5,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 5
+        },
+        {
+          "equipe": "Bulgarie",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Uruguay",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Italie",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Australie",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Haïti",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Chili",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Zaïre",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        }
+      ]
+    },
+    {
+      "edition": "1978",
+      "pays_hote": "Argentine",
+      "resultats": [
+        {
+          "equipe": "Argentine",
+          "V": 5,
+          "N": 1,
+          "D": 1,
+          "score": 16,
+          "tour_atteint": "Vainqueur",
+          "total_points": 816
+        },
+        {
+          "equipe": "Pays-Bas",
+          "V": 3,
+          "N": 2,
+          "D": 2,
+          "score": 11,
+          "tour_atteint": "Finale",
+          "total_points": 411
+        },
+        {
+          "equipe": "Brésil",
+          "V": 4,
+          "N": 3,
+          "D": 0,
+          "score": 15,
+          "tour_atteint": "Demi-finales",
+          "total_points": 215
+        },
+        {
+          "equipe": "Italie",
+          "V": 4,
+          "N": 1,
+          "D": 2,
+          "score": 13,
+          "tour_atteint": "Demi-finales",
+          "total_points": 213
+        },
+        {
+          "equipe": "Pologne",
+          "V": 3,
+          "N": 1,
+          "D": 2,
+          "score": 10,
+          "tour_atteint": "Second tour",
+          "total_points": 10
+        },
+        {
+          "equipe": "Allemagne de l'Ouest",
+          "V": 1,
+          "N": 4,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Second tour",
+          "total_points": 7
+        },
+        {
+          "equipe": "Autriche",
+          "V": 2,
+          "N": 0,
+          "D": 4,
+          "score": 6,
+          "tour_atteint": "Second tour",
+          "total_points": 6
+        },
+        {
+          "equipe": "Pérou",
+          "V": 2,
+          "N": 1,
+          "D": 3,
+          "score": 7,
+          "tour_atteint": "Second tour",
+          "total_points": 7
+        },
+        {
+          "equipe": "Tunisie",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Écosse",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "France",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Mexique",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Suède",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Iran",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Hongrie",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Espagne",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        }
+      ]
+    },
+    {
+      "edition": "1982",
+      "pays_hote": "Espagne",
+      "resultats": [
+        {
+          "equipe": "Italie",
+          "V": 4,
+          "N": 3,
+          "D": 0,
+          "score": 15,
+          "tour_atteint": "Vainqueur",
+          "total_points": 815
+        },
+        {
+          "equipe": "Allemagne de l'Ouest",
+          "V": 3,
+          "N": 2,
+          "D": 2,
+          "score": 11,
+          "tour_atteint": "Finale",
+          "total_points": 411
+        },
+        {
+          "equipe": "Pologne",
+          "V": 3,
+          "N": 2,
+          "D": 2,
+          "score": 11,
+          "tour_atteint": "Demi-finales",
+          "total_points": 211
+        },
+        {
+          "equipe": "France",
+          "V": 3,
+          "N": 2,
+          "D": 2,
+          "score": 11,
+          "tour_atteint": "Demi-finales",
+          "total_points": 211
+        },
+        {
+          "equipe": "Brésil",
+          "V": 4,
+          "N": 0,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Second tour",
+          "total_points": 12
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 3,
+          "N": 2,
+          "D": 0,
+          "score": 11,
+          "tour_atteint": "Second tour",
+          "total_points": 11
+        },
+        {
+          "equipe": "Espagne",
+          "V": 1,
+          "N": 2,
+          "D": 2,
+          "score": 5,
+          "tour_atteint": "Second tour",
+          "total_points": 5
+        },
+        {
+          "equipe": "Union soviétique",
+          "V": 2,
+          "N": 1,
+          "D": 2,
+          "score": 7,
+          "tour_atteint": "Second tour",
+          "total_points": 7
+        },
+        {
+          "equipe": "Autriche",
+          "V": 2,
+          "N": 1,
+          "D": 2,
+          "score": 7,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 7
+        },
+        {
+          "equipe": "Belgique",
+          "V": 2,
+          "N": 1,
+          "D": 2,
+          "score": 7,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 7
+        },
+        {
+          "equipe": "Tchécoslovaquie",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Écosse",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Honduras",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Yougoslavie",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Irlande du Nord",
+          "V": 1,
+          "N": 3,
+          "D": 1,
+          "score": 6,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 6
+        },
+        {
+          "equipe": "Algérie",
+          "V": 2,
+          "N": 0,
+          "D": 1,
+          "score": 6,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 6
+        },
+        {
+          "equipe": "Chili",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Cameroun",
+          "V": 0,
+          "N": 3,
+          "D": 0,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Nouvelle-Zélande",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Hongrie",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Pérou",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Koweït",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Argentine",
+          "V": 2,
+          "N": 0,
+          "D": 3,
+          "score": 6,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 6
+        },
+        {
+          "equipe": "Salvador",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        }
+      ]
+    },
+    {
+      "edition": "1986",
+      "pays_hote": "Mexique",
+      "resultats": [
+        {
+          "equipe": "Argentine",
+          "V": 5,
+          "N": 1,
+          "D": 1,
+          "score": 16,
+          "tour_atteint": "Vainqueur",
+          "total_points": 3216
+        },
+        {
+          "equipe": "Allemagne de l'Ouest",
+          "V": 4,
+          "N": 1,
+          "D": 2,
+          "score": 13,
+          "tour_atteint": "Finale",
+          "total_points": 1613
+        },
+        {
+          "equipe": "France",
+          "V": 4,
+          "N": 2,
+          "D": 1,
+          "score": 14,
+          "tour_atteint": "Demi-finales",
+          "total_points": 814
+        },
+        {
+          "equipe": "Belgique",
+          "V": 2,
+          "N": 2,
+          "D": 3,
+          "score": 8,
+          "tour_atteint": "Demi-finales",
+          "total_points": 808
+        },
+        {
+          "equipe": "Brésil",
+          "V": 4,
+          "N": 0,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 412
+        },
+        {
+          "equipe": "Mexique",
+          "V": 3,
+          "N": 2,
+          "D": 0,
+          "score": 11,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 411
+        },
+        {
+          "equipe": "Espagne",
+          "V": 3,
+          "N": 1,
+          "D": 1,
+          "score": 10,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 410
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 2,
+          "N": 1,
+          "D": 2,
+          "score": 7,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 407
+        },
+        {
+          "equipe": "Union soviétique",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Italie",
+          "V": 1,
+          "N": 3,
+          "D": 1,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Danemark",
+          "V": 3,
+          "N": 0,
+          "D": 1,
+          "score": 9,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 209
+        },
+        {
+          "equipe": "Maroc",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Pologne",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Paraguay",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Portugal",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Hongrie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Corée du Sud",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Canada",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Algérie",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Irak",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Écosse",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Irlande du Nord",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Bulgarie",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Uruguay",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        }
+      ]
+    },
+    {
+      "edition": "1990",
+      "pays_hote": "Italie",
+      "resultats": [
+        {
+          "equipe": "Allemagne de l'Ouest",
+          "V": 6,
+          "N": 1,
+          "D": 0,
+          "score": 19,
+          "tour_atteint": "Vainqueur",
+          "total_points": 3219
+        },
+        {
+          "equipe": "Argentine",
+          "V": 2,
+          "N": 3,
+          "D": 2,
+          "score": 9,
+          "tour_atteint": "Finale",
+          "total_points": 1609
+        },
+        {
+          "equipe": "Italie",
+          "V": 6,
+          "N": 1,
+          "D": 0,
+          "score": 19,
+          "tour_atteint": "Demi-finales",
+          "total_points": 819
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 3,
+          "N": 3,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Demi-finales",
+          "total_points": 812
+        },
+        {
+          "equipe": "Yougoslavie",
+          "V": 3,
+          "N": 1,
+          "D": 1,
+          "score": 10,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 410
+        },
+        {
+          "equipe": "Tchécoslovaquie",
+          "V": 3,
+          "N": 0,
+          "D": 2,
+          "score": 9,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 409
+        },
+        {
+          "equipe": "Cameroun",
+          "V": 3,
+          "N": 0,
+          "D": 2,
+          "score": 9,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 409
+        },
+        {
+          "equipe": "République d'Irlande",
+          "V": 0,
+          "N": 5,
+          "D": 0,
+          "score": 5,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 405
+        },
+        {
+          "equipe": "Brésil",
+          "V": 3,
+          "N": 0,
+          "D": 1,
+          "score": 9,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 209
+        },
+        {
+          "equipe": "Espagne",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Uruguay",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Belgique",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Costa Rica",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Roumanie",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Colombie",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Suisse",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Pays-Bas",
+          "V": 0,
+          "N": 3,
+          "D": 1,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Union soviétique",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Corée du Sud",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Autriche",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "États-Unis",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Écosse",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Égypte",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Suède",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        }
+      ]
+    },
+    {
+      "edition": "1994",
+      "pays_hote": "États-Unis",
+      "resultats": [
+        {
+          "equipe": "Brésil",
+          "V": 5,
+          "N": 2,
+          "D": 0,
+          "score": 17,
+          "tour_atteint": "Vainqueur",
+          "total_points": 3217
+        },
+        {
+          "equipe": "Italie",
+          "V": 4,
+          "N": 2,
+          "D": 1,
+          "score": 14,
+          "tour_atteint": "Finale",
+          "total_points": 1614
+        },
+        {
+          "equipe": "Suède",
+          "V": 3,
+          "N": 3,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Demi-finales",
+          "total_points": 812
+        },
+        {
+          "equipe": "Bulgarie",
+          "V": 3,
+          "N": 1,
+          "D": 3,
+          "score": 10,
+          "tour_atteint": "Demi-finales",
+          "total_points": 810
+        },
+        {
+          "equipe": "Allemagne",
+          "V": 3,
+          "N": 1,
+          "D": 1,
+          "score": 10,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 410
+        },
+        {
+          "equipe": "Roumanie",
+          "V": 3,
+          "N": 1,
+          "D": 1,
+          "score": 10,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 410
+        },
+        {
+          "equipe": "Pays-Bas",
+          "V": 3,
+          "N": 0,
+          "D": 2,
+          "score": 9,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 409
+        },
+        {
+          "equipe": "Espagne",
+          "V": 2,
+          "N": 2,
+          "D": 1,
+          "score": 8,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 408
+        },
+        {
+          "equipe": "Argentine",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "États-Unis",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Suisse",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Nigeria",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Mexique",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Belgique",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Arabie saoudite",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "République d'Irlande",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Norvège",
+          "V": 1,
+          "N": 2,
+          "D": 0,
+          "score": 5,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 5
+        },
+        {
+          "equipe": "Russie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Corée du Sud",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Cameroun",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Colombie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Grèce",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Bolivie",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Maroc",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        }
+      ]
+    },
+    {
+      "edition": "1998",
+      "pays_hote": "France",
+      "resultats": [
+        {
+          "equipe": "France",
+          "V": 6,
+          "N": 1,
+          "D": 0,
+          "score": 19,
+          "tour_atteint": "Vainqueur",
+          "total_points": 3219
+        },
+        {
+          "equipe": "Brésil",
+          "V": 4,
+          "N": 0,
+          "D": 3,
+          "score": 12,
+          "tour_atteint": "Finale",
+          "total_points": 1612
+        },
+        {
+          "equipe": "Croatie",
+          "V": 5,
+          "N": 0,
+          "D": 2,
+          "score": 15,
+          "tour_atteint": "Demi-finales",
+          "total_points": 815
+        },
+        {
+          "equipe": "Pays-Bas",
+          "V": 3,
+          "N": 3,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Demi-finales",
+          "total_points": 812
+        },
+        {
+          "equipe": "Italie",
+          "V": 3,
+          "N": 2,
+          "D": 0,
+          "score": 11,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 411
+        },
+        {
+          "equipe": "Argentine",
+          "V": 3,
+          "N": 1,
+          "D": 1,
+          "score": 10,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 410
+        },
+        {
+          "equipe": "Allemagne",
+          "V": 3,
+          "N": 1,
+          "D": 1,
+          "score": 10,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 410
+        },
+        {
+          "equipe": "Danemark",
+          "V": 2,
+          "N": 1,
+          "D": 2,
+          "score": 7,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 407
+        },
+        {
+          "equipe": "Chili",
+          "V": 0,
+          "N": 3,
+          "D": 1,
+          "score": 3,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 203
+        },
+        {
+          "equipe": "Mexique",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Paraguay",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Nigeria",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Yougoslavie",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Roumanie",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Arabie saoudite",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Autriche",
+          "V": 0,
+          "N": 3,
+          "D": 0,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Espagne",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Bulgarie",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Corée du Sud",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Colombie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Maroc",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Écosse",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Tunisie",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        }
+      ]
+    },
+    {
+      "edition": "2002",
+      "pays_hote": "Corée du Sud",
+      "resultats": [
+        {
+          "equipe": "Brésil",
+          "V": 7,
+          "N": 0,
+          "D": 0,
+          "score": 21,
+          "tour_atteint": "Vainqueur",
+          "total_points": 3221
+        },
+        {
+          "equipe": "Allemagne",
+          "V": 5,
+          "N": 1,
+          "D": 1,
+          "score": 16,
+          "tour_atteint": "Finale",
+          "total_points": 1616
+        },
+        {
+          "equipe": "Turquie",
+          "V": 4,
+          "N": 1,
+          "D": 2,
+          "score": 13,
+          "tour_atteint": "Demi-finales",
+          "total_points": 813
+        },
+        {
+          "equipe": "Corée du Sud",
+          "V": 3,
+          "N": 2,
+          "D": 2,
+          "score": 11,
+          "tour_atteint": "Demi-finales",
+          "total_points": 811
+        },
+        {
+          "equipe": "Espagne",
+          "V": 3,
+          "N": 2,
+          "D": 0,
+          "score": 11,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 411
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 2,
+          "N": 2,
+          "D": 1,
+          "score": 8,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 408
+        },
+        {
+          "equipe": "Sénégal",
+          "V": 2,
+          "N": 2,
+          "D": 1,
+          "score": 8,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 408
+        },
+        {
+          "equipe": "États-Unis",
+          "V": 2,
+          "N": 1,
+          "D": 2,
+          "score": 7,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 407
+        },
+        {
+          "equipe": "Japon",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Danemark",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Suède",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Mexique",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Irlande",
+          "V": 1,
+          "N": 3,
+          "D": 0,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Belgique",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Paraguay",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Italie",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Portugal",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Russie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Arabie saoudite",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Pologne",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Chine",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Costa Rica",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Uruguay",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Argentine",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        }
+      ]
+    },
+    {
+      "edition": "2006",
+      "pays_hote": "Allemagne",
+      "resultats": [
+        {
+          "equipe": "Italie",
+          "V": 5,
+          "N": 2,
+          "D": 0,
+          "score": 17,
+          "tour_atteint": "Vainqueur",
+          "total_points": 3217
+        },
+        {
+          "equipe": "France",
+          "V": 4,
+          "N": 3,
+          "D": 0,
+          "score": 15,
+          "tour_atteint": "Finale",
+          "total_points": 1615
+        },
+        {
+          "equipe": "Allemagne",
+          "V": 5,
+          "N": 1,
+          "D": 1,
+          "score": 16,
+          "tour_atteint": "Demi-finales",
+          "total_points": 816
+        },
+        {
+          "equipe": "Portugal",
+          "V": 4,
+          "N": 1,
+          "D": 2,
+          "score": 13,
+          "tour_atteint": "Demi-finales",
+          "total_points": 813
+        },
+        {
+          "equipe": "Brésil",
+          "V": 4,
+          "N": 0,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 412
+        },
+        {
+          "equipe": "Argentine",
+          "V": 3,
+          "N": 2,
+          "D": 0,
+          "score": 11,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 411
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 3,
+          "N": 2,
+          "D": 0,
+          "score": 11,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 411
+        },
+        {
+          "equipe": "Ukraine",
+          "V": 2,
+          "N": 1,
+          "D": 2,
+          "score": 7,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 407
+        },
+        {
+          "equipe": "Espagne",
+          "V": 4,
+          "N": 0,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 212
+        },
+        {
+          "equipe": "Pays-Bas",
+          "V": 3,
+          "N": 1,
+          "D": 1,
+          "score": 10,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 210
+        },
+        {
+          "equipe": "Suisse",
+          "V": 2,
+          "N": 2,
+          "D": 0,
+          "score": 8,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 208
+        },
+        {
+          "equipe": "Australie",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Ghana",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Équateur",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Mexique",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Corée du Sud",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Côte d'Ivoire",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Tchéquie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Togo",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Pologne",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Costa Rica",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Serbie-et-Monténégro",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Paraguay",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Trinité-et-Tobago",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Japon",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Arabie saoudite",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Iran",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Croatie",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Angola",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Tunisie",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "France",
+          "V": 0,
+          "N": 0,
+          "D": 0,
+          "score": 0,
+          "tour_atteint": "Non qualifié",
+          "total_points": 0
+        }
+      ]
+    },
+    {
+      "edition": "2010",
+      "pays_hote": "Afrique du Sud",
+      "resultats": [
+        {
+          "equipe": "Espagne",
+          "V": 6,
+          "N": 0,
+          "D": 1,
+          "score": 18,
+          "tour_atteint": "Vainqueur",
+          "total_points": 3218
+        },
+        {
+          "equipe": "Pays-Bas",
+          "V": 6,
+          "N": 0,
+          "D": 1,
+          "score": 18,
+          "tour_atteint": "Finale",
+          "total_points": 1618
+        },
+        {
+          "equipe": "Allemagne",
+          "V": 5,
+          "N": 0,
+          "D": 2,
+          "score": 15,
+          "tour_atteint": "Demi-finales",
+          "total_points": 815
+        },
+        {
+          "equipe": "Uruguay",
+          "V": 3,
+          "N": 2,
+          "D": 2,
+          "score": 11,
+          "tour_atteint": "Demi-finales",
+          "total_points": 811
+        },
+        {
+          "equipe": "Argentine",
+          "V": 4,
+          "N": 0,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 412
+        },
+        {
+          "equipe": "Brésil",
+          "V": 3,
+          "N": 1,
+          "D": 1,
+          "score": 10,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 410
+        },
+        {
+          "equipe": "Ghana",
+          "V": 2,
+          "N": 2,
+          "D": 1,
+          "score": 8,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 408
+        },
+        {
+          "equipe": "Paraguay",
+          "V": 1,
+          "N": 3,
+          "D": 1,
+          "score": 6,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 406
+        },
+        {
+          "equipe": "États-Unis",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Corée du Sud",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Mexique",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Chili",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Japon",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Slovaquie",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Portugal",
+          "V": 1,
+          "N": 3,
+          "D": 1,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "France",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Afrique du Sud",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Grèce",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Australie",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Italie",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Nouvelle-Zélande",
+          "V": 0,
+          "N": 3,
+          "D": 0,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Côte d'Ivoire",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Serbie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Suisse",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Cameroun",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Danemark",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Corée du Nord",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Honduras",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Nigeria",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Algérie",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Slovénie",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        }
+      ]
+    },
+    {
+      "edition": "2014",
+      "pays_hote": "Brésil",
+      "resultats": [
+        {
+          "equipe": "Allemagne",
+          "V": 6,
+          "N": 1,
+          "D": 0,
+          "score": 19,
+          "tour_atteint": "Vainqueur",
+          "total_points": 3219
+        },
+        {
+          "equipe": "Argentine",
+          "V": 5,
+          "N": 1,
+          "D": 1,
+          "score": 16,
+          "tour_atteint": "Finale",
+          "total_points": 1616
+        },
+        {
+          "equipe": "Pays-Bas",
+          "V": 5,
+          "N": 2,
+          "D": 0,
+          "score": 17,
+          "tour_atteint": "Demi-finales",
+          "total_points": 817
+        },
+        {
+          "equipe": "Brésil",
+          "V": 3,
+          "N": 2,
+          "D": 2,
+          "score": 11,
+          "tour_atteint": "Demi-finales",
+          "total_points": 811
+        },
+        {
+          "equipe": "Colombie",
+          "V": 4,
+          "N": 0,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 412
+        },
+        {
+          "equipe": "Belgique",
+          "V": 4,
+          "N": 0,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 412
+        },
+        {
+          "equipe": "Costa Rica",
+          "V": 2,
+          "N": 3,
+          "D": 0,
+          "score": 9,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 409
+        },
+        {
+          "equipe": "France",
+          "V": 3,
+          "N": 1,
+          "D": 1,
+          "score": 10,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 410
+        },
+        {
+          "equipe": "Chili",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Mexique",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "États-Unis",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Nigeria",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Grèce",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Algérie",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Suisse",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Uruguay",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Croatie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Espagne",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Cameroun",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Australie",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Côte d'Ivoire",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Japon",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Italie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Honduras",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Bosnie-Herzégovine",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Iran",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Portugal",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Ghana",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Corée du Sud",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Russie",
+          "V": 0,
+          "N": 2,
+          "D": 1,
+          "score": 2,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 2
+        },
+        {
+          "equipe": "Équateur",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        }
+      ]
+    },
+    {
+      "edition": "2018",
+      "pays_hote": "Russie",
+      "resultats": [
+        {
+          "equipe": "France",
+          "V": 6,
+          "N": 1,
+          "D": 0,
+          "score": 19,
+          "tour_atteint": "Vainqueur",
+          "total_points": 3219
+        },
+        {
+          "equipe": "Croatie",
+          "V": 4,
+          "N": 2,
+          "D": 1,
+          "score": 14,
+          "tour_atteint": "Finale",
+          "total_points": 1614
+        },
+        {
+          "equipe": "Belgique",
+          "V": 6,
+          "N": 0,
+          "D": 1,
+          "score": 18,
+          "tour_atteint": "Demi-finales",
+          "total_points": 818
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 3,
+          "N": 1,
+          "D": 3,
+          "score": 10,
+          "tour_atteint": "Demi-finales",
+          "total_points": 810
+        },
+        {
+          "equipe": "Russie",
+          "V": 2,
+          "N": 1,
+          "D": 2,
+          "score": 7,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 407
+        },
+        {
+          "equipe": "Suède",
+          "V": 3,
+          "N": 0,
+          "D": 2,
+          "score": 9,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 409
+        },
+        {
+          "equipe": "Uruguay",
+          "V": 4,
+          "N": 0,
+          "D": 1,
+          "score": 12,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 412
+        },
+        {
+          "equipe": "Brésil",
+          "V": 2,
+          "N": 2,
+          "D": 1,
+          "score": 8,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 408
+        },
+        {
+          "equipe": "Portugal",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Argentine",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Espagne",
+          "V": 1,
+          "N": 3,
+          "D": 0,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Danemark",
+          "V": 1,
+          "N": 3,
+          "D": 0,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Mexique",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Japon",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Suisse",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Colombie",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Pérou",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Nigeria",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Serbie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Corée du Sud",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Allemagne",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Australie",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Islande",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Arabie saoudite",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Iran",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Maroc",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Tunisie",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Pologne",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Égypte",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Panama",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Sénégal",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Costa Rica",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        }
+      ]
+    },
+    {
+      "edition": "2022",
+      "pays_hote": "Qatar",
+      "resultats": [
+        {
+          "equipe": "Argentine",
+          "V": 5,
+          "N": 2,
+          "D": 0,
+          "score": 17,
+          "tour_atteint": "Vainqueur",
+          "total_points": 3217
+        },
+        {
+          "equipe": "France",
+          "V": 5,
+          "N": 1,
+          "D": 1,
+          "score": 16,
+          "tour_atteint": "Finale",
+          "total_points": 1616
+        },
+        {
+          "equipe": "Croatie",
+          "V": 2,
+          "N": 4,
+          "D": 1,
+          "score": 10,
+          "tour_atteint": "Demi-finales",
+          "total_points": 810
+        },
+        {
+          "equipe": "Maroc",
+          "V": 3,
+          "N": 2,
+          "D": 2,
+          "score": 11,
+          "tour_atteint": "Demi-finales",
+          "total_points": 811
+        },
+        {
+          "equipe": "Pays-Bas",
+          "V": 3,
+          "N": 2,
+          "D": 0,
+          "score": 11,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 411
+        },
+        {
+          "equipe": "Angleterre",
+          "V": 3,
+          "N": 1,
+          "D": 1,
+          "score": 10,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 410
+        },
+        {
+          "equipe": "Brésil",
+          "V": 3,
+          "N": 1,
+          "D": 1,
+          "score": 10,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 410
+        },
+        {
+          "equipe": "Portugal",
+          "V": 3,
+          "N": 0,
+          "D": 2,
+          "score": 9,
+          "tour_atteint": "Quarts de finale",
+          "total_points": 409
+        },
+        {
+          "equipe": "Sénégal",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "États-Unis",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Australie",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Pologne",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Japon",
+          "V": 2,
+          "N": 1,
+          "D": 1,
+          "score": 7,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 207
+        },
+        {
+          "equipe": "Corée du Sud",
+          "V": 1,
+          "N": 1,
+          "D": 2,
+          "score": 4,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 204
+        },
+        {
+          "equipe": "Suisse",
+          "V": 2,
+          "N": 0,
+          "D": 2,
+          "score": 6,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 206
+        },
+        {
+          "equipe": "Espagne",
+          "V": 1,
+          "N": 2,
+          "D": 1,
+          "score": 5,
+          "tour_atteint": "Huitièmes de finale",
+          "total_points": 205
+        },
+        {
+          "equipe": "Allemagne",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Équateur",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Cameroun",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Uruguay",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Tunisie",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Arabie saoudite",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Mexique",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Belgique",
+          "V": 1,
+          "N": 1,
+          "D": 1,
+          "score": 4,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 4
+        },
+        {
+          "equipe": "Costa Rica",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Canada",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Serbie",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Ghana",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Qatar",
+          "V": 0,
+          "N": 0,
+          "D": 3,
+          "score": 0,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 0
+        },
+        {
+          "equipe": "Iran",
+          "V": 1,
+          "N": 0,
+          "D": 2,
+          "score": 3,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 3
+        },
+        {
+          "equipe": "Pays de Galles",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        },
+        {
+          "equipe": "Danemark",
+          "V": 0,
+          "N": 1,
+          "D": 2,
+          "score": 1,
+          "tour_atteint": "Phase de groupes",
+          "total_points": 1
+        }
+      ]
+    }
+  ],
+  "title": "Ranking world cup all edition 1930-2022"
+}
