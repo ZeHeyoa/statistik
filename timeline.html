@@ -3,37 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timeline Futuriste Avancée V5 - Triée & Stylisée</title>
+    <title>Timeline Futuriste Avancée V6 - Axe Pivot Personnalisé</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --bg-color: #0d0c1d;
-            --primary-glow: #00e5ff; /* Cyan */
-            --secondary-glow: #ff4700; /* Orange */
-            --marker-color: #fffa7a; /* Jaune pâle */
+            --primary-glow: #00e5ff;
+            --secondary-glow: #ff4700;
+            --marker-color: #fffa7a;
             --widget-bg: #1f1e33;
             --text-color: #f0f0f0;
             --border-color: rgba(0, 229, 255, 0.4);
             --danger-color: #ff3366;
-
-            /* Couleurs pour les axes (Pastilles) */
             --color-axex: #ff0077; 
             --color-axey: #00ffaa; 
             --color-axez: #00aaff; 
             --color-rotx: #ffaa00; 
             --color-roty: #aa00ff; 
-            --color-rotz: #ff0000; 
-
-            /* NOUVEAU: Couleurs des barres (plus pâles / transparentes) */
+            --color-rotz: #ff0000;
+            --color-pivot: #f0f0f0; /* New color for pivot axis */
             --bar-color-axex: rgba(255, 0, 119, 0.4); 
             --bar-color-axey: rgba(0, 255, 170, 0.4); 
             --bar-color-axez: rgba(0, 170, 255, 0.4); 
             --bar-color-rotx: rgba(255, 170, 0, 0.4); 
             --bar-color-roty: rgba(170, 0, 255, 0.4); 
-            --bar-color-rotz: rgba(255, 0, 0, 0.4); 
+            --bar-color-rotz: rgba(255, 0, 0, 0.4);
+            --bar-color-pivot: rgba(240, 240, 240, 0.4); /* New bar color */
         }
 
+        /* ... (previous styles remain unchanged) ... */
         * {
             box-sizing: border-box;
             margin: 0;
@@ -47,7 +46,6 @@
             overflow: hidden;
         }
 
-        /* --- En-tête et Pastille de Référence --- */
         #top-header {
             position: fixed;
             top: 0;
@@ -77,7 +75,6 @@
             transform: scale(1.1);
             box-shadow: 0 0 15px var(--secondary-glow), 0 0 30px var(--secondary-glow);
         }
-        /* NOUVEAU: Agrandissement au drag */
         #reference-pastille.dragging {
             transform: scale(1.5);
             opacity: 0.8; 
@@ -85,7 +82,6 @@
             cursor: grabbing;
         }
 
-        /* --- Styles globaux pour les contrôles --- */
         button, select, input {
             background-color: var(--widget-bg);
             color: var(--text-color);
@@ -126,7 +122,6 @@
              box-shadow: 0 0 15px var(--color-axey), 0 0 25px var(--color-axey);
         }
 
-        /* --- Timeline (Restylisée) --- */
         #timeline-container {
             position: absolute;
             top: 60px; 
@@ -136,7 +131,6 @@
             background: #0a0918;
             overflow: auto;
         }
-        /* Style de la scrollbar */
         #timeline-container::-webkit-scrollbar {
             width: 10px;
             height: 10px;
@@ -150,7 +144,6 @@
             border: 2px solid #0a0918;
         }
 
-
         #timeline {
             position: relative;
             width: 3000px;
@@ -162,7 +155,6 @@
             border-top: 1px solid var(--border-color);
         }
         
-        /* --- Pastilles et Barres --- */
         .pastille {
             position: absolute;
             top: 50%;
@@ -175,14 +167,12 @@
             z-index: 10;
         }
 
-        /* Définition des animations de rebond (DROP) */
         @keyframes bounce-in {
             0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.5; } 
             50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; } 
             100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
         
-        /* Définition des animations (DRAG START) */
         @keyframes squish-and-lift {
             0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
             50% { transform: translate(-50%, -50%) scale(0.8, 1.2); box-shadow: 0 0 5px var(--secondary-glow); } 
@@ -200,11 +190,8 @@
         
         .duration-bar {
             position: absolute;
-            /* COMMENCE AU CENTRE HORIZONTAL DE LA PASTILLE (30px/2) */
             left: 15px; 
-            /* COMMENCE AU CENTRE VERTICAL DE LA PASTILLE (30px/2) */
             top: 15px; 
-            /* CENTRE VERTICALEMENT LA BARRE (2px de haut) SUR LA LIGNE DE 15px */
             transform: translateY(-50%); 
             height: 2px;
             border-radius: 1px;
@@ -212,7 +199,6 @@
             z-index: 9;
         }
 
-        /* --- Repères de Temps --- */
         .time-marker {
             position: absolute;
             width: 1px;
@@ -242,8 +228,6 @@
         }
         .marker-end .time-label { top: -40px; left: 0; transform: translateX(0); }
 
-
-        /* --- Éditeur de Temps (#time-editor) --- */
         #time-editor {
             position: fixed; 
             display: none;
@@ -313,6 +297,8 @@
         .input-group label {
             font-size: 10px;
             opacity: 0.8;
+            width: 15px;
+            text-align: right;
         }
         .input-group input {
             width: 50px;
@@ -321,6 +307,17 @@
         input[type="text"]{
              width: 80px;
         }
+
+        #pivot-fieldset {
+            display: none; /* Hidden by default */
+        }
+        #pivot-fieldset .pivot-group {
+             flex-basis: 100%;
+             display: flex;
+             gap: 8px;
+             justify-content: space-around;
+        }
+
 
         .editor-footer {
             padding: 10px 15px;
@@ -335,7 +332,6 @@
             color: var(--bg-color);
         }
 
-        /* --- Courbe de Bézier --- */
         #curve-area {
             flex-basis: 250px; 
             height: 250px;
@@ -370,15 +366,16 @@
             box-shadow: 0 0 5px var(--color-axey);
         }
         
-        /* --- Card de Prévisualisation --- */
         #preview-card {
             position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 200px;
-            height: 350px;
-            background-color: var(--widget-bg);
+            width: 80%;
+            height: 90%;
+           background-image: 
+                linear-gradient(rgba(0, 229, 255, 0.05) .5px, transparent .5px),
+                linear-gradient(90deg, rgba(0, 229, 255, 0.05) 1px, transparent 1px);
             border: 2px solid var(--primary-glow);
             border-radius: 12px;
             box-shadow: 0 0 30px rgba(0, 229, 255, 0.5);
@@ -389,10 +386,6 @@
             justify-content: space-around; 
             padding: 20px;
             perspective: 800px;
-            background-image: url("Psg.jpg");
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
         }
         
         #preview-card h3 {
@@ -401,20 +394,15 @@
             text-align: center;
         }
 
-        /* PARENT: Gère la Translation */
         #preview-object {
             width: 200px;
             height: 300px;
-            /* Maintenir transform-style pour que l'enfant soit 3D */
             transform-style: preserve-3d; 
-            
-            /* Utilisé uniquement pour centrer l'enfant */
             display: flex; 
             align-items: center;
             justify-content: center;
         }
 
-        /* ENFANT: Gère la Rotation et le style visuel */
         #preview-inner {
             width: 100%;
             height: 100%;
@@ -426,7 +414,7 @@
             border: 2px dashed var(--color-axey);
             border-radius: 8px;
             transform-style: preserve-3d; 
-            background-image: url("neuf.jpg");
+            background-image: url("Psg.jpg");
             background-size: cover;      
             background-repeat: no-repeat;
             background-position: center;
@@ -436,7 +424,6 @@
             font-size: 18px;
             letter-spacing: 1px;
         }
-
     </style>
 </head>
 <body>
@@ -492,16 +479,29 @@
                         <option value="rotation X">Rotation X</option>
                         <option value="rotation Y">Rotation Y</option>
                         <option value="rotation Z">Rotation Z</option>
+                        <option value="rotation Pivot">Rotation Axe Personnalisé</option>
                     </select>
                 </div>
                 
-                <div>
-                    <fieldset>
-                        <legend>Valeurs</legend>
-                        <div class="input-group"><label>Début</label><input type="text" id="start-value" value="0"></div>
-                        <div class="input-group"><label>Fin</label><input type="text" id="end-value" value="100"></div>
-                    </fieldset>
-                </div>
+                <fieldset>
+                    <legend>Valeurs</legend>
+                    <div class="input-group"><label>Début</label><input type="text" id="start-value" value="0"></div>
+                    <div class="input-group"><label>Fin</label><input type="text" id="end-value" value="100"></div>
+                </fieldset>
+                
+                <fieldset id="pivot-fieldset">
+                    <legend>Points Pivots (%)</legend>
+                    <div class="pivot-group">
+                        <div class="input-group"><label for="pivot-ax">Ax</label><input type="number" id="pivot-ax" value="-50"></div>
+                        <div class="input-group"><label for="pivot-ay">Ay</label><input type="number" id="pivot-ay" value="-50"></div>
+                        <div class="input-group"><label for="pivot-az">Az</label><input type="number" id="pivot-az" value="0"></div>
+                    </div>
+                    <div class="pivot-group">
+                         <div class="input-group"><label for="pivot-bx">Bx</label><input type="number" id="pivot-bx" value="50"></div>
+                        <div class="input-group"><label for="pivot-by">By</label><input type="number" id="pivot-by" value="50"></div>
+                        <div class="input-group"><label for="pivot-bz">Bz</label><input type="number" id="pivot-bz" value="0"></div>
+                    </div>
+                </fieldset>
 
                 <div>
                     <fieldset>
@@ -528,6 +528,43 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // ... (Quaternion class and other initial variables remain the same) ...
+        class Quaternion {
+            constructor(w, x, y, z) { this.w = w; this.x = x; this.y = y; this.z = z; }
+            static fromAxisAngle(axis, angle) {
+                const s = Math.sin(angle / 2);
+                return new Quaternion(Math.cos(angle / 2), axis.x * s, axis.y * s, axis.z * s);
+            }
+            multiply(q) {
+                return new Quaternion(
+                    this.w*q.w-this.x*q.x-this.y*q.y-this.z*q.z,
+                    this.w*q.x+this.x*q.w+this.y*q.z-this.z*q.y,
+                    this.w*q.y-this.x*q.z+this.y*q.w+this.z*q.x,
+                    this.w*q.z+this.x*q.y-this.y*q.x+this.z*q.w
+                );
+            }
+            rotatePoint(p) {
+                const qp = new Quaternion(0, p.x, p.y, p.z);
+                const res = this.multiply(qp).multiply(new Quaternion(this.w, -this.x, -this.y, -this.z));
+                return { x: res.x, y: res.y, z: res.z };
+            }
+            toMatrix4(tx = 0, ty = 0, tz = 0) {
+                const w=this.w, x=this.x, y=this.y, z=this.z,
+                      x2=x+x, y2=y+y, z2=z+z,
+                      xx=x*x2, xy=x*y2, xz=x*z2,
+                      yy=y*y2, yz=y*z2, zz=z*z2,
+                      wx=w*x2, wy=w*y2, wz=w*z2;
+                
+                const matrixValues = [
+                    1-(yy+zz), xy+wz, xz-wy, 0,
+                    xy-wz, 1-(xx+zz), yz+wx, 0,
+                    xz+wy, yz-wx, 1-(xx+yy), 0,
+                    tx, ty, tz, 1
+                ];
+                return `matrix3d(${matrixValues.join(',')})`;
+            }
+        }
+
         const timelineContainer = document.getElementById('timeline-container');
         const timeline = document.getElementById('timeline');
         const referencePastille = document.getElementById('reference-pastille');
@@ -539,27 +576,25 @@
         const editorAxisSelector = document.getElementById('editor-axis-selector');
         const startValueInput = document.getElementById('start-value');
         const endValueInput = document.getElementById('end-value');
+        const pivotFieldset = document.getElementById('pivot-fieldset');
         let activePastille = null;
 
-        // --- Éléments de Simulation ---
         const playBtn = document.getElementById('play-btn');
         const previewCard = document.getElementById('preview-card');
         const closePreviewBtn = document.getElementById('close-preview-btn');
-        const previewObject = document.getElementById('preview-object'); // Parent (Translation)
-        const previewInner = document.getElementById('preview-inner');   // Enfant (Rotation)
+        const previewObject = document.getElementById('preview-object');
+        const previewInner = document.getElementById('preview-inner');
         const currentTimeDisplay = document.getElementById('current-time-display');
         let animationFrame = null;
         let animationStartTime = 0;
         let totalTimelineDuration = 0;
         let currentTimelineTime = 0;
         
-        // --- Courbe de Bézier ---
         const curveArea = document.getElementById('curve-area');
         const canvas = document.getElementById('curve-canvas');
         const ctx = canvas.getContext('2d');
         const curvePoints = Array.from(document.querySelectorAll('.curve-control-point'));
 
-        // --- Logique de Déplacement de l'Éditeur ---
         let isDraggingEditor = false;
         let editorOffsetX, editorOffsetY;
 
@@ -574,7 +609,8 @@
             document.addEventListener('mouseup', stopDragEditor);
             e.preventDefault(); 
         });
-
+        
+        // ... (utility functions like dragEditor, timeToMilliseconds, etc. remain the same) ...
         const dragEditor = (e) => {
             if (!isDraggingEditor) return;
             let newX = e.clientX - editorOffsetX;
@@ -594,7 +630,6 @@
             document.removeEventListener('mouseup', stopDragEditor);
         };
 
-        // --- Fonctions Utilitaires ---
         const timeToMilliseconds = (h, m, s, ms) => (parseInt(h||0)*3600+parseInt(m||0)*60+parseInt(s||0))*1000+parseInt(ms||0);
         const millisecondsToTime = (totalMs) => {
             if (isNaN(totalMs) || totalMs < 0) return { h:0,m:0,s:0,ms:0 };
@@ -616,7 +651,6 @@
                 <span>${String(t.ms).padStart(3,'0')}ms</span>
             </div>`;
         };
-        
         const getAxisColor = (axis) => {
             switch(axis) {
                 case "Axe X": return "var(--color-axex)";
@@ -625,6 +659,7 @@
                 case "rotation X": return "var(--color-rotx)";
                 case "rotation Y": return "var(--color-roty)";
                 case "rotation Z": return "var(--color-rotz)";
+                case "rotation Pivot": return "var(--color-pivot)";
                 default: return "var(--primary-glow)";
             }
         };
@@ -637,12 +672,11 @@
                 case "rotation X": return "var(--bar-color-rotx)";
                 case "rotation Y": return "var(--bar-color-roty)";
                 case "rotation Z": return "var(--bar-color-rotz)";
+                case "rotation Pivot": return "var(--bar-color-pivot)";
                 default: return "var(--border-color)";
             }
         };
 
-
-        // --- Logique Courbe de Bézier ---
         const updateCanvasSize = () => {
             canvas.width = curveArea.clientWidth;
             canvas.height = curveArea.clientHeight;
@@ -688,27 +722,20 @@
         };
 
         let draggingCurvePoint = null;
-
         const startDragCurve = (e) => {
             if (isDraggingEditor) return;
-            
             draggingCurvePoint = e.target;
             const rect = curveArea.getBoundingClientRect();
 
             const moveHandler = (moveEvent) => {
                 if (!draggingCurvePoint) return;
-                
                 let x = moveEvent.clientX - rect.left;
                 let y = moveEvent.clientY - rect.top;
-
                 let newLeft = (x / rect.width) * 100;
                 let newTop = (y / rect.height) * 100;
-
                 const index = parseInt(draggingCurvePoint.dataset.index);
-
                 newLeft = Math.max(0, Math.min(100, newLeft));
                 newTop = Math.max(0, Math.min(100, newTop));
-
                 if (index === 1 || index === 2) {
                     draggingCurvePoint.style.left = `${newLeft}%`;
                     draggingCurvePoint.style.top = `${newTop}%`;
@@ -719,7 +746,6 @@
                     draggingCurvePoint.style.left = `100%`; 
                     draggingCurvePoint.style.top = `${newTop}%`;
                 }
-
                 drawBezierCurve();
             };
 
@@ -738,11 +764,10 @@
             document.addEventListener('mouseup', stopHandler);
             e.preventDefault();
         };
-
         curvePoints.forEach(p => p.addEventListener('mousedown', startDragCurve));
         window.addEventListener('resize', updateCanvasSize);
 
-        // --- Fonctions Principales ---
+
         const createPastille = (x, y) => {
             const pastille = document.createElement('div');
             pastille.className = 'pastille pastille-drop-bounce'; 
@@ -760,14 +785,20 @@
             pastille.dataset.axis = axisSelector.value;
             pastille.draggable = true;
 
+            // Default curve points
             pastille.dataset.curveP0Left = '0%'; pastille.dataset.curveP0Top = '100%';
             pastille.dataset.curveP1Left = '33%'; pastille.dataset.curveP1Top = '50%';
             pastille.dataset.curveP2Left = '66%'; pastille.dataset.curveP2Top = '50%';
             pastille.dataset.curveP3Left = '100%'; pastille.dataset.curveP3Top = '0%';
             
+            // Default pivot points
+            pastille.dataset.pivotAx = "-50"; pastille.dataset.pivotAy = "-50"; pastille.dataset.pivotAz = "0";
+            pastille.dataset.pivotBx = "50"; pastille.dataset.pivotBy = "50"; pastille.dataset.pivotBz = "0";
+
+            
             const durationBar = document.createElement('div');
             durationBar.className = 'duration-bar';
-            pastille.appendChild(durationBar); // Le bar est enfant de la pastille
+            pastille.appendChild(durationBar);
             timeline.appendChild(pastille);
 
             pastille.addEventListener('animationend', (e) => {
@@ -781,14 +812,12 @@
 
             pastille.style.setProperty('background-color', initialColor);
             pastille.style.setProperty('box-shadow', `0 0 8px ${initialColor}, 0 0 15px ${initialColor}`);
-            
             durationBar.style.setProperty('background-color', initialBarColor);
             durationBar.style.setProperty('box-shadow', `0 0 4px ${initialColor}`); 
 
             pastille.addEventListener('click', (e) => {
                 showTimeEditor(pastille);
             });
-
             pastille.addEventListener('dragstart', (e) => {
                 e.dataTransfer.setData('text/plain', e.target.id);
                 e.dataTransfer.effectAllowed = 'move';
@@ -801,6 +830,10 @@
             return pastille;
         };
 
+        editorAxisSelector.addEventListener('change', (e) => {
+            pivotFieldset.style.display = (e.target.value === 'rotation Pivot') ? 'flex' : 'none';
+        });
+
         const showTimeEditor = (p) => {
             activePastille = p;
             
@@ -809,14 +842,23 @@
             
             ['start','end'].forEach(type => {
                 const t = type === 'start' ? startTime : endTime;
-                Object.keys(t).forEach(unit => {
-                    document.getElementById(`${type}-${unit}`).value = t[unit];
-                });
+                Object.keys(t).forEach(unit => document.getElementById(`${type}-${unit}`).value = t[unit] );
             });
             startValueInput.value = p.dataset.startValue;
             endValueInput.value = p.dataset.endValue;
-
             editorAxisSelector.value = p.dataset.axis;
+
+            // Show/hide pivot fields based on saved axis
+            pivotFieldset.style.display = (p.dataset.axis === 'rotation Pivot') ? 'flex' : 'none';
+            
+            // Populate pivot fields
+            document.getElementById('pivot-ax').value = p.dataset.pivotAx;
+            document.getElementById('pivot-ay').value = p.dataset.pivotAy;
+            document.getElementById('pivot-az').value = p.dataset.pivotAz;
+            document.getElementById('pivot-bx').value = p.dataset.pivotBx;
+            document.getElementById('pivot-by').value = p.dataset.pivotBy;
+            document.getElementById('pivot-bz').value = p.dataset.pivotBz;
+
             curvePoints.forEach((cp, index) => {
                 cp.style.left = p.dataset[`curveP${index}Left`] || cp.style.left;
                 cp.style.top = p.dataset[`curveP${index}Top`] || cp.style.top;
@@ -833,23 +875,15 @@
         
         const updateAndDrawMarkers = () => {
             document.querySelectorAll('.time-marker').forEach(m => m.remove());
-
             let pastilles = Array.from(timeline.querySelectorAll('.pastille'));
-            
             pastilles.sort((a, b) => parseInt(a.dataset.startTimeMs) - parseInt(b.dataset.startTimeMs));
             
             if (pastilles.length === 0) {
-                totalTimelineDuration = 0;
-                return;
+                totalTimelineDuration = 0; return;
             }
-
             let maxTime = 0;
-            pastilles.forEach(p => {
-                maxTime = Math.max(maxTime, parseInt(p.dataset.endTimeMs));
-            });
-
+            pastilles.forEach(p => maxTime = Math.max(maxTime, parseInt(p.dataset.endTimeMs)) );
             if (maxTime <= 0) maxTime = 1000;
-
             totalTimelineDuration = maxTime;
 
             const timelineWidth = timeline.scrollWidth;
@@ -860,14 +894,10 @@
                 const startMs = parseInt(p.dataset.startTimeMs);
                 const endMs = parseInt(p.dataset.endTimeMs);
                 const durationMs = Math.max(0, endMs - startMs);
-
                 const posX = (startMs * pixelsPerMs);
                 p.style.left = `${posX + minX}px`;
-                
                 const bar = p.querySelector('.duration-bar');
                 if (bar) bar.style.width = `${durationMs * pixelsPerMs}px`;
-                
-
                 createMarker(posX + minX, formatTimeVertical(startMs), 'top');
                 createMarker(posX + minX, formatTimeVertical(startMs), 'bottom');
                 if (durationMs > 0) {
@@ -884,22 +914,18 @@
             marker.innerHTML = htmlContent;
             timeline.appendChild(marker);
         };
-
-        // --- Logique d'Animation ---
+        
         const getBezierValue = (t, P0_y, P1_y, P2_y, P3_y) => {
-            const t2 = t * t;
-            const t3 = t2 * t;
-            const mt = 1 - t;
-            const mt2 = mt * mt;
-            const mt3 = mt2 * mt;
+            const t2 = t*t, t3 = t2*t, mt = 1-t, mt2 = mt*mt, mt3 = mt2*mt;
             return P0_y * mt3 + 3 * P1_y * mt2 * t + 3 * P2_y * mt * t2 + P3_y * t3;
         };
 
         const applyTransform = (timeMs) => {
-            let transforms = {
-                translateX: 0, translateY: 0, translateZ: 0,
-                rotateX: 0, rotateY: 0, rotateZ: 0
-            };
+            let translateX = 0, translateY = 0, translateZ = 0;
+            let orientation = new Quaternion(1, 0, 0, 0);
+
+            // Default transform origin, reset each frame
+            previewObject.style.transformOrigin = '50% 50% 0';
 
             const pastilles = timeline.querySelectorAll('.pastille');
 
@@ -910,64 +936,77 @@
 
                 if (durationMs > 0 && timeMs >= startMs && timeMs <= endMs) {
                     const t_progression = (timeMs - startMs) / durationMs;
-                    
-                    const P0_y = 1 - (parseFloat(p.dataset.curveP0Top) / 100);
-                    const P1_y = 1 - (parseFloat(p.dataset.curveP1Top) / 100);
-                    const P2_y = 1 - (parseFloat(p.dataset.curveP2Top) / 100);
-                    const P3_y = 1 - (parseFloat(p.dataset.curveP3Top) / 100);
-                    
-                    const curve_value = getBezierValue(t_progression, P0_y, P1_y, P2_y, P3_y);
-
+                    const curve_value = getBezierValue(t_progression, 1-(parseFloat(p.dataset.curveP0Top)/100), 1-(parseFloat(p.dataset.curveP1Top)/100), 1-(parseFloat(p.dataset.curveP2Top)/100), 1-(parseFloat(p.dataset.curveP3Top)/100));
                     const startVal = parseFloat(p.dataset.startValue || 0);
                     const endVal = parseFloat(p.dataset.endValue || 0);
                     const final_value = startVal + (endVal - startVal) * curve_value;
-                    
                     const axis = p.dataset.axis;
-                    if (axis === 'Axe X') transforms.translateX += final_value;
-                    if (axis === 'Axe Y') transforms.translateY += final_value;
-                    if (axis === 'Axe Z') transforms.translateZ += final_value;
-                    if (axis === 'rotation X') transforms.rotateX += final_value;
-                    if (axis === 'rotation Y') transforms.rotateY += final_value;
-                    if (axis === 'rotation Z') transforms.rotateZ += final_value;
+                    
+                    if (axis === 'Axe X') translateX += final_value;
+                    if (axis === 'Axe Y') translateY += final_value;
+                    if (axis === 'Axe Z') translateZ += final_value;
+                    
+                    const angleRad = final_value * Math.PI / 180;
+                    let rotQuat;
+
+                    if (axis === 'rotation X') {
+                        rotQuat = Quaternion.fromAxisAngle({x:1, y:0, z:0}, angleRad);
+                        orientation = orientation.multiply(rotQuat);
+                    } else if (axis === 'rotation Y') {
+                        rotQuat = Quaternion.fromAxisAngle({x:0, y:1, z:0}, angleRad);
+                        orientation = orientation.multiply(rotQuat);
+                    } else if (axis === 'rotation Z') {
+                        rotQuat = Quaternion.fromAxisAngle({x:0, y:0, z:1}, angleRad);
+                        orientation = orientation.multiply(rotQuat);
+                    } else if (axis === 'rotation Pivot') {
+                        // 1. Set the transform origin based on Pivot A
+                        const pAx = parseFloat(p.dataset.pivotAx || 0);
+                        const pAy = parseFloat(p.dataset.pivotAy || 0);
+                        const pAz = parseFloat(p.dataset.pivotAz || 0);
+                        
+                        // Convert from (-50, 50) to (0, 100) for CSS, and invert Y
+                        const originX = 50 + pAx;
+                        const originY = 50 - pAy; 
+                        // Z is pixels based on a % of the object's width
+                        const zUnit = previewObject.offsetWidth;
+                        const originZ = (pAz / 100) * zUnit;
+                        previewObject.style.transformOrigin = `${originX}% ${originY}% ${originZ}px`;
+
+                        // 2. Calculate the rotation axis vector (B - A)
+                        const pBx = parseFloat(p.dataset.pivotBx || 0);
+                        const pBy = parseFloat(p.dataset.pivotBy || 0);
+                        const pBz = parseFloat(p.dataset.pivotBz || 0);
+                        let vx = pBx - pAx, vy = pBy - pAy, vz = pBz - pAz;
+
+                        // 3. Normalize the vector
+                        const mag = Math.sqrt(vx*vx + vy*vy + vz*vz);
+                        let rotationAxis = {x: 0, y: 1, z: 0}; // Default to Y axis if magnitude is 0
+                        if (mag > 1e-6) {
+                            rotationAxis = { x: vx / mag, y: vy / mag, z: vz / mag };
+                        }
+                        
+                        rotQuat = Quaternion.fromAxisAngle(rotationAxis, angleRad);
+                        orientation = orientation.multiply(rotQuat);
+                    }
                 }
             });
             
-            // CORRECTION CLÉ : Séparation des transformations sur deux éléments.
-            
-            // 1. Appliquer la ROTATION à l'élément ENFANT (previewInner).
-            // L'objet lui-même est tourné.
-            previewInner.style.transform = `
-                rotateX(${transforms.rotateX}deg) 
-                rotateY(${transforms.rotateY}deg) 
-                rotateZ(${transforms.rotateZ}deg)
-            `;
-            
-            // 2. Appliquer la TRANSLATION à l'élément PARENT (previewObject).
-            // Le parent est toujours aligné sur les axes du monde (car il n'a pas de rotation), 
-            // garantissant que translateX se fait horizontalement sur l'écran.
-            previewObject.style.transform = `
-                translateX(${transforms.translateX}px) 
-                translateY(${transforms.translateY}px) 
-                translateZ(${transforms.translateZ}px) 
-            `;
-
+            const combinedTransform = orientation.toMatrix4(translateX, translateY, translateZ);
+            previewObject.style.transform = combinedTransform;
+            previewInner.style.transform = ''; 
             previewInner.textContent = `OBJET`;
         };
 
         const animateTimeline = (timestamp) => {
             if (!animationStartTime) animationStartTime = timestamp;
             const elapsed = timestamp - animationStartTime;
-            
             currentTimelineTime = elapsed;
-            
             if(currentTimelineTime > totalTimelineDuration){
-                animationStartTime = timestamp; // loop
+                animationStartTime = timestamp;
                 currentTimelineTime = 0;
             }
-
             currentTimeDisplay.textContent = formatTimeDisplay(currentTimelineTime);
             applyTransform(currentTimelineTime);
-            
             animationFrame = requestAnimationFrame(animateTimeline);
         };
 
@@ -977,31 +1016,23 @@
             animationStartTime = 0;
             currentTimelineTime = 0;
             previewCard.style.display = 'none';
-            // Réinitialiser les deux éléments
             previewObject.style.transform = ''; 
+            previewObject.style.transformOrigin = '50% 50% 0';
             previewInner.style.transform = ''; 
             currentTimeDisplay.textContent = formatTimeDisplay(0); 
         };
 
-        // --- Gestionnaires d'Événements ---
-
         referencePastille.addEventListener('dragstart', (e) => {
             e.dataTransfer.setData('text/plain', 'reference-pastille');
-            // AJOUT: Agrandir au début du glissement
             e.target.classList.add('dragging'); 
         });
-
-        referencePastille.addEventListener('dragend', (e) => {
-            // AJOUT: Revenir à la taille normale à la fin du glissement
-            e.target.classList.remove('dragging');
-        });
+        referencePastille.addEventListener('dragend', (e) => e.target.classList.remove('dragging'));
 
         timeline.addEventListener('dragover', (e) => e.preventDefault());
         timeline.addEventListener('drop', (e) => {
             e.preventDefault();
             const id = e.dataTransfer.getData('text/plain');
             const draggedElement = document.getElementById(id);
-
             const rect = timeline.getBoundingClientRect();
             const x = e.clientX - rect.left + timelineContainer.scrollLeft;
             const y = e.clientY - rect.top + timelineContainer.scrollTop;
@@ -1013,10 +1044,8 @@
                 draggedElement.classList.remove('pastille-drop-bounce'); 
                 void draggedElement.offsetWidth; 
                 draggedElement.classList.add('pastille-drop-bounce');
-                
                 draggedElement.style.left = `${x}px`;
                 draggedElement.style.top = `${y}px`;
-                
                 const startMs = (x-30) * (totalTimelineDuration / timeline.scrollWidth);
                 const endMs = parseInt(draggedElement.dataset.endTimeMs) - parseInt(draggedElement.dataset.startTimeMs) + startMs;
                 draggedElement.dataset.startTimeMs = Math.max(0, startMs);
@@ -1039,12 +1068,20 @@
             activePastille.dataset.startValue = startValueInput.value;
             activePastille.dataset.endValue = endValueInput.value;
             
+            // Save pivot data if the axis is set to pivot
+            if (newAxis === 'rotation Pivot') {
+                activePastille.dataset.pivotAx = document.getElementById('pivot-ax').value;
+                activePastille.dataset.pivotAy = document.getElementById('pivot-ay').value;
+                activePastille.dataset.pivotAz = document.getElementById('pivot-az').value;
+                activePastille.dataset.pivotBx = document.getElementById('pivot-bx').value;
+                activePastille.dataset.pivotBy = document.getElementById('pivot-by').value;
+                activePastille.dataset.pivotBz = document.getElementById('pivot-bz').value;
+            }
+
             const newColor = getAxisColor(newAxis);
             const newBarColor = getBarColor(newAxis); 
-            
             activePastille.style.setProperty('background-color', newColor);
             activePastille.style.setProperty('box-shadow', `0 0 8px ${newColor}, 0 0 15px ${newColor}`);
-            
             const bar = activePastille.querySelector('.duration-bar');
             if (bar) {
                 bar.style.setProperty('background-color', newBarColor);
@@ -1078,7 +1115,6 @@
                 return;
             }
             previewCard.style.display = 'flex';
-            // Réinitialiser les deux éléments
             previewObject.style.transform = ''; 
             previewInner.style.transform = '';
             animationFrame = requestAnimationFrame(animateTimeline);
