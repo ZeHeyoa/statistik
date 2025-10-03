@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timeline Futuriste Avancée V7 - Slides de Paramétrage</title>
+    <title>Timeline Futuriste Avancée V10 - Correction Minuterie & Fermeture Preview</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
@@ -11,7 +11,7 @@
             --bg-color: #0d0c1d;
             --primary-glow: #00e5ff;
             --secondary-glow: #ff4700;
-            --marker-color: #fffa7a;
+            --marker-color: #fffa7a; /* Couleur de la graduation */
             --widget-bg: #1f1e33;
             --text-color: #f0f0f0;
             --border-color: rgba(0, 229, 255, 0.4);
@@ -19,7 +19,7 @@
             --color-axex: #ff0077; 
             --color-axey: #00ffaa; 
             --color-axez: #00aaff; 
-            --color-rotx: #ffaa00; 
+            --color-rotx: #ffaa00; /* ORANGE */
             --color-roty: #aa00ff; 
             --color-rotz: #ff0000;
             --color-pivot: #f0f0f0; 
@@ -43,12 +43,12 @@
             color: var(--text-color);
             font-family: 'Roboto Mono', monospace;
             overflow: hidden;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
 
         #top-header {
-            position: fixed;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 60px; 
             z-index: 1000;
@@ -59,74 +59,74 @@
             background: rgba(13, 12, 29, 0.8);
             backdrop-filter: blur(5px);
             border-bottom: 1px solid var(--border-color);
+            flex-shrink: 0; 
         }
 
         #reference-pastille {
-            width: 30px; 
-            height: 30px; 
-            background-color: var(--secondary-glow);
+            width: 30px;
+            height: 30px;
             border-radius: 50%;
+            background-color: var(--color-rotx); 
+            box-shadow: 0 0 8px var(--color-rotx), 0 0 15px var(--color-rotx);
             cursor: grab;
-            box-shadow: 0 0 8px var(--secondary-glow), 0 0 15px var(--secondary-glow);
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        #reference-pastille:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 10px var(--secondary-glow), 0 0 20px var(--secondary-glow);
+            flex-shrink: 0; 
+            transition: transform 0.2s;
         }
         #reference-pastille.dragging {
-            transform: scale(1.5);
-            opacity: 0.8; 
-            box-shadow: 0 0 15px var(--secondary-glow), 0 0 30px var(--secondary-glow);
-            cursor: grabbing;
+            transform: scale(0.8);
+            opacity: 0.8;
+        }
+        
+        #current-time-display {
+            font-size: 1.2em;
+            color: var(--primary-glow);
+            text-shadow: 0 0 5px var(--primary-glow);
         }
 
-        button, select, input {
-            background-color: var(--widget-bg);
-            color: var(--text-color);
+        #group-list-container {
+            width: 100%;
+            padding: 10px 20px;
+            background: #15142a;
+            border-bottom: 1px solid var(--border-color);
+            overflow-x: auto;
+            white-space: nowrap; 
+            flex-shrink: 0; 
+        }
+        .group-item {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            margin-right: 10px;
             border: 1px solid var(--border-color);
             border-radius: 4px;
-            padding: 8px 12px; 
-            font-family: 'Roboto Mono', monospace;
-            transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+            background-color: var(--widget-bg);
+            font-size: 12px;
         }
-
-        select {
-            cursor: pointer;
+        .group-color-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            margin-right: 8px;
         }
-        
-        button {
-            cursor: pointer;
+        .delete-group-btn {
+            margin-left: 10px;
+            background: none;
+            border: none;
+            color: var(--danger-color);
             font-weight: bold;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+        .delete-group-btn:hover {
+            color: var(--secondary-glow);
         }
 
-        button:hover {
-            border-color: var(--primary-glow);
-            box-shadow: 0 0 8px var(--primary-glow);
-        }
-
-        input:focus, select:focus {
-            outline: none;
-            border-color: var(--primary-glow);
-            box-shadow: 0 0 8px var(--primary-glow);
-        }
-        
-        #play-btn {
-            background-color: var(--color-axey); 
-            color: var(--bg-color);
-            border-color: var(--color-axey);
-            box-shadow: 0 0 10px var(--color-axey);
-        }
-        #play-btn:hover {
-             box-shadow: 0 0 15px var(--color-axey), 0 0 25px var(--color-axey);
-        }
 
         #timeline-container {
-            position: absolute;
-            top: 60px; 
-            left: 0;
+            position: relative;
             width: 100%;
-            height: calc(100% - 60px);
+            flex-grow: 1; 
             background: #0a0918;
             overflow: auto;
         }
@@ -154,6 +154,53 @@
             border-top: 1px solid var(--border-color);
         }
         
+        /* Styles de Graduation du Temps */
+        .time-marker {
+            position: absolute;
+            height: 100%; 
+            width: 1px;
+            background-color: var(--marker-color); 
+            box-shadow: 0 0 5px var(--marker-color);
+            transform: translateX(-50%);
+            pointer-events: none; 
+            z-index: 5;
+            opacity: 0.8;
+        }
+
+        .time-marker.marker-top {
+            top: 0;
+            height: 10px; 
+        }
+
+        .time-marker.marker-bottom {
+            bottom: 0;
+            height: 10px; 
+        }
+
+        .time-marker.marker-end {
+            height: 30px; 
+            width: 2px;
+            opacity: 1;
+            z-index: 6;
+        }
+
+        .time-label {
+            position: absolute;
+            top: -45px; 
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 3px 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+            font-size: 10px;
+            color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        /* Fin Styles de Graduation */
+
         .pastille {
             position: absolute;
             top: 50%;
@@ -164,27 +211,26 @@
             cursor: grab;
             transition: top 0.6s cubic-bezier(.17,.89,.32,1.45), left 0.6s cubic-bezier(.17,.89,.32,1.45), box-shadow 0.2s, background-color 0.2s;
             z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        @keyframes bounce-in {
-            0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0.5; } 
-            50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; } 
-            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        .pastille.grouped {
+            box-sizing: content-box; 
+            padding: 2px; 
+            border: 2px solid transparent; 
         }
-        
-        @keyframes squish-and-lift {
-            0% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-            50% { transform: translate(-50%, -50%) scale(0.8, 1.2); box-shadow: 0 0 5px var(--secondary-glow); } 
-            100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.5; box-shadow: 0 0 20px var(--secondary-glow); } 
-        }
-
-        .pastille-drop-bounce {
-            animation: bounce-in 0.6s cubic-bezier(.17,.89,.32,1.45); 
-        }
-
-        .pastille-drag-squish {
-            animation: squish-and-lift 0.2s forwards; 
-            cursor: grabbing;
+        .pastille .group-label {
+            position: absolute;
+            top: -15px;
+            font-size: 10px;
+            color: var(--text-color);
+            background: rgba(0, 0, 0, 0.7);
+            padding: 1px 4px;
+            border-radius: 2px;
+            z-index: 20;
+            pointer-events: none;
         }
         
         .duration-bar {
@@ -198,50 +244,62 @@
             z-index: 9;
         }
 
-        .time-marker {
-            position: absolute;
-            width: 1px;
-            background: var(--marker-color);
-            opacity: 0.7;
-            color: var(--marker-color);
-            z-index: 1;
-        }
-        .time-label {
-            position: absolute;
-            font-size: 8px; 
+        #footer-controls {
+            flex-shrink: 0;
+            height: 60px;
+            background: rgba(13, 12, 29, 0.8);
+            backdrop-filter: blur(5px);
+            border-top: 1px solid var(--border-color);
             display: flex;
-            flex-direction: column; 
+            justify-content: center;
             align-items: center;
-            line-height: 1;
+            gap: 20px;
+            padding: 0 20px;
         }
-        .marker-top { top: 0; height: 40px; }
-        .marker-top .time-label { top: -45px; }
-
-        .marker-bottom { bottom: 0; height: 40px; }
-        .marker-bottom .time-label { bottom: -45px; top: unset; }
-
-        .marker-end {
-            top: 50%;
-            height: 20px;
-            transform: translateY(-50%);
+        
+        #save-json-btn {
+            background-color: var(--danger-color); 
+            color: white;
+            border-color: var(--danger-color);
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 51, 102, 0.7);
         }
-        .marker-end .time-label { top: -40px; left: 0; transform: translateX(0); }
+        #save-json-btn:hover {
+            box-shadow: 0 0 15px var(--danger-color), 0 0 25px var(--danger-color);
+        }
 
-        /* MODIFIÉ: Nouvelle structure pour les slides (display: none par défaut) */
+        #load-json-btn {
+            background-color: var(--widget-bg);
+            color: var(--primary-glow);
+            border-color: var(--primary-glow);
+        }
+        
+        button, select, input {
+            background-color: var(--widget-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 8px 12px; 
+            font-family: 'Roboto Mono', monospace;
+            transition: background-color 0.2s, box-shadow 0.2s, border-color 0.2s;
+            font-size: 12px;
+        }
+        
+        /* Styles de l'éditeur (inchangés) */
         #time-editor {
             position: fixed; 
             top: 50%; 
             left: 50%; 
             transform: translate(-50%, -50%); 
-            display: none; /* Masqué par défaut */ 
-            width: 450px; /* Largeur par défaut pour Slide 1 (Contrôles) */
+            display: none; 
+            width: 450px; 
             background-color: var(--widget-bg);
             border: 1px solid var(--border-color);
             box-shadow: 0 0 20px rgba(0, 229, 255, 0.3);
             z-index: 2000; 
             overflow: hidden; 
-            font-size: 12px; /* Police conservée */
-            transition: width 0.3s ease-in-out; /* Transition pour le changement de slide */
+            font-size: 12px; 
+            transition: width 0.3s ease-in-out; 
         }
         .editor-header {
             display: flex; justify-content: space-between; align-items: center;
@@ -249,20 +307,15 @@
             cursor: default; 
             background: rgba(0,0,0,0.2);
         }
-
-        /* Styles de la Slide 1 */
         .editor-body-controls {
             display: flex;
             flex-direction: column;
             gap: 15px;
             padding: 15px;
         }
-
-        /* Styles de la Slide 2 */
         #editor-slide-2 {
             padding: 15px;
         }
-        
         .close-btn {
             background: none;
             border: none;
@@ -275,12 +328,6 @@
             padding: 0;
             border-radius: 50%;
         }
-        .close-btn:hover {
-            background-color: var(--danger-color);
-            color: white;
-            box-shadow: 0 0 8px var(--danger-color);
-        }
-
         fieldset {
             border: 1px solid var(--border-color);
             border-radius: 4px;
@@ -298,6 +345,7 @@
             display: flex;
             align-items: center;
             gap: 5px;
+            font-size: 12px; 
         }
         .input-group label {
             opacity: 0.8;
@@ -311,18 +359,9 @@
         input[type="text"]{
              width: 80px;
         }
-
         #pivot-fieldset {
             display: none; 
         }
-        #pivot-fieldset .pivot-group {
-             flex-basis: 100%;
-             display: flex;
-             gap: 8px;
-             justify-content: space-around;
-        }
-
-        /* Footer des Slides */
         .slide-footer {
             padding: 10px 15px;
             border-top: 1px solid var(--border-color);
@@ -330,8 +369,6 @@
             justify-content: space-between;
             background: rgba(0,0,0,0.2);
         }
-
-        /* Bouton OK */
         .ok-btn {
             background-color: var(--primary-glow);
             border-color: var(--primary-glow);
@@ -340,18 +377,15 @@
             font-size: 12px;
             font-weight: bold;
         }
-
-        /* Boutons Suivant/Précédent */
         .slide-btn {
             padding: 6px 10px;
             font-size: 12px;
             background-color: var(--widget-bg);
             border-color: var(--border-color);
         }
-
         #curve-area {
             width: 100%;
-            height: 300px; /* Taille augmentée pour la slide dédiée */
+            height: 300px; 
             border: 1px solid var(--border-color);
             border-radius: 4px;
             position: relative;
@@ -382,7 +416,6 @@
             background-color: var(--color-axey); 
             box-shadow: 0 0 5px var(--color-axey);
         }
-        
         #preview-card {
             position: fixed;
             top: 50%;
@@ -404,22 +437,14 @@
             padding: 20px;
             perspective: 800px;
         }
-        
-        #preview-card h3 {
-            font-size: 16px;
-            color: var(--primary-glow);
-            text-align: center;
-        }
-
         #preview-object {
-            width: 200px;
-            height: 300px;
+            width: 200px; /* Dimensions de référence */
+            height: 300px; /* Dimensions de référence */
             transform-style: preserve-3d; 
             display: flex; 
             align-items: center;
             justify-content: center;
         }
-
         #preview-inner {
             width: 100%;
             height: 100%;
@@ -431,15 +456,10 @@
             border: 2px dashed var(--color-axey);
             border-radius: 8px;
             transform-style: preserve-3d; 
-            background-image: url("Psg.jpg");
             background-size: cover;      
             background-repeat: no-repeat;
             background-position: center;
-        }
-
-        #current-time-display {
-            font-size: 18px;
-            letter-spacing: 1px;
+            background-color: rgba(255, 255, 255, 0.1); 
         }
     </style>
 </head>
@@ -447,18 +467,28 @@
     <div id="top-header">
         <div id="reference-pastille" draggable="true"></div> 
         <button id="play-btn">▶ Démarrer Simulation</button>
+        <span id="current-time-display">00:00:00:000</span>
+    </div>
+
+    <div id="group-list-container">
+        <span style="opacity: 0.6; margin-right: 10px;">Groupes:</span>
     </div>
 
     <div id="timeline-container">
         <div id="timeline"></div>
     </div>
 
+    <div id="footer-controls">
+        <button id="save-json-btn">💾 SAUVEGARDER SÉQUENCE</button>
+        <input type="file" id="load-json-file" style="display: none;" accept=".json">
+        <button id="load-json-btn">📂 CHARGER SÉQUENCE</button>
+    </div>
+    
     <div id="preview-card">
         <h3>Simulation</h3>
         <div id="preview-object">
             <div id="preview-inner">OBJET</div>
         </div>
-        <span id="current-time-display">00:00:00:000</span>
         <button id="close-preview-btn" class="close-btn" style="position: absolute; top: 5px; right: 5px;">×</button>
     </div>
 
@@ -492,16 +522,16 @@
                     </fieldset>
                     
                     <fieldset id="pivot-fieldset">
-                        <legend>Points Pivots (%)</legend>
+                        <legend>Points Pivots (coordonnées relatives à l'objet)</legend>
                         <div class="pivot-group">
-                            <div class="input-group"><label for="pivot-ax">Ax</label><input type="number" id="pivot-ax" value="-50"></div>
-                            <div class="input-group"><label for="pivot-ay">Ay</label><input type="number" id="pivot-ay" value="-50"></div>
-                            <div class="input-group"><label for="pivot-az">Az</label><input type="number" id="pivot-az" value="0"></div>
+                            <div class="input-group"><label for="pivot-ax">Ax (%)</label><input type="number" id="pivot-ax" value="-50"></div>
+                            <div class="input-group"><label for="pivot-ay">Ay (%)</label><input type="number" id="pivot-ay" value="-50"></div>
+                            <div class="input-group"><label for="pivot-az">Az (px)</label><input type="number" id="pivot-az" value="0"></div>
                         </div>
                         <div class="pivot-group">
-                             <div class="input-group"><label for="pivot-bx">Bx</label><input type="number" id="pivot-bx" value="50"></div>
-                            <div class="input-group"><label for="pivot-by">By</label><input type="number" id="pivot-by" value="50"></div>
-                            <div class="input-group"><label for="pivot-bz">Bz</label><input type="number" id="pivot-bz" value="0"></div>
+                             <div class="input-group"><label for="pivot-bx">Bx (%)</label><input type="number" id="pivot-bx" value="50"></div>
+                            <div class="input-group"><label for="pivot-by">By (%)</label><input type="number" id="pivot-by" value="50"></div>
+                            <div class="input-group"><label for="pivot-bz">Bz (px)</label><input type="number" id="pivot-bz" value="0"></div>
                         </div>
                     </fieldset>
     
@@ -546,7 +576,9 @@
 
     <script>
     document.addEventListener('DOMContentLoaded', () => {
+        // --- CLASSE QUATERNION (Pour les rotations 3D) ---
         class Quaternion {
+            // ... (code de la classe Quaternion)
             constructor(w, x, y, z) { this.w = w; this.x = x; this.y = y; this.z = z; }
             static fromAxisAngle(axis, angle) {
                 const s = Math.sin(angle / 2);
@@ -581,13 +613,12 @@
                 return `matrix3d(${matrixValues.join(',')})`;
             }
         }
+        // --- FIN CLASSE QUATERNION ---
 
         const timelineContainer = document.getElementById('timeline-container');
         const timeline = document.getElementById('timeline');
         const referencePastille = document.getElementById('reference-pastille');
         const timeEditor = document.getElementById('time-editor');
-        const editorHeader = timeEditor.querySelector('.editor-header');
-        // Remplacé okEditorBtn par la sélection de tous les boutons .ok-btn
         const okBtns = document.querySelectorAll('#time-editor .ok-btn'); 
         const closeEditorBtn = document.getElementById('close-editor-btn');
         const editorAxisSelector = document.getElementById('editor-axis-selector');
@@ -596,7 +627,6 @@
         const pivotFieldset = document.getElementById('pivot-fieldset');
         let activePastille = null;
 
-        // Nouvelles références pour le multi-slide
         const slide1 = document.getElementById('editor-slide-1');
         const slide2 = document.getElementById('editor-slide-2');
         const nextSlideBtn = document.getElementById('next-slide-btn');
@@ -604,22 +634,27 @@
 
         const playBtn = document.getElementById('play-btn');
         const previewCard = document.getElementById('preview-card');
-        const closePreviewBtn = document.getElementById('close-preview-btn');
         const previewObject = document.getElementById('preview-object');
         const previewInner = document.getElementById('preview-inner');
         const currentTimeDisplay = document.getElementById('current-time-display');
+        const groupListContainer = document.getElementById('group-list-container');
+        const saveJsonBtn = document.getElementById('save-json-btn');
+        const loadJsonBtn = document.getElementById('load-json-btn');
+        const loadJsonFile = document.getElementById('load-json-file');
+        const closePreviewBtn = document.getElementById('close-preview-btn'); 
+
         let animationFrame = null;
         let animationStartTime = 0;
         let totalTimelineDuration = 0;
         let currentTimelineTime = 0;
         
-        const curveArea = document.getElementById('curve-area');
-        const canvas = document.getElementById('curve-canvas');
-        const ctx = canvas.getContext('2d');
-        const curvePoints = Array.from(document.querySelectorAll('.curve-control-point'));
-
         let currentSlide = 1;
-
+        
+        // GESTION DES GROUPES
+        let allGroups = []; 
+        let nextGroupNumber = 1; 
+        
+        // --- Fonctions utilitaires ---
         const timeToMilliseconds = (h, m, s, ms) => (parseInt(h||0)*3600+parseInt(m||0)*60+parseInt(s||0))*1000+parseInt(ms||0);
         const millisecondsToTime = (totalMs) => {
             if (isNaN(totalMs) || totalMs < 0) return { h:0,m:0,s:0,ms:0 };
@@ -628,18 +663,26 @@
             const s=Math.floor(r/1000); const ms=r%1000;
             return {h,m,s,ms};
         };
+        
+        // ✨ C'EST ICI QUE LES MILLISECONDES SONT AFFICHÉES SUR 3 CHIFFRES
         const formatTimeDisplay = (ms) => {
             const t = millisecondsToTime(ms);
+            // On s'assure d'avoir HH:MM:SS:ms. padStart(3,'0') assure 3 chiffres pour les millisecondes.
             return `${String(t.h).padStart(2,'0')}:${String(t.m).padStart(2,'0')}:${String(t.s).padStart(2,'0')}:${String(t.ms).padStart(3,'0')}`;
         };
-        const formatTimeVertical = (ms) => {
-            const t = millisecondsToTime(ms);
-            return `<div class="time-label">
-                <span>${String(t.h).padStart(2,'0')}H</span>
-                <span>${String(t.m).padStart(2,'0')}M</span>
-                <span>${String(t.s).padStart(2,'0')}S</span>
-                <span>${String(t.ms).padStart(3,'0')}ms</span>
-            </div>`;
+        
+        // 🕰️ Mise à jour de formatTimeVertical pour la lisibilité de la graduation
+        const formatTimeVertical = (totalMs) => {
+            const t = millisecondsToTime(totalMs);
+            // Si l'heure est > 0, on affiche tout. Sinon on raccourcit
+            const parts = [];
+            if (t.h > 0) parts.push(`<span>${String(t.h).padStart(2,'0')}H</span>`);
+            if (t.m > 0 || t.h > 0) parts.push(`<span>${String(t.m).padStart(2,'0')}M</span>`);
+            parts.push(`<span>${String(t.s).padStart(2,'0')}S</span>`);
+            // Ici aussi, 3 chiffres pour les millisecondes (ms)
+            parts.push(`<span>${String(t.ms).padStart(3,'0')}ms</span>`);
+
+            return `<div class="time-label">${parts.join('')}</div>`;
         };
         const getAxisColor = (axis) => {
             switch(axis) {
@@ -667,19 +710,44 @@
             }
         };
 
+        const getRandomPaleColor = () => {
+            const h = Math.floor(Math.random() * 360);
+            const s = Math.floor(Math.random() * 30 + 30); 
+            const l = Math.floor(Math.random() * 15 + 70); 
+            return `hsl(${h}, ${s}%, ${l}%)`;
+        };
+
+        const downloadJson = (data, filename = 'timeline_sequence.json') => {
+            const jsonString = JSON.stringify(data, null, 2);
+            const blob = new Blob([jsonString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        };
+        // --- Fin fonctions utilitaires ---
+
+
+        // --- Gestion de la courbe de Bézier ---
+        const curveArea = document.getElementById('curve-area');
+        const canvas = document.getElementById('curve-canvas');
+        const ctx = canvas.getContext('2d');
+        const curvePoints = Array.from(document.querySelectorAll('.curve-control-point'));
+
         const updateCanvasSize = () => {
-            // S'assure que la taille du canvas correspond à son conteneur pour le redimensionnement
             canvas.width = curveArea.clientWidth;
             canvas.height = curveArea.clientHeight;
             drawBezierCurve();
         };
-        
         const showSlide = (slideNumber) => {
             slide1.style.display = (slideNumber === 1) ? 'block' : 'none';
             slide2.style.display = (slideNumber === 2) ? 'block' : 'none';
             currentSlide = slideNumber;
 
-            // Ajustement de la largeur de la fenêtre pour la slide
             if (slideNumber === 2) {
                 timeEditor.style.width = '330px'; 
                 updateCanvasSize();
@@ -687,29 +755,23 @@
                 timeEditor.style.width = '450px'; 
             }
         };
-
         nextSlideBtn.addEventListener('click', () => showSlide(2));
         prevSlideBtn.addEventListener('click', () => showSlide(1));
-
         const drawBezierCurve = () => {
             const w = canvas.width;
             const h = canvas.height;
             ctx.clearRect(0, 0, w, h);
-
             const getPointCoords = (index) => {
                 const style = curvePoints[index].style;
                 const x = parseFloat(style.left) * w / 100;
                 const y = h - (parseFloat(style.top) * h / 100); 
                 return { x, y };
             };
-            
             if (w === 0 || h === 0) return;
-
             const p0 = getPointCoords(0);
             const p1 = getPointCoords(1);
             const p2 = getPointCoords(2);
             const p3 = getPointCoords(3);
-
             ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
             ctx.lineWidth = 1;
             ctx.setLineDash([5, 5]);
@@ -720,20 +782,17 @@
             ctx.lineTo(p3.x, p3.y);
             ctx.stroke();
             ctx.setLineDash([]); 
-
             ctx.strokeStyle = 'var(--secondary-glow)';
             ctx.lineWidth = 3;
             ctx.beginPath();
             ctx.moveTo(p0.x, p0.y);
-            ctx.bezierCurveTo(p1.x, p1.y, p2.x, p2.y, p3.x, p3.y);
+            ctx.bezierCurveTo(p1.x, p1.y, p2.x, p2.x, p3.x, p3.y);
             ctx.stroke();
         };
-
         let draggingCurvePoint = null;
         const startDragCurve = (e) => {
             draggingCurvePoint = e.target;
             const rect = curveArea.getBoundingClientRect();
-
             const moveHandler = (moveEvent) => {
                 if (!draggingCurvePoint) return;
                 let x = moveEvent.clientX - rect.left;
@@ -755,7 +814,6 @@
                 }
                 drawBezierCurve();
             };
-
             const stopHandler = () => {
                  if (activePastille && draggingCurvePoint) {
                     const pointIndex = draggingCurvePoint.dataset.index;
@@ -766,60 +824,101 @@
                 document.removeEventListener('mousemove', moveHandler);
                 document.removeEventListener('mouseup', stopHandler);
             };
-
             document.addEventListener('mousemove', moveHandler);
             document.addEventListener('mouseup', stopHandler);
             e.preventDefault();
         };
         curvePoints.forEach(p => p.addEventListener('mousedown', startDragCurve));
         window.addEventListener('resize', updateCanvasSize);
+        const getBezierValue = (t, P0_y, P1_y, P2_y, P3_y) => {
+            const t2 = t*t, t3 = t2*t, mt = 1-t, mt2 = mt*mt, mt3 = mt2*mt;
+            return P0_y * mt3 + 3 * P1_y * mt2 * t + 3 * P2_y * mt * t2 + P3_y * t3;
+        };
+        // --- Fin gestion de la courbe de Bézier ---
 
 
-        const createPastille = (x, y) => {
+        // Mise à jour du style (incluant le groupe)
+        const updatePastilleStyle = (pastille) => {
+            const axis = pastille.dataset.axis || 'Axe X';
+            const initialColor = getAxisColor(axis);
+            const initialBarColor = getBarColor(axis);
+            const durationBar = pastille.querySelector('.duration-bar');
+
+            // 1. Style de base
+            pastille.style.setProperty('background-color', initialColor);
+            pastille.style.setProperty('box-shadow', `0 0 8px ${initialColor}, 0 0 15px ${initialColor}`);
+            if (durationBar) {
+                durationBar.style.setProperty('background-color', initialBarColor);
+                durationBar.style.setProperty('box-shadow', `0 0 4px ${initialColor}`);
+            }
+
+            // 2. Style de Groupe
+            let label = pastille.querySelector('.group-label');
+            if (pastille.dataset.groupId) {
+                const groupId = pastille.dataset.groupId;
+                const group = allGroups.find(g => g.id === groupId);
+                
+                pastille.classList.add('grouped');
+                if (group) {
+                    pastille.style.setProperty('border', `2px solid ${group.color}`);
+                }
+
+                if (!label) {
+                    label = document.createElement('span');
+                    label.className = 'group-label';
+                    pastille.appendChild(label);
+                }
+                label.textContent = `G${pastille.dataset.groupNumber}`;
+
+            } else {
+                pastille.classList.remove('grouped');
+                pastille.style.removeProperty('border');
+                if (label) label.remove();
+            }
+        };
+
+        const createPastille = (x, y, data = {}, groupId = null, groupNumber = null) => {
             const pastille = document.createElement('div');
             pastille.className = 'pastille pastille-drop-bounce'; 
-            pastille.id = `pastille-${Date.now()}`;
+            pastille.id = data.id || `pastille-${Date.now()}`;
             
             const minX = 30; 
             const finalX = Math.max(minX, x);
 
-            pastille.style.left = `${finalX}px`;
-            pastille.style.top = `${y}px`;
-            pastille.dataset.startTimeMs = '0';
-            pastille.dataset.endTimeMs = '0';
-            pastille.dataset.startValue = '0';
-            pastille.dataset.endValue = '100';
-            pastille.dataset.axis = 'Axe X'; 
+            pastille.style.left = data.left || `${finalX}px`;
+            pastille.style.top = data.top || `${y}px`;
 
-            // Default curve points
-            pastille.dataset.curveP0Left = '0%'; pastille.dataset.curveP0Top = '100%';
-            pastille.dataset.curveP1Left = '33%'; pastille.dataset.curveP1Top = '50%';
-            pastille.dataset.curveP2Left = '66%'; pastille.dataset.curveP2Top = '50%';
-            pastille.dataset.curveP3Left = '100%'; pastille.dataset.curveP3Top = '0%';
-            
-            // Default pivot points
-            pastille.dataset.pivotAx = "-50"; pastille.dataset.pivotAy = "-50"; pastille.dataset.pivotAz = "0";
-            pastille.dataset.pivotBx = "50"; pastille.dataset.pivotBy = "50"; pastille.dataset.pivotBz = "0";
+            pastille.dataset.startTimeMs = data.startTimeMs || '0';
+            pastille.dataset.endTimeMs = data.endTimeMs || '0';
+            pastille.dataset.startValue = data.startValue || '0';
+            pastille.dataset.endValue = data.endValue || '100';
+            pastille.dataset.axis = data.axis || 'rotation X'; 
 
+            pastille.dataset.curveP0Left = data.curveP0Left || '0%'; pastille.dataset.curveP0Top = data.curveP0Top || '100%';
+            pastille.dataset.curveP1Left = data.curveP1Left || '33%'; pastille.dataset.curveP1Top = data.curveP1Top || '50%';
+            pastille.dataset.curveP2Left = data.curveP2Left || '66%'; pastille.dataset.curveP2Top = data.curveP2Top || '50%';
+            pastille.dataset.curveP3Left = data.curveP3Left || '100%'; pastille.dataset.curveP3Top = data.curveP3Top || '0%';
             
+            pastille.dataset.pivotAx = data.pivotAx || "-50"; pastille.dataset.pivotAy = data.pivotAy || "-50"; pastille.dataset.pivotAz = data.pivotAz || "0";
+            pastille.dataset.pivotBx = data.pivotBx || "50"; pastille.dataset.pivotBy = data.pivotBy || "50"; pastille.dataset.pivotBz = data.pivotBz || "0";
+            
+            if (groupId !== null) {
+                pastille.dataset.groupId = groupId;
+                pastille.dataset.groupNumber = groupNumber;
+            }
+
             const durationBar = document.createElement('div');
             durationBar.className = 'duration-bar';
             pastille.appendChild(durationBar);
             timeline.appendChild(pastille);
+
+            updatePastilleStyle(pastille); 
 
             pastille.addEventListener('animationend', (e) => {
                 if (e.animationName === 'bounce-in') {
                     pastille.classList.remove('pastille-drop-bounce');
                 }
             });
-
-            const initialColor = getAxisColor(pastille.dataset.axis);
-            const initialBarColor = getBarColor(pastille.dataset.axis);
-
-            pastille.style.setProperty('background-color', initialColor);
-            pastille.style.setProperty('box-shadow', `0 0 8px ${initialColor}, 0 0 15px ${initialColor}`);
-            durationBar.style.setProperty('background-color', initialBarColor);
-            durationBar.style.setProperty('box-shadow', `0 0 4px ${initialColor}`); 
 
             pastille.addEventListener('click', (e) => {
                 showTimeEditor(pastille);
@@ -836,10 +935,117 @@
             return pastille;
         };
 
-        editorAxisSelector.addEventListener('change', (e) => {
-            pivotFieldset.style.display = (e.target.value === 'rotation Pivot') ? 'flex' : 'none';
+
+        // --- Fonctions de gestion des groupes ---
+
+        const updateGroupList = () => {
+            groupListContainer.innerHTML = '<span style="opacity: 0.6; margin-right: 10px;">Groupes:</span>';
+            allGroups.forEach(group => {
+                const item = document.createElement('div');
+                item.className = 'group-item';
+                item.innerHTML = `
+                    <span class="group-color-dot" style="background-color: ${group.color};"></span>
+                    <span>Groupe ${group.number}</span>
+                    <button class="delete-group-btn" data-group-id="${group.id}">X</button>
+                `;
+                groupListContainer.appendChild(item);
+            });
+
+            document.querySelectorAll('.delete-group-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const groupId = e.target.dataset.groupId;
+                    if (confirm(`Voulez-vous supprimer le Groupe ${allGroups.find(g => g.id === groupId)?.number} et toutes ses pastilles ?`)) {
+                        deleteGroup(groupId);
+                    }
+                });
+            });
+        };
+
+        const deleteGroup = (groupId) => {
+            document.querySelectorAll(`.pastille[data-group-id="${groupId}"]`).forEach(p => p.remove());
+            allGroups = allGroups.filter(g => g.id !== groupId);
+            
+            updateGroupList();
+            updateAndDrawMarkers();
+        };
+
+        // --- Fonctions d'export/import JSON ---
+
+        saveJsonBtn.addEventListener('click', () => {
+            const pastillesData = Array.from(timeline.querySelectorAll('.pastille')).map(p => {
+                const data = { 
+                    left: p.style.left, 
+                    top: p.style.top,
+                    id: p.id
+                };
+                for (const key in p.dataset) {
+                    data[key] = p.dataset[key];
+                }
+                return data;
+            });
+
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                pastilles: pastillesData
+            };
+            
+            downloadJson(exportData, `timeline_export_${Date.now()}.json`);
         });
 
+        loadJsonBtn.addEventListener('click', () => {
+            loadJsonFile.click();
+        });
+
+        loadJsonFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const jsonContent = JSON.parse(event.target.result);
+                    importTimelineFromJson(jsonContent);
+                } catch (error) {
+                    alert("Erreur lors du chargement du fichier JSON. Format invalide.");
+                    console.error("Erreur de chargement JSON:", error);
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = null; 
+        });
+
+        const importTimelineFromJson = (importData) => {
+            if (!importData || !Array.isArray(importData.pastilles)) {
+                alert("Erreur: Le fichier JSON ne contient pas de tableau 'pastilles' valide.");
+                return;
+            }
+
+            const newGroupId = `group-${Date.now()}`;
+            const newGroupColor = getRandomPaleColor();
+            const newGroupNumber = nextGroupNumber++;
+
+            const newGroup = {
+                id: newGroupId,
+                number: newGroupNumber,
+                color: newGroupColor
+            };
+            allGroups.push(newGroup);
+
+            importData.pastilles.forEach(pData => {
+                const x = parseFloat(pData.left.replace('px', '')) || 30;
+                const y = parseFloat(pData.top.replace('px', '')) || 50;
+                
+                createPastille(x, y, pData, newGroupId, newGroupNumber);
+            });
+
+            updateGroupList();
+            updateAndDrawMarkers();
+            
+            alert(`Séquence importée avec succès! Pastilles ajoutées au Groupe ${newGroupNumber} (couleur pâle).`);
+        };
+        
+        // --- Logique d'interaction et d'animation ---
+        
         const showTimeEditor = (p) => {
             activePastille = p;
             
@@ -854,10 +1060,8 @@
             endValueInput.value = p.dataset.endValue;
             editorAxisSelector.value = p.dataset.axis;
 
-            // Show/hide pivot fields based on saved axis
             pivotFieldset.style.display = (p.dataset.axis === 'rotation Pivot') ? 'flex' : 'none';
             
-            // Populate pivot fields
             document.getElementById('pivot-ax').value = p.dataset.pivotAx;
             document.getElementById('pivot-ay').value = p.dataset.pivotAy;
             document.getElementById('pivot-az').value = p.dataset.pivotAz;
@@ -871,16 +1075,20 @@
             });
             
             timeEditor.style.display = 'block';
-            showSlide(1); // Affiche la première slide par défaut
+            showSlide(1); 
         };
         
+        // 📐 Mise à jour des marqueurs et de la durée
         const updateAndDrawMarkers = () => {
             document.querySelectorAll('.time-marker').forEach(m => m.remove());
             let pastilles = Array.from(timeline.querySelectorAll('.pastille'));
             pastilles.sort((a, b) => parseInt(a.dataset.startTimeMs) - parseInt(b.dataset.startTimeMs));
             
             if (pastilles.length === 0) {
-                totalTimelineDuration = 0; return;
+                totalTimelineDuration = 0; 
+                // Mise à jour de la minuterie même si elle est vide
+                currentTimeDisplay.textContent = formatTimeDisplay(0); 
+                return;
             }
             let maxTime = 0;
             pastilles.forEach(p => maxTime = Math.max(maxTime, parseInt(p.dataset.endTimeMs)) );
@@ -899,11 +1107,14 @@
                 p.style.left = `${posX + minX}px`;
                 const bar = p.querySelector('.duration-bar');
                 if (bar) bar.style.width = `${durationMs * pixelsPerMs}px`;
+                
+                // Création des marqueurs
                 createMarker(posX + minX, formatTimeVertical(startMs), 'top');
                 createMarker(posX + minX, formatTimeVertical(startMs), 'bottom');
                 if (durationMs > 0) {
                     createMarker(posX + minX + (durationMs * pixelsPerMs), formatTimeVertical(endMs), 'end', p.style.top);
                 }
+                updatePastilleStyle(p); 
             });
         };
 
@@ -911,24 +1122,33 @@
             const marker = document.createElement('div');
             marker.className = `time-marker marker-${type}`;
             marker.style.left = `${x}px`;
-            if (y) marker.style.top = y;
+            if (y) { 
+                // Pour le marqueur de fin (marker-end) qui suit la hauteur de la pastille
+                marker.style.top = y; 
+                marker.style.transform = `translate(-50%, -50%)`;
+            } else {
+                // Pour les marqueurs top/bottom
+                marker.style.transform = `translateX(-50%)`;
+            }
             marker.innerHTML = htmlContent;
             timeline.appendChild(marker);
         };
         
-        const getBezierValue = (t, P0_y, P1_y, P2_y, P3_y) => {
-            const t2 = t*t, t3 = t2*t, mt = 1-t, mt2 = mt*mt, mt3 = mt2*mt;
-            return P0_y * mt3 + 3 * P1_y * mt2 * t + 3 * P2_y * mt * t2 + P3_y * t3;
-        };
-
+        // La fonction `applyTransform` est modifiée ici pour gérer la rotation par pivot
         const applyTransform = (timeMs) => {
-            let translateX = 0, translateY = 0, translateZ = 0;
-            let orientation = new Quaternion(1, 0, 0, 0);
-
-            // Default transform origin, reset each frame
+            const pastilles = Array.from(timeline.querySelectorAll('.pastille'));
+            
+            pastilles.sort((a, b) => parseInt(a.dataset.startTimeMs) - parseInt(b.dataset.startTimeMs));
+            
+            let orientation = new Quaternion(1, 0, 0, 0); 
+            let position = { x: 0, y: 0, z: 0 };         
+            
             previewObject.style.transformOrigin = '50% 50% 0';
 
-            const pastilles = timeline.querySelectorAll('.pastille');
+            // Référence des dimensions de l'objet pour les calculs de pivot (%)
+            const PREVIEW_WIDTH = 200;
+            const PREVIEW_HEIGHT = 300;
+
 
             pastilles.forEach(p => {
                 const startMs = parseInt(p.dataset.startTimeMs);
@@ -943,61 +1163,97 @@
                     const final_value = startVal + (endVal - startVal) * curve_value;
                     const axis = p.dataset.axis;
                     
-                    if (axis === 'Axe X') translateX += final_value;
-                    if (axis === 'Axe Y') translateY += final_value;
-                    if (axis === 'Axe Z') translateZ += final_value;
-                    
-                    const angleRad = final_value * Math.PI / 180;
-                    let rotQuat;
+                    let rotQuat = null;
+                    let transVec = { x: 0, y: 0, z: 0 }; 
 
-                    if (axis === 'rotation X') {
-                        rotQuat = Quaternion.fromAxisAngle({x:1, y:0, z:0}, angleRad);
-                        orientation = orientation.multiply(rotQuat);
-                    } else if (axis === 'rotation Y') {
-                        rotQuat = Quaternion.fromAxisAngle({x:0, y:1, z:0}, angleRad);
-                        orientation = orientation.multiply(rotQuat);
-                    } else if (axis === 'rotation Z') {
-                        rotQuat = Quaternion.fromAxisAngle({x:0, y:0, z:1}, angleRad);
-                        orientation = orientation.multiply(rotQuat);
-                    } else if (axis === 'rotation Pivot') {
-                        // 1. Set the transform origin based on Pivot A
-                        const pAx = parseFloat(p.dataset.pivotAx || 0);
-                        const pAy = parseFloat(p.dataset.pivotAy || 0);
-                        const pAz = parseFloat(p.dataset.pivotAz || 0);
-                        
-                        // Convert from (-50, 50) to (0, 100) for CSS, and invert Y
-                        const originX = 50 + pAx;
-                        const originY = 50 - pAy; 
-                        // Z is pixels based on a % of the object's width
-                        const zUnit = previewObject.offsetWidth;
-                        const originZ = (pAz / 100) * zUnit;
-                        previewObject.style.transformOrigin = `${originX}% ${originY}% ${originZ}px`;
+                    if (axis === 'Axe X') transVec.x = final_value;
+                    if (axis === 'Axe Y') transVec.y = final_value;
+                    if (axis === 'Axe Z') transVec.z = final_value;
 
-                        // 2. Calculate the rotation axis vector (B - A)
-                        const pBx = parseFloat(p.dataset.pivotBx || 0);
-                        const pBy = parseFloat(p.dataset.pivotBy || 0);
-                        const pBz = parseFloat(p.dataset.pivotBz || 0);
-                        let vx = pBx - pAx, vy = pBy - pAy, vz = pBz - pAz;
+                    if (axis.startsWith('rotation')) {
+                        const angleRad = final_value * Math.PI / 180;
 
-                        // 3. Normalize the vector
-                        const mag = Math.sqrt(vx*vx + vy*vy + vz*vz);
-                        let rotationAxis = {x: 0, y: 1, z: 0}; // Default to Y axis if magnitude is 0
-                        if (mag > 1e-6) {
-                            rotationAxis = { x: vx / mag, y: vy / mag, z: vz / mag };
+                        if (axis === 'rotation X') {
+                            rotQuat = Quaternion.fromAxisAngle({x:1, y:0, z:0}, angleRad);
+                        } else if (axis === 'rotation Y') {
+                            rotQuat = Quaternion.fromAxisAngle({x:0, y:1, z:0}, angleRad);
+                        } else if (axis === 'rotation Z') {
+                            rotQuat = Quaternion.fromAxisAngle({x:0, y:0, z:1}, angleRad);
+                        } else if (axis === 'rotation Pivot') {
+                            // --- DÉBUT CORRECTION ROTATION PIVOT ---
+                            
+                            const pAx_pct = parseFloat(p.dataset.pivotAx || 0);
+                            const pAy_pct = parseFloat(p.dataset.pivotAy || 0);
+                            const pAz_px = parseFloat(p.dataset.pivotAz || 0);
+                            const pBx = parseFloat(p.dataset.pivotBx || 0);
+                            const pBy = parseFloat(p.dataset.pivotBy || 0);
+                            const pBz = parseFloat(p.dataset.pivotBz || 0);
+                            
+                            // 1. Définir le Point Pivot A en pixels par rapport au centre de l'objet (0,0,0)
+                            // Le centre de l'objet est (0, 0, 0).
+                            // Les pivots sont donnés en % de la dimension (width/height) + Z en px.
+                            // pAx_pct = -50 (50% à gauche) -> (200 / 100) * -50 = -100
+                            // pAx_pct = 50 (50% à droite) -> (200 / 100) * 50 = 100
+                            
+                            const pivotPoint = {
+                                x: (PREVIEW_WIDTH / 100) * pAx_pct,
+                                y: (PREVIEW_HEIGHT / 100) * pAy_pct,
+                                z: pAz_px 
+                            };
+
+                            // 2. Définir l'Axe de Rotation (vecteur B - A)
+                            let vx = (PREVIEW_WIDTH / 100) * (pBx - pAx_pct);
+                            let vy = (PREVIEW_HEIGHT / 100) * (pBy - pAy_pct);
+                            let vz = pBz - pAz_px;
+
+                            const mag = Math.sqrt(vx*vx + vy*vy + vz*vz);
+                            let rotationAxis = {x: 0, y: 1, z: 0}; 
+                            if (mag > 1e-6) {
+                                rotationAxis = { x: vx / mag, y: vy / mag, z: vz / mag };
+                            }
+                            
+                            rotQuat = Quaternion.fromAxisAngle(rotationAxis, angleRad);
+                            
+                            // 3. Appliquer la rotation locale (rotQuat) au point de pivot actuel de l'animation
+                            const rotatedPivot = rotQuat.rotatePoint(pivotPoint);
+                            
+                            // 4. Calculer la compensation de translation pour maintenir le pivot en place
+                            const compensation = { 
+                                x: pivotPoint.x - rotatedPivot.x,
+                                y: pivotPoint.y - rotatedPivot.y,
+                                z: pivotPoint.z - rotatedPivot.z
+                            };
+                            
+                            // 5. Appliquer la compensation à la translation locale
+                            transVec.x += compensation.x;
+                            transVec.y += compensation.y;
+                            transVec.z += compensation.z;
+                            
+                            // --- FIN CORRECTION ROTATION PIVOT ---
                         }
-                        
-                        rotQuat = Quaternion.fromAxisAngle(rotationAxis, angleRad);
-                        orientation = orientation.multiply(rotQuat);
+                    }
+
+                    // Chaînage Local
+                    if (transVec.x !== 0 || transVec.y !== 0 || transVec.z !== 0) {
+                        // Translation relative aux axes du système déjà orienté
+                        const rotatedTranslation = orientation.rotatePoint(transVec);
+                        position.x += rotatedTranslation.x;
+                        position.y += rotatedTranslation.y;
+                        position.z += rotatedTranslation.z;
+                    }
+                    if (rotQuat) {
+                        // Multiplication de l'orientation (nouvelle rotation * ancienne orientation)
+                        orientation = rotQuat.multiply(orientation); 
                     }
                 }
             });
             
-            const combinedTransform = orientation.toMatrix4(translateX, translateY, translateZ);
+            const combinedTransform = orientation.toMatrix4(position.x, position.y, position.z);
             previewObject.style.transform = combinedTransform;
             previewInner.style.transform = ''; 
             previewInner.textContent = `OBJET`;
         };
-
+        
         const animateTimeline = (timestamp) => {
             if (!animationStartTime) animationStartTime = timestamp;
             const elapsed = timestamp - animationStartTime;
@@ -1006,11 +1262,13 @@
                 animationStartTime = timestamp;
                 currentTimelineTime = 0;
             }
-            currentTimeDisplay.textContent = formatTimeDisplay(currentTimelineTime);
+            // Affichage avec le format correct (HH:MM:SS:ms)
+            currentTimeDisplay.textContent = formatTimeDisplay(currentTimelineTime); 
             applyTransform(currentTimelineTime);
             animationFrame = requestAnimationFrame(animateTimeline);
         };
 
+        // 🛑 CORRECTION : Réinitialisation de l'affichage du temps
         const stopAnimation = () => {
             cancelAnimationFrame(animationFrame);
             animationFrame = null;
@@ -1020,7 +1278,7 @@
             previewObject.style.transform = ''; 
             previewObject.style.transformOrigin = '50% 50% 0';
             previewInner.style.transform = ''; 
-            currentTimeDisplay.textContent = formatTimeDisplay(0); 
+            currentTimeDisplay.textContent = formatTimeDisplay(0); // Réinitialisation de la minuterie
         };
 
         referencePastille.addEventListener('dragstart', (e) => {
@@ -1055,7 +1313,6 @@
             }
         });
 
-        // Logique de sauvegarde attachée à TOUS les boutons OK
         okBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 if (!activePastille) return;
@@ -1071,7 +1328,6 @@
                 activePastille.dataset.startValue = startValueInput.value;
                 activePastille.dataset.endValue = endValueInput.value;
                 
-                // Save pivot data if the axis is set to pivot
                 if (newAxis === 'rotation Pivot') {
                     activePastille.dataset.pivotAx = document.getElementById('pivot-ax').value;
                     activePastille.dataset.pivotAy = document.getElementById('pivot-ay').value;
@@ -1081,20 +1337,12 @@
                     activePastille.dataset.pivotBz = document.getElementById('pivot-bz').value;
                 }
 
-                const newColor = getAxisColor(newAxis);
-                const newBarColor = getBarColor(newAxis); 
-                activePastille.style.setProperty('background-color', newColor);
-                activePastille.style.setProperty('box-shadow', `0 0 8px ${newColor}, 0 0 15px ${newColor}`);
-                const bar = activePastille.querySelector('.duration-bar');
-                if (bar) {
-                    bar.style.setProperty('background-color', newBarColor);
-                    bar.style.setProperty('box-shadow', `0 0 4px ${newColor}`);
-                }
-
                 curvePoints.forEach((cp, index) => {
                     activePastille.dataset[`curveP${index}Left`] = cp.style.left;
                     activePastille.dataset[`curveP${index}Top`] = cp.style.top;
                 });
+                
+                updatePastilleStyle(activePastille); 
                 
                 timeEditor.style.display = 'none';
                 updateAndDrawMarkers();
@@ -1124,10 +1372,14 @@
             animationFrame = requestAnimationFrame(animateTimeline);
         });
 
+        // Le bouton de fermeture appelle stopAnimation
         closePreviewBtn.addEventListener('click', stopAnimation);
 
+        // --- Initialisation ---
+        currentTimeDisplay.textContent = formatTimeDisplay(0); // Affichage initial du temps à 00:00:00:000
         updateCanvasSize();
         updateAndDrawMarkers();
+        updateGroupList(); 
     });
     </script>
 </body>
