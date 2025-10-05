@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Timeline Futuriste - Version Canvas 3D</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="canvas.css">
+   
+    </style>
+    </style>
+</head>
+<body>
+    <div id="top-header">
+        <div id="reference-pastille" draggable="true"></div>
+        <button id="play-btn">▶ Démarrer</button>
+        <span id="current-time-display">00:00:00:000</span>
+    </div>
+
+    <div id="group-list-container">
+        <span style="opacity: 0.6; margin-right: 10px;">Groupes:</span>
+    </div>
+
+    <div id="timeline-container">
+        <div id="timeline"></div>
+    </div>
+
+    <div id="footer-controls">
+        <button id="save-json-btn">💾 SAUVEGARDER</button>
+        <input type="file" id="load-json-file" style="display: none;" accept=".json">
+        <button id="load-json-btn">📂 CHARGER</button>
+    </div>
+    
+    <div id="preview-card">
+        <h3>Simulation 3D</h3>
+        <div id="preview-canvas-container">
+            <canvas id="preview-canvas"></canvas>
+        </div>
+        <button id="close-preview-btn" class="close-btn">×</button>
+    </div>
+
+    <div id="time-editor">
+        <div class="editor-header">
+            <span>Définir l'Animation</span>
+            <button id="close-editor-btn" class="close-btn">×</button>
+        </div>
+        
+        <div id="slide-container">
+            <div id="editor-slide-1" class="editor-slide">
+                <div class="editor-body-controls">
+                    <div class="input-group" style="align-self: stretch;">
+                        <label for="editor-axis-selector" style="width: auto;">Axe:</label>
+                        <select id="editor-axis-selector" style="flex: 1;">
+                            <option value="Axe X">Axe X</option>
+                            <option value="Axe Y">Axe Y</option>
+                            <option value="Axe Z">Axe Z</option>
+                            <option value="rotation X">Rotation X</option>
+                            <option value="rotation Y">Rotation Y</option>
+                            <option value="rotation Z">Rotation Z</option>
+                            <option value="rotation Pivot">Rotation Personnalisé</option>
+                        </select>
+                    </div>
+                    
+                    <div class="input-group" style="align-self: stretch;">
+                        <label for="editor-referential-selector" style="width: auto;">Référentiel:</label>
+                        <select id="editor-referential-selector" style="flex: 1;">
+                            <option value="local">Local (suit l'objet)</option>
+                            <option value="world">Monde (axes fixes)</option>
+                        </select>
+                    </div>
+                    
+                    <fieldset>
+                        <legend>Valeurs</legend>
+                        <div class="input-group"><label>Début</label><input type="text" id="start-value" value="0"></div>
+                        <div class="input-group"><label>Fin</label><input type="text" id="end-value" value="100"></div>
+                    </fieldset>
+                    
+                    <fieldset id="pivot-fieldset">
+                        <legend>Points Pivots (% relatif à l'objet)</legend>
+                        <div class="input-group"><label for="pivot-ax">Ax</label><input type="number" id="pivot-ax" value="-50"></div>
+                        <div class="input-group"><label for="pivot-ay">Ay</label><input type="number" id="pivot-ay" value="-50"></div>
+                        <div class="input-group"><label for="pivot-az">Az</label><input type="number" id="pivot-az" value="0"></div>
+                        <div class="input-group"><label for="pivot-bx">Bx</label><input type="number" id="pivot-bx" value="50"></div>
+                        <div class="input-group"><label for="pivot-by">By</label><input type="number" id="pivot-by" value="50"></div>
+                        <div class="input-group"><label for="pivot-bz">Bz</label><input type="number" id="pivot-bz" value="0"></div>
+                    </fieldset>
+    
+                    <fieldset>
+                        <legend>Début (HH:MM:SS:ms)</legend>
+                        <div class="input-group"><label for="start-h">HH</label><input type="number" id="start-h" min="0" value="0"></div>
+                        <div class="input-group"><label for="start-m">MM</label><input type="number" id="start-m" min="0" max="59" value="0"></div>
+                        <div class="input-group"><label for="start-s">SS</label><input type="number" id="start-s" min="0" max="59" value="0"></div>
+                        <div class="input-group"><label for="start-ms">ms</label><input type="number" id="start-ms" min="0" max="999" value="0"></div>
+                    </fieldset>
+                    <fieldset>
+                        <legend>Fin (HH:MM:SS:ms)</legend>
+                        <div class="input-group"><label for="end-h">HH</label><input type="number" id="end-h" min="0" value="0"></div>
+                        <div class="input-group"><label for="end-m">MM</label><input type="number" id="end-m" min="0" max="59" value="0"></div>
+                        <div class="input-group"><label for="end-s">SS</label><input type="number" id="end-s" min="0" max="59" value="0"></div>
+                        <div class="input-group"><label for="end-ms">ms</label><input type="number" id="end-ms" min="0" max="999" value="0"></div>
+                    </fieldset>
+                </div>
+                <div class="slide-footer">
+                    <button id="next-slide-btn" class="slide-btn">Courbe >></button>
+                    <button class="ok-btn">OK</button>
+                </div>
+            </div>
+            
+            <div id="editor-slide-2" class="editor-slide" style="display: none;">
+                <div id="curve-area">
+                    <canvas id="curve-canvas"></canvas>
+                    <div class="curve-control-point start-end" id="p0" data-index="0" style="left: 0%; top: 100%;"></div>
+                    <div class="curve-control-point" id="p1" data-index="1" style="left: 33%; top: 50%;"></div>
+                    <div class="curve-control-point" id="p2" data-index="2" style="left: 66%; top: 50%;"></div>
+                    <div class="curve-control-point start-end" id="p3" data-index="3" style="left: 100%; top: 0%;"></div>
+                </div>
+                <div class="slide-footer">
+                    <button id="prev-slide-btn" class="slide-btn"><< Retour</button>
+                    <button class="ok-btn">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+  
+    <script src="canvas-utils.js"></script>
+    <script src="canvas-ui.js"></script>
+    <script src="canvas-anima.js"></script>
+</body>
+</html>
