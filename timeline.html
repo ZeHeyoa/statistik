@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timeline Futuriste Avancée V10 - Correction Minuterie & Fermeture Preview</title>
+    <title>Timeline Futuriste Avancée V11 - Parenté et Position Relative</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
     
     <style>
@@ -285,7 +285,7 @@
             font-size: 12px;
         }
         
-        /* Styles de l'éditeur (inchangés) */
+        /* Styles de l'éditeur */
         #time-editor {
             position: fixed; 
             top: 50%; 
@@ -361,6 +361,9 @@
         }
         #pivot-fieldset {
             display: none; 
+        }
+        #relative-pos-fieldset {
+             display: none; /* Cache par défaut */
         }
         .slide-footer {
             padding: 10px 15px;
@@ -534,7 +537,23 @@
                             <div class="input-group"><label for="pivot-bz">Bz (px)</label><input type="number" id="pivot-bz" value="0"></div>
                         </div>
                     </fieldset>
-    
+
+                    <fieldset>
+                        <legend>Parenté</legend>
+                        <div class="input-group" style="flex-direction: column; align-items: flex-start; width: 100%;">
+                            <label for="parent-id-selector" style="width: auto;">Parent (ID Pastille) :</label>
+                            <select id="parent-id-selector" style="width: 100%; padding: 4px 8px;">
+                                <option value="">(Aucun Parent)</option>
+                            </select>
+                        </div>
+                    </fieldset>
+
+                    <fieldset id="relative-pos-fieldset">
+                        <legend>Position Relative au Parent (px)</legend>
+                        <div class="input-group"><label for="relative-x">X</label><input type="number" id="relative-x" value="0"></div>
+                        <div class="input-group"><label for="relative-y">Y</label><input type="number" id="relative-y" value="0"></div>
+                        <div class="input-group"><label for="relative-z">Z</label><input type="number" id="relative-z" value="0"></div>
+                    </fieldset>
                     <div>
                         <fieldset>
                             <legend>Début (HH:MM:SS:ms)</legend>
@@ -578,12 +597,12 @@
     document.addEventListener('DOMContentLoaded', () => {
         // --- CLASSE QUATERNION (Pour les rotations 3D) ---
         class Quaternion {
-            // ... (code de la classe Quaternion)
             constructor(w, x, y, z) { this.w = w; this.x = x; this.y = y; this.z = z; }
             static fromAxisAngle(axis, angle) {
                 const s = Math.sin(angle / 2);
                 return new Quaternion(Math.cos(angle / 2), axis.x * s, axis.y * s, axis.z * s);
             }
+            // Utilise l'orientation actuelle (this) pour faire une nouvelle rotation (q)
             multiply(q) {
                 return new Quaternion(
                     this.w*q.w-this.x*q.x-this.y*q.y-this.z*q.z,
@@ -592,6 +611,7 @@
                     this.w*q.z+this.x*q.y-this.y*q.x+this.z*q.w
                 );
             }
+            // Tourne un vecteur (p) par cette orientation (this)
             rotatePoint(p) {
                 const qp = new Quaternion(0, p.x, p.y, p.z);
                 const res = this.multiply(qp).multiply(new Quaternion(this.w, -this.x, -this.y, -this.z));
@@ -625,6 +645,13 @@
         const startValueInput = document.getElementById('start-value');
         const endValueInput = document.getElementById('end-value');
         const pivotFieldset = document.getElementById('pivot-fieldset');
+        // NOUVEAU: Références pour la parenté et la position relative
+        const parentIdSelector = document.getElementById('parent-id-selector');
+        const relativeXInput = document.getElementById('relative-x');
+        const relativeYInput = document.getElementById('relative-y');
+        const relativeZInput = document.getElementById('relative-z');
+        const relativePosFieldset = document.getElementById('relative-pos-fieldset');
+        // FIN NOUVEAU
         let activePastille = null;
 
         const slide1 = document.getElementById('editor-slide-1');
@@ -664,22 +691,17 @@
             return {h,m,s,ms};
         };
         
-        // ✨ C'EST ICI QUE LES MILLISECONDES SONT AFFICHÉES SUR 3 CHIFFRES
         const formatTimeDisplay = (ms) => {
             const t = millisecondsToTime(ms);
-            // On s'assure d'avoir HH:MM:SS:ms. padStart(3,'0') assure 3 chiffres pour les millisecondes.
             return `${String(t.h).padStart(2,'0')}:${String(t.m).padStart(2,'0')}:${String(t.s).padStart(2,'0')}:${String(t.ms).padStart(3,'0')}`;
         };
         
-        // 🕰️ Mise à jour de formatTimeVertical pour la lisibilité de la graduation
         const formatTimeVertical = (totalMs) => {
             const t = millisecondsToTime(totalMs);
-            // Si l'heure est > 0, on affiche tout. Sinon on raccourcit
             const parts = [];
             if (t.h > 0) parts.push(`<span>${String(t.h).padStart(2,'0')}H</span>`);
             if (t.m > 0 || t.h > 0) parts.push(`<span>${String(t.m).padStart(2,'0')}M</span>`);
             parts.push(`<span>${String(t.s).padStart(2,'0')}S</span>`);
-            // Ici aussi, 3 chiffres pour les millisecondes (ms)
             parts.push(`<span>${String(t.ms).padStart(3,'0')}ms</span>`);
 
             return `<div class="time-label">${parts.join('')}</div>`;
@@ -875,6 +897,12 @@
                 pastille.style.removeProperty('border');
                 if (label) label.remove();
             }
+
+             // 3. Indicateur de Parenté (si parentId est défini, on ajoute un contour spécial)
+            if (pastille.dataset.parentId) {
+                pastille.style.setProperty('border', `2px solid var(--secondary-glow)`);
+                pastille.style.setProperty('box-shadow', `0 0 8px ${initialColor}, 0 0 15px ${initialColor}, 0 0 10px 5px var(--secondary-glow) inset`);
+            }
         };
 
         const createPastille = (x, y, data = {}, groupId = null, groupNumber = null) => {
@@ -901,6 +929,13 @@
             
             pastille.dataset.pivotAx = data.pivotAx || "-50"; pastille.dataset.pivotAy = data.pivotAy || "-50"; pastille.dataset.pivotAz = data.pivotAz || "0";
             pastille.dataset.pivotBx = data.pivotBx || "50"; pastille.dataset.pivotBy = data.pivotBy || "50"; pastille.dataset.pivotBz = data.pivotBz || "0";
+            
+            // NOUVEAU: Données de Parenté et de Position Relative
+            pastille.dataset.parentId = data.parentId || '';
+            pastille.dataset.relativeX = data.relativeX || '0';
+            pastille.dataset.relativeY = data.relativeY || '0';
+            pastille.dataset.relativeZ = data.relativeZ || '0';
+            // FIN NOUVEAU
             
             if (groupId !== null) {
                 pastille.dataset.groupId = groupId;
@@ -968,81 +1003,6 @@
             updateGroupList();
             updateAndDrawMarkers();
         };
-
-        // --- Fonctions d'export/import JSON ---
-
-        saveJsonBtn.addEventListener('click', () => {
-            const pastillesData = Array.from(timeline.querySelectorAll('.pastille')).map(p => {
-                const data = { 
-                    left: p.style.left, 
-                    top: p.style.top,
-                    id: p.id
-                };
-                for (const key in p.dataset) {
-                    data[key] = p.dataset[key];
-                }
-                return data;
-            });
-
-            const exportData = {
-                timestamp: new Date().toISOString(),
-                pastilles: pastillesData
-            };
-            
-            downloadJson(exportData, `timeline_export_${Date.now()}.json`);
-        });
-
-        loadJsonBtn.addEventListener('click', () => {
-            loadJsonFile.click();
-        });
-
-        loadJsonFile.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = (event) => {
-                try {
-                    const jsonContent = JSON.parse(event.target.result);
-                    importTimelineFromJson(jsonContent);
-                } catch (error) {
-                    alert("Erreur lors du chargement du fichier JSON. Format invalide.");
-                    console.error("Erreur de chargement JSON:", error);
-                }
-            };
-            reader.readAsText(file);
-            e.target.value = null; 
-        });
-
-        const importTimelineFromJson = (importData) => {
-            if (!importData || !Array.isArray(importData.pastilles)) {
-                alert("Erreur: Le fichier JSON ne contient pas de tableau 'pastilles' valide.");
-                return;
-            }
-
-            const newGroupId = `group-${Date.now()}`;
-            const newGroupColor = getRandomPaleColor();
-            const newGroupNumber = nextGroupNumber++;
-
-            const newGroup = {
-                id: newGroupId,
-                number: newGroupNumber,
-                color: newGroupColor
-            };
-            allGroups.push(newGroup);
-
-            importData.pastilles.forEach(pData => {
-                const x = parseFloat(pData.left.replace('px', '')) || 30;
-                const y = parseFloat(pData.top.replace('px', '')) || 50;
-                
-                createPastille(x, y, pData, newGroupId, newGroupNumber);
-            });
-
-            updateGroupList();
-            updateAndDrawMarkers();
-            
-            alert(`Séquence importée avec succès! Pastilles ajoutées au Groupe ${newGroupNumber} (couleur pâle).`);
-        };
         
         // --- Logique d'interaction et d'animation ---
         
@@ -1069,6 +1029,30 @@
             document.getElementById('pivot-by').value = p.dataset.pivotBy;
             document.getElementById('pivot-bz').value = p.dataset.pivotBz;
 
+            // NOUVEAU: Remplissage de la sélection de Parent et des inputs de position relative
+            parentIdSelector.innerHTML = '<option value="">(Aucun Parent)</option>';
+            const allPastilles = Array.from(timeline.querySelectorAll('.pastille'));
+            
+            allPastilles.forEach(pInTimeline => {
+                if (pInTimeline.id !== p.id) { // Une pastille ne peut pas être son propre parent
+                    const option = document.createElement('option');
+                    option.value = pInTimeline.id;
+                    // Afficher l'ID pour le moment. On pourrait ajouter un nom si on en avait un.
+                    option.textContent = pInTimeline.id; 
+                    parentIdSelector.appendChild(option);
+                }
+            });
+            
+            parentIdSelector.value = p.dataset.parentId;
+            
+            relativeXInput.value = p.dataset.relativeX;
+            relativeYInput.value = p.dataset.relativeY;
+            relativeZInput.value = p.dataset.relativeZ;
+
+            // Afficher/Cacher la position relative en fonction de la parenté
+            relativePosFieldset.style.display = p.dataset.parentId ? 'flex' : 'none';
+            // FIN NOUVEAU
+
             curvePoints.forEach((cp, index) => {
                 cp.style.left = p.dataset[`curveP${index}Left`] || cp.style.left;
                 cp.style.top = p.dataset[`curveP${index}Top`] || cp.style.top;
@@ -1078,6 +1062,11 @@
             showSlide(1); 
         };
         
+        // NOUVEAU: Écouteur pour montrer/cacher la position relative lors du changement de parent
+        parentIdSelector.addEventListener('change', () => {
+            relativePosFieldset.style.display = parentIdSelector.value ? 'flex' : 'none';
+        });
+
         // 📐 Mise à jour des marqueurs et de la durée
         const updateAndDrawMarkers = () => {
             document.querySelectorAll('.time-marker').forEach(m => m.remove());
@@ -1086,7 +1075,6 @@
             
             if (pastilles.length === 0) {
                 totalTimelineDuration = 0; 
-                // Mise à jour de la minuterie même si elle est vide
                 currentTimeDisplay.textContent = formatTimeDisplay(0); 
                 return;
             }
@@ -1123,29 +1111,31 @@
             marker.className = `time-marker marker-${type}`;
             marker.style.left = `${x}px`;
             if (y) { 
-                // Pour le marqueur de fin (marker-end) qui suit la hauteur de la pastille
                 marker.style.top = y; 
                 marker.style.transform = `translate(-50%, -50%)`;
             } else {
-                // Pour les marqueurs top/bottom
                 marker.style.transform = `translateX(-50%)`;
             }
             marker.innerHTML = htmlContent;
             timeline.appendChild(marker);
         };
         
-        // La fonction `applyTransform` est modifiée ici pour gérer la rotation par pivot
+        // La fonction applyTransform est modifiée pour gérer la hiérarchie
         const applyTransform = (timeMs) => {
             const pastilles = Array.from(timeline.querySelectorAll('.pastille'));
             
+            // Tri par temps (obligatoire)
             pastilles.sort((a, b) => parseInt(a.dataset.startTimeMs) - parseInt(b.dataset.startTimeMs));
             
+            // État Monde Global de l'objet (accumulé par les pastilles SANS parent)
             let orientation = new Quaternion(1, 0, 0, 0); 
             let position = { x: 0, y: 0, z: 0 };         
             
+            // Map pour stocker l'état Monde (Quat/Pos) après chaque pastille, pour les enfants
+            const pastilleWorldStates = {}; 
+            
             previewObject.style.transformOrigin = '50% 50% 0';
 
-            // Référence des dimensions de l'objet pour les calculs de pivot (%)
             const PREVIEW_WIDTH = 200;
             const PREVIEW_HEIGHT = 300;
 
@@ -1154,6 +1144,41 @@
                 const startMs = parseInt(p.dataset.startTimeMs);
                 const endMs = parseInt(p.dataset.endTimeMs);
                 const durationMs = endMs - startMs;
+                
+                // État de départ pour l'animation de P : soit l'accumulation globale, soit l'état du Parent.
+                let startOrientation = orientation; 
+                let startPosition = {...position}; // Copie de l'objet pour ne pas modifier l'état global directement
+                let isChild = false;
+
+                // --- 1. DÉFINITION DE L'ORIGINE (Parent ou Accumulation Globale) ---
+                const parentId = p.dataset.parentId;
+                if (parentId && pastilleWorldStates[parentId]) {
+                    // La pastille est un enfant. Son animation est relative au Parent.
+                    const parentState = pastilleWorldStates[parentId];
+                    // Hériter correctement de l'orientation et la position du parent
+                    startOrientation = parentState.orientation;
+                    startPosition = {...parentState.position}; 
+                    isChild = true;
+                    
+                    // Appliquer l'Offset Relatif (Translation du Child par rapport au Parent)
+                    const relX = parseFloat(p.dataset.relativeX || 0);
+                    const relY = parseFloat(p.dataset.relativeY || 0);
+                    const relZ = parseFloat(p.dataset.relativeZ || 0);
+                    const relativeOffset = { x: relX, y: relY, z: relZ };
+
+                    // L'offset est tourné par l'orientation du parent (dans l'espace Monde)
+                    const rotatedOffset = startOrientation.rotatePoint(relativeOffset); 
+
+                    startPosition.x += rotatedOffset.x;
+                    startPosition.y += rotatedOffset.y;
+                    startPosition.z += rotatedOffset.z;
+                } 
+                // Sinon, c'est une animation racine, qui se construit sur l'état global actuel.
+
+                // --- 2. CALCUL ET APPLICATION DE L'ANIMATION P ---
+                
+                let rotQuat = null;
+                let transVec = { x: 0, y: 0, z: 0 }; 
 
                 if (durationMs > 0 && timeMs >= startMs && timeMs <= endMs) {
                     const t_progression = (timeMs - startMs) / durationMs;
@@ -1162,9 +1187,6 @@
                     const endVal = parseFloat(p.dataset.endValue || 0);
                     const final_value = startVal + (endVal - startVal) * curve_value;
                     const axis = p.dataset.axis;
-                    
-                    let rotQuat = null;
-                    let transVec = { x: 0, y: 0, z: 0 }; 
 
                     if (axis === 'Axe X') transVec.x = final_value;
                     if (axis === 'Axe Y') transVec.y = final_value;
@@ -1180,74 +1202,72 @@
                         } else if (axis === 'rotation Z') {
                             rotQuat = Quaternion.fromAxisAngle({x:0, y:0, z:1}, angleRad);
                         } else if (axis === 'rotation Pivot') {
-                            // --- DÉBUT CORRECTION ROTATION PIVOT ---
-                            
                             const pAx_pct = parseFloat(p.dataset.pivotAx || 0);
                             const pAy_pct = parseFloat(p.dataset.pivotAy || 0);
                             const pAz_px = parseFloat(p.dataset.pivotAz || 0);
                             const pBx = parseFloat(p.dataset.pivotBx || 0);
                             const pBy = parseFloat(p.dataset.pivotBy || 0);
                             const pBz = parseFloat(p.dataset.pivotBz || 0);
-                            
-                            // 1. Définir le Point Pivot A en pixels par rapport au centre de l'objet (0,0,0)
-                            // Le centre de l'objet est (0, 0, 0).
-                            // Les pivots sont donnés en % de la dimension (width/height) + Z en px.
-                            // pAx_pct = -50 (50% à gauche) -> (200 / 100) * -50 = -100
-                            // pAx_pct = 50 (50% à droite) -> (200 / 100) * 50 = 100
-                            
                             const pivotPoint = {
                                 x: (PREVIEW_WIDTH / 100) * pAx_pct,
                                 y: (PREVIEW_HEIGHT / 100) * pAy_pct,
                                 z: pAz_px 
                             };
-
-                            // 2. Définir l'Axe de Rotation (vecteur B - A)
                             let vx = (PREVIEW_WIDTH / 100) * (pBx - pAx_pct);
                             let vy = (PREVIEW_HEIGHT / 100) * (pBy - pAy_pct);
                             let vz = pBz - pAz_px;
-
                             const mag = Math.sqrt(vx*vx + vy*vy + vz*vz);
                             let rotationAxis = {x: 0, y: 1, z: 0}; 
-                            if (mag > 1e-6) {
-                                rotationAxis = { x: vx / mag, y: vy / mag, z: vz / mag };
-                            }
+                            if (mag > 1e-6) rotationAxis = { x: vx / mag, y: vy / mag, z: vz / mag };
                             
                             rotQuat = Quaternion.fromAxisAngle(rotationAxis, angleRad);
                             
-                            // 3. Appliquer la rotation locale (rotQuat) au point de pivot actuel de l'animation
+                            // La compensation est calculée dans l'espace local de l'animation
                             const rotatedPivot = rotQuat.rotatePoint(pivotPoint);
-                            
-                            // 4. Calculer la compensation de translation pour maintenir le pivot en place
                             const compensation = { 
                                 x: pivotPoint.x - rotatedPivot.x,
                                 y: pivotPoint.y - rotatedPivot.y,
                                 z: pivotPoint.z - rotatedPivot.z
                             };
-                            
-                            // 5. Appliquer la compensation à la translation locale
                             transVec.x += compensation.x;
                             transVec.y += compensation.y;
                             transVec.z += compensation.z;
-                            
-                            // --- FIN CORRECTION ROTATION PIVOT ---
                         }
                     }
 
-                    // Chaînage Local
+                    // Translation animée (relative à l'orientation du point de départ)
                     if (transVec.x !== 0 || transVec.y !== 0 || transVec.z !== 0) {
-                        // Translation relative aux axes du système déjà orienté
-                        const rotatedTranslation = orientation.rotatePoint(transVec);
-                        position.x += rotatedTranslation.x;
-                        position.y += rotatedTranslation.y;
-                        position.z += rotatedTranslation.z;
+                        const rotatedTranslation = startOrientation.rotatePoint(transVec);
+                        startPosition.x += rotatedTranslation.x;
+                        startPosition.y += rotatedTranslation.y;
+                        startPosition.z += rotatedTranslation.z;
                     }
+                    
+                    // Rotation animée (Globale/Monde)
                     if (rotQuat) {
-                        // Multiplication de l'orientation (nouvelle rotation * ancienne orientation)
-                        orientation = rotQuat.multiply(orientation); 
+                        // Rotation appliquée sur l'orientation de départ
+                        // --- IMPORTANT : on compose la rotation locale de la pastille **par-dessus**
+                        // l'orientation héritée du parent (si il y en a une).
+                        startOrientation = startOrientation.multiply(rotQuat); 
                     }
+                }
+                
+                // --- 3. MISE À JOUR DES ÉTATS GLOBALS ET INTERMÉDIAIRES ---
+
+                // Sauvegarde de l'état Monde (après application de P) pour ses enfants
+                pastilleWorldStates[p.id] = { 
+                    orientation: startOrientation, 
+                    position: startPosition 
+                };
+                
+                // Si c'est une animation racine, elle devient l'état global pour les futures pastilles racines.
+                if (!isChild) {
+                    orientation = startOrientation;
+                    position = startPosition;
                 }
             });
             
+            // Le transform final est l'état global accumulé.
             const combinedTransform = orientation.toMatrix4(position.x, position.y, position.z);
             previewObject.style.transform = combinedTransform;
             previewInner.style.transform = ''; 
@@ -1337,6 +1357,13 @@
                     activePastille.dataset.pivotBz = document.getElementById('pivot-bz').value;
                 }
 
+                // NOUVEAU: Sauvegarde de la Parenté et de la Position Relative
+                activePastille.dataset.parentId = parentIdSelector.value;
+                activePastille.dataset.relativeX = relativeXInput.value;
+                activePastille.dataset.relativeY = relativeYInput.value;
+                activePastille.dataset.relativeZ = relativeZInput.value;
+                // FIN NOUVEAU
+
                 curvePoints.forEach((cp, index) => {
                     activePastille.dataset[`curveP${index}Left`] = cp.style.left;
                     activePastille.dataset[`curveP${index}Top`] = cp.style.top;
@@ -1375,8 +1402,94 @@
         // Le bouton de fermeture appelle stopAnimation
         closePreviewBtn.addEventListener('click', stopAnimation);
 
+        // --- Fonctions d'export/import JSON (inchangées) ---
+
+        saveJsonBtn.addEventListener('click', () => {
+            const pastillesData = Array.from(timeline.querySelectorAll('.pastille')).map(p => {
+                const data = { 
+                    left: p.style.left, 
+                    top: p.style.top,
+                    id: p.id
+                };
+                for (const key in p.dataset) {
+                    data[key] = p.dataset[key];
+                }
+                return data;
+            });
+
+            const exportData = {
+                timestamp: new Date().toISOString(),
+                pastilles: pastillesData
+            };
+            
+            downloadJson(exportData, `timeline_export_${Date.now()}.json`);
+        });
+
+        loadJsonBtn.addEventListener('click', () => {
+            loadJsonFile.click();
+        });
+
+        loadJsonFile.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                try {
+                    const jsonContent = JSON.parse(event.target.result);
+                    importTimelineFromJson(jsonContent);
+                } catch (error) {
+                    alert("Erreur lors du chargement du fichier JSON. Format invalide.");
+                    console.error("Erreur de chargement JSON:", error);
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = null; 
+        });
+
+        const importTimelineFromJson = (importData) => {
+            if (!importData || !Array.isArray(importData.pastilles)) {
+                alert("Erreur: Le fichier JSON ne contient pas de tableau 'pastilles' valide.");
+                return;
+            }
+
+            const newGroupId = `group-${Date.now()}`;
+            const newGroupColor = getRandomPaleColor();
+            const newGroupNumber = nextGroupNumber++;
+
+            const newGroup = {
+                id: newGroupId,
+                number: newGroupNumber,
+                color: newGroupColor
+            };
+            allGroups.push(newGroup);
+            
+            // Assurez-vous d'importer les pastilles dans l'ordre pour les dépendances
+            importData.pastilles.sort((a, b) => {
+                const idA = a.id || '';
+                const idB = b.id || '';
+                if (b.parentId === idA) return -1; // A doit venir avant B si A est le parent de B
+                if (a.parentId === idB) return 1;  // B doit venir avant A si B est le parent de A
+                return 0;
+            });
+
+
+            importData.pastilles.forEach(pData => {
+                const x = parseFloat(pData.left.replace('px', '')) || 30;
+                const y = parseFloat(pData.top.replace('px', '')) || 50;
+                
+                createPastille(x, y, pData, newGroupId, newGroupNumber);
+            });
+
+            updateGroupList();
+            updateAndDrawMarkers();
+            
+            alert(`Séquence importée avec succès! Pastilles ajoutées au Groupe ${newGroupNumber} (couleur pâle).`);
+        };
+        // --- Fin fonctions d'export/import JSON ---
+
         // --- Initialisation ---
-        currentTimeDisplay.textContent = formatTimeDisplay(0); // Affichage initial du temps à 00:00:00:000
+        currentTimeDisplay.textContent = formatTimeDisplay(0); 
         updateCanvasSize();
         updateAndDrawMarkers();
         updateGroupList(); 
