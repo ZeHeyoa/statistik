@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Système de Nœuds et Pivots 3D - V5</title>
+<script src="gl.js"></script>
+<style>
+/* Style Avant-Gardiste et Responsive */
+body {
+  margin: 0;
+  background: #000000; /* Noir profond */
+  color: #00ffff; /* Cyan électrique */
+  font-family: 'Space Mono', monospace; /* Police technique/futuriste */
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+}
+
+#scene {
+  flex: 1 1 auto;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  perspective: 1500px; /* Perspective modérée pour l'effet 3D */
+  background: radial-gradient(circle at 50% 50%, #1a001a, #000000); /* Effet d'aura sombre */
+  position: relative; 
+}
+
+/* Conteneurs des nœuds */
+.node-container {
+  position: absolute;
+  transform-style: preserve-3d;
+  display: flex; 
+  justify-content: center;
+  align-items: center;
+  width: 0; /* Le conteneur définit le point d'origine à (0,0,0) */
+  height: 0;
+}
+
+/* La DIV de l'élément visuel */
+.node-div {
+  border-radius: 1rem;
+  box-shadow: 0 0 10px rgba(0,255,255,0.8), 0 0 30px rgba(0,255,255,0.3);
+  transform-style: preserve-3d;
+  background: rgba(0,255,255,0.1); 
+  border: 1px solid #0ff;
+  transition: box-shadow 0.2s;
+}
+
+/* Marqueur pour le Point Origine Immuable du Nœud (le centre du container) */
+/* Les marqueurs sont des enfants ABSOLUS de la SCENE */
+.origin-marker {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ff0055; /* Rouge d'alerte */
+  box-shadow: 0 0 10px #ff0055;
+  margin: -5px; 
+  z-index: 1000;
+  pointer-events: none;
+}
+
+/* Marqueur pour les Pivots Rotatifs */
+/* Les marqueurs sont des enfants ABSOLUS de la SCENE */
+.pivot-marker {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #ffff00; /* Jaune néon */
+  box-shadow: 0 0 8px #ffff00;
+  margin: -4px; 
+  z-index: 900;
+  pointer-events: none;
+}
+
+
+/* --- Contrôles et Interface --- */
+#controls {
+  flex: 0 0 380px;
+  overflow-y: auto;
+  background: rgba(10,10,10,0.95);
+  padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border-left: 2px solid #0ff;
+  max-height: 100vh;
+}
+
+.group {
+  background: #111;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  border: 1px solid #222;
+}
+
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  background: #222;
+  font-size: 1rem;
+  color: #0ff;
+}
+.group-header.node { background: #005555; }
+.group-header.pivot { background: #555500; }
+
+.group-info {
+    font-size: 0.75rem;
+    color: #fff;
+    margin-left: 0.5rem;
+}
+
+.group-content {
+  display: none;
+  flex-direction: column;
+  padding: 0.25rem 0.5rem 0.5rem 0.5rem;
+  gap: 0.25rem;
+}
+
+.field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.field label { flex: 1; font-size: 0.8rem; }
+
+.field input {
+  width: 70px;
+  height: 25px;
+  text-align: right;
+  background: #000;
+  border: 1px solid #0ff;
+  color: #fff;
+  border-radius: 3px;
+  padding: 2px 5px;
+  font-size: 0.9rem;
+}
+
+.field button {
+  background: #222;
+  color: #0ff;
+  border: 1px solid #444;
+  border-radius: 3px;
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+.field button:hover { background: #333; }
+.action-button { 
+    width: 100%; 
+    padding: 0.5rem; 
+    margin-top: 0.5rem; 
+    border: 1px solid #0ff;
+    color: #000;
+    background: #0ff;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+.action-button:hover { background: #fff; border-color: #fff;}
+.node-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+.node-actions button {
+    flex: 1;
+}
+
+@media (max-width: 800px) {
+  body {
+    flex-direction: column;
+  }
+  #scene {
+    height: 60vh;
+  }
+  #controls {
+    flex: 1 1 auto;
+    width: 100%;
+    max-height: 40vh;
+    border-left: none;
+    border-top: 2px solid #0ff;
+  }
+}
+</style>
+</head>
+<body>
+<div id="scene">
+  </div>
+
+<div id="controls">
+    <div id="control-panel">
+        </div>
+    <button class="action-button" onclick="addNode()">+ AJOUTER UN NŒUD RACINE</button>
+</div>
+
+<script>
+// Nécessite la librairie gl-matrix (gl.js) pour quat et mat4
+
+// ==========================================================
+// 1. STRUCTURE DE DONNÉES (CLASSES)
+// ==========================================================
+
+class Pivot {
+    constructor(id, parentNodeId) {
+        this.id = id;
+        this.parentNodeId = parentNodeId;
+        this.tx = 0;
+        this.ty = 0;
+        this.tz = 0;
+        this.rx = 0;
+        this.ry = 0;
+        this.rz = 0;
+        this.matrix = mat4.create();
+    }
+}
+
+class Node {
+    constructor(id, isRoot = true, parentId = null) {
+        this.id = id;
+        this.parentId = parentId;
+        this.isRoot = isRoot;
+        this.hasDiv = true; 
+        
+        this.divWidth = 250;
+        this.divHeight = 250;
+
+        this.tx = 0;
+        this.ty = 0;
+        this.tz = 0;
+        this.rx = 0;
+        this.ry = 0;
+        this.rz = 0;
+        
+        this.pivots = [];
+        this.children = [];
+
+        this.matrix = mat4.create(); // Matrice locale propre (T * R)
+        this.worldMatrix = mat4.create(); // Matrice accumulée dans l'espace monde
+    }
+}
+
+// ==========================================================
+// 2. ÉTAT GLOBAL DU PROGRAMME ET UTILS
+// ==========================================================
+
+const nodeMap = {};
+let nextNodeId = 1;
+let nextPivotId = 1;
+
+function getQuaternion(rx, ry, rz) {
+    let qx = quat.create(), qy = quat.create(), qz = quat.create(), q = quat.create();
+    quat.setAxisAngle(qx, [1,0,0], rx);
+    quat.setAxisAngle(qy, [0,1,0], ry);
+    quat.setAxisAngle(qz, [0,0,1], rz);
+    quat.multiply(q, qy, qx);
+    quat.multiply(q, qz, q);
+    return q;
+}
+
+// ==========================================================
+// 3. GESTION DU DOM ET DE L'INTERFACE
+// ==========================================================
+
+function createControls(obj, type) {
+    const title = obj.id.toUpperCase();
+    const isPivot = type === 'pivot';
+    
+    const group = document.createElement("div");
+    group.className="group";
+    
+    const header = document.createElement("div");
+    header.className=`group-header ${type}`;
+    
+    const titleSpan = document.createElement("span");
+    titleSpan.textContent = title;
+    
+    const infoSpan = document.createElement("span");
+    infoSpan.className = "group-info";
+    if (isPivot) {
+        infoSpan.textContent = `Nœud: ${obj.parentNodeId.toUpperCase()}`;
+    } else {
+        infoSpan.textContent = `Parent: ${obj.parentId ? obj.parentId.toUpperCase() : 'RACINE'}`;
+    }
+    
+    header.appendChild(titleSpan);
+    header.appendChild(infoSpan);
+    header.onclick = ()=>{ content.style.display = (content.style.display==="flex")?"none":"flex"; }
+    
+    const content = document.createElement("div");
+    content.className="group-content";
+
+    // Champs T & R
+    ['tx', 'ty', 'tz', 'rx', 'ry', 'rz'].forEach(field=>{
+        const fieldDiv = document.createElement("div");
+        fieldDiv.className="field";
+        const label = document.createElement("label");
+        label.textContent = isPivot ? (field.includes('t') ? `P. ${field.toUpperCase()} (rel. Origine)` : `R. ${field.toUpperCase()}`) : field.toUpperCase();
+        
+        const input = document.createElement("input");
+        input.type="number";
+        input.id = `${obj.id}-${field}`;
+        input.step = field.includes('r') ? 5 : 1;
+        input.value = obj[field];
+        input.oninput = (e)=>{ obj[field] = +e.target.value; update(); };
+
+        const plus = document.createElement("button");
+        plus.textContent = "+";
+        plus.onclick = ()=>{ input.value = Number(input.value)+Number(input.step); obj[field] = +input.value; update(); }
+
+        const minus = document.createElement("button");
+        minus.textContent = "-";
+        minus.onclick = ()=>{ input.value = Number(input.value)-Number(input.step); obj[field] = +input.value; update(); }
+
+        fieldDiv.appendChild(label);
+        fieldDiv.appendChild(minus);
+        fieldDiv.appendChild(input);
+        fieldDiv.appendChild(plus);
+        content.appendChild(fieldDiv);
+    });
+    
+    group.appendChild(header);
+    group.appendChild(content);
+
+    if (isPivot) {
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "action-button";
+        deleteBtn.textContent = `Retirer Pivot ${title}`;
+        deleteBtn.style.background = '#ff0055';
+        deleteBtn.style.borderColor = '#ff0055';
+        deleteBtn.style.color = '#fff';
+        deleteBtn.onclick = () => { removePivot(obj.parentNodeId, obj.id); };
+        content.appendChild(deleteBtn);
+    } else {
+        const actionsDiv = document.createElement("div");
+        actionsDiv.className = "node-actions";
+        
+        // Bouton Ajouter/Retirer DIV
+        const divToggleBtn = document.createElement("button");
+        divToggleBtn.className = "action-button";
+        divToggleBtn.id = `${obj.id}-div-toggle`;
+        divToggleBtn.textContent = obj.hasDiv ? `Retirer DIV` : `Ajouter DIV`;
+        divToggleBtn.onclick = () => { toggleNodeDiv(obj.id); };
+        divToggleBtn.style.background = obj.hasDiv ? '#555' : '#0ff';
+        divToggleBtn.style.color = obj.hasDiv ? '#fff' : '#000';
+        actionsDiv.appendChild(divToggleBtn);
+        
+        const addPivotBtn = document.createElement("button");
+        addPivotBtn.className = "action-button";
+        addPivotBtn.textContent = `+ Pivot`;
+        addPivotBtn.onclick = () => { addPivot(obj.id); };
+        actionsDiv.appendChild(addPivotBtn);
+        
+        const addChildBtn = document.createElement("button");
+        addChildBtn.className = "action-button";
+        addChildBtn.textContent = `+ Enfant`;
+        addChildBtn.onclick = () => { addChild(obj.id); };
+        actionsDiv.appendChild(addChildBtn);
+        
+        content.appendChild(actionsDiv);
+        
+        if (!obj.isRoot) {
+             const deleteNodeBtn = document.createElement("button");
+            deleteNodeBtn.className = "action-button";
+            deleteNodeBtn.textContent = `Retirer Nœud ${title}`;
+            deleteNodeBtn.style.background = '#ff0055';
+            deleteNodeBtn.style.borderColor = '#ff0055';
+            deleteNodeBtn.style.color = '#fff';
+            deleteNodeBtn.onclick = () => { removeNode(obj.id); };
+            content.appendChild(deleteNodeBtn);
+        }
+    }
+
+    return group;
+}
+
+function rebuildControls() {
+    const panel = document.getElementById('control-panel');
+    panel.innerHTML = '';
+    
+    Object.values(nodeMap).forEach(node => {
+        panel.appendChild(createControls(node, 'node'));
+        
+        node.pivots.forEach(pivot => {
+            panel.appendChild(createControls(pivot, 'pivot'));
+        });
+    });
+    
+    const lastGroup = panel.lastChild;
+    if (lastGroup) {
+        lastGroup.querySelector('.group-content').style.display = 'flex';
+        if (lastGroup.previousSibling) {
+             lastGroup.previousSibling.querySelector('.group-content').style.display = 'flex';
+        }
+    }
+}
+
+function addNodeToDOM(node) {
+    const scene = document.getElementById('scene');
+    
+    // Conteneur du Nœud (reçoit la transformation LOCALE)
+    const container = document.createElement('div');
+    container.id = node.id;
+    container.className = 'node-container';
+    
+    // Si c'est un enfant, il est imbriqué dans le conteneur du parent
+    if (node.parentId && document.getElementById(node.parentId)) {
+        document.getElementById(node.parentId).appendChild(container);
+    } else {
+        scene.appendChild(container);
+    }
+
+    // Marqueur d'Origine Immuable (reçoit la transformation MONDIALE)
+    const marker = document.createElement('div');
+    marker.id = `${node.id}-origin-marker`;
+    marker.className = 'origin-marker';
+    scene.appendChild(marker);
+    
+    if (node.hasDiv) {
+        createNodeDiv(container);
+    }
+}
+
+function createNodeDiv(containerEl) {
+    const node = nodeMap[containerEl.id];
+    const div = document.createElement('div');
+    div.className = 'node-div';
+    
+    // Centrage Dynamique de la DIV sur l'origine (0,0,0) du conteneur
+    div.style.width = `${node.divWidth}px`;
+    div.style.height = `${node.divHeight}px`;
+    div.style.margin = `-${node.divHeight / 2}px 0 0 -${node.divWidth / 2}px`;
+    
+    // Style spécifique pour l'enfant par défaut
+    if (node.id === 'node-2') {
+        div.style.background = 'linear-gradient(135deg, #ff00ff, #00ffff)';
+        div.style.boxShadow = '0 0 10px rgba(255,0,255,0.8), 0 0 30px rgba(255,0,255,0.3)';
+    }
+
+    containerEl.appendChild(div);
+}
+
+function removeNodeDiv(containerEl) {
+    const div = containerEl.querySelector('.node-div');
+    if (div) div.remove();
+}
+
+function removeNodeFromDOM(nodeId) {
+    const nodeEl = document.getElementById(nodeId);
+    if (nodeEl) nodeEl.remove();
+    const originMarker = document.getElementById(`${nodeId}-origin-marker`);
+    if (originMarker) originMarker.remove();
+}
+
+function addPivotMarkerToDOM(pivotId) {
+    const scene = document.getElementById('scene');
+    const marker = document.createElement('div');
+    marker.id = `${pivotId}-marker`;
+    marker.className = 'pivot-marker';
+    scene.appendChild(marker);
+}
+
+function removePivotMarkerFromDOM(pivotId) {
+    const marker = document.getElementById(`${pivotId}-marker`);
+    if (marker) marker.remove();
+}
+
+
+// ==========================================================
+// 4. GESTION DE LA LOGIQUE ET MISE À JOUR
+// ==========================================================
+
+function toggleNodeDiv(nodeId) {
+    const node = nodeMap[nodeId];
+    if (!node) return;
+    
+    node.hasDiv = !node.hasDiv;
+    const containerEl = document.getElementById(nodeId);
+    
+    if (node.hasDiv) {
+        createNodeDiv(containerEl);
+    } else {
+        removeNodeDiv(containerEl);
+    }
+    
+    rebuildControls(); 
+    update();
+}
+
+
+function addNode(parentId = null) {
+    const newId = `node-${nextNodeId++}`;
+    let isRoot = parentId === null;
+    
+    const newNode = new Node(newId, isRoot, parentId);
+    nodeMap[newId] = newNode;
+
+    if (!isRoot) {
+        if (nodeMap[parentId]) {
+            nodeMap[parentId].children.push(newId);
+        } else {
+            newNode.isRoot = true;
+            newNode.parentId = null;
+        }
+    }
+    
+    addNodeToDOM(newNode);
+    rebuildControls();
+    update();
+}
+
+function addChild(parentId) {
+    addNode(parentId);
+    const newNode = nodeMap[`node-${nextNodeId-1}`];
+    
+    // Dimensions spécifiques pour l'enfant par défaut de la démo
+    newNode.divWidth = 100;
+    newNode.divHeight = 200;
+    
+    newNode.ty = 200;
+    newNode.tx = 150;
+    
+    rebuildControls();
+    update();
+}
+
+function removeNode(nodeId) {
+    const nodeToRemove = nodeMap[nodeId];
+    if (!nodeToRemove) return;
+
+    if (nodeToRemove.parentId && nodeMap[nodeToRemove.parentId]) {
+        const parent = nodeMap[nodeToRemove.parentId];
+        parent.children = parent.children.filter(id => id !== nodeId);
+    }
+    
+    [...nodeToRemove.children].forEach(removeNode);
+
+    nodeToRemove.pivots.forEach(pivot => removePivotMarkerFromDOM(pivot.id));
+
+    removeNodeFromDOM(nodeId);
+    delete nodeMap[nodeId];
+
+    rebuildControls();
+    update();
+}
+
+function addPivot(nodeId) {
+    const newId = `pivot-${nextPivotId++}`;
+    const newPivot = new Pivot(newId, nodeId);
+    nodeMap[nodeId].pivots.push(newPivot);
+    
+    addPivotMarkerToDOM(newId);
+    rebuildControls();
+    update();
+}
+
+function removePivot(nodeId, pivotId) {
+    const node = nodeMap[nodeId];
+    if (!node) return;
+
+    node.pivots = node.pivots.filter(p => p.id !== pivotId);
+
+    removePivotMarkerFromDOM(pivotId);
+    rebuildControls();
+    update();
+}
+
+function calculatePivotMatrix(pivot) {
+    let pTrans = mat4.create();
+    mat4.fromTranslation(pTrans, [pivot.tx, pivot.ty, pivot.tz]);
+    
+    let pRot = mat4.create();
+    mat4.fromQuat(pRot, getQuaternion(
+        pivot.rx * Math.PI / 180,
+        pivot.ry * Math.PI / 180,
+        pivot.rz * Math.PI / 180
+    ));
+    
+    let pTransInv = mat4.create();
+    mat4.fromTranslation(pTransInv, [-pivot.tx, -pivot.ty, -pivot.tz]);
+    
+    mat4.multiply(pivot.matrix, pTrans, pRot);
+    mat4.multiply(pivot.matrix, pivot.matrix, pTransInv);
+}
+
+function calculateNodeMatrix(node) {
+    let tMat = mat4.create();
+    mat4.fromTranslation(tMat, [node.tx, node.ty, node.tz]);
+    
+    let rMat = mat4.create();
+    mat4.fromQuat(rMat, getQuaternion(
+        node.rx * Math.PI / 180,
+        node.ry * Math.PI / 180,
+        node.rz * Math.PI / 180
+    ));
+    
+    mat4.multiply(node.matrix, tMat, rMat);
+}
+
+function updateHierarchy(nodeId) {
+    const node = nodeMap[nodeId];
+    if (!node) return;
+
+    calculateNodeMatrix(node);
+    node.pivots.forEach(calculatePivotMatrix);
+
+    // 1. Matrice Locale Accumulée (Node T*R + Pivots Chain)
+    let accumulatedMatrix = mat4.clone(node.matrix); 
+    node.pivots.forEach(pivot => {
+        mat4.multiply(accumulatedMatrix, accumulatedMatrix, pivot.matrix);
+    });
+
+    // 2. Calcul de la Matrice Monde (World Matrix)
+    if (node.isRoot || !nodeMap[node.parentId]) {
+        mat4.copy(node.worldMatrix, accumulatedMatrix);
+    } else {
+        const parent = nodeMap[node.parentId];
+        // M_monde = M_parent_monde * M_accumulée_locale
+        mat4.multiply(node.worldMatrix, parent.worldMatrix, accumulatedMatrix);
+    }
+
+    // 3. Application au DOM (CORRECTION ICI)
+    const containerEl = document.getElementById(nodeId);
+    if (containerEl) {
+        // Appliquer la MATRICE LOCALE ACCUMULÉE pour la transformation relative au parent
+        containerEl.style.transform = `matrix3d(${Array.from(accumulatedMatrix)})`;
+    }
+    
+    // 4. Mise à jour des marqueurs (utilisent la Matrice Monde pour l'absolu)
+    
+    // Marqueur d'Origine Immuable (World Space)
+    const originMarkerEl = document.getElementById(`${nodeId}-origin-marker`);
+    if (originMarkerEl) {
+        let worldOrigin = vec3.fromValues(0, 0, 0);
+        // Transformé par la matrice monde du nœud (son origine)
+        vec3.transformMat4(worldOrigin, worldOrigin, node.worldMatrix);
+        originMarkerEl.style.transform = `translate3d(${worldOrigin[0]}px,${worldOrigin[1]}px,${worldOrigin[2]}px)`;
+    }
+    
+    // Marqueur de Pivot (World Space)
+    node.pivots.forEach(pivot => {
+        const pivotMarkerEl = document.getElementById(`${pivot.id}-marker`);
+        if (pivotMarkerEl) {
+             let pivotLocalOffset = vec3.fromValues(pivot.tx, pivot.ty, pivot.tz);
+             let pivotWorldPos = vec3.create();
+             
+             // La position du pivot dans l'espace local (T_pivot) est transformée par M_world
+             vec3.transformMat4(pivotWorldPos, pivotLocalOffset, node.worldMatrix);
+             
+             pivotMarkerEl.style.transform = `translate3d(${pivotWorldPos[0]}px,${pivotWorldPos[1]}px,${pivotWorldPos[2]}px)`;
+        }
+    });
+
+
+    // 5. Récurence pour les enfants
+    node.children.forEach(updateHierarchy);
+}
+
+function update() {
+    const rootNodes = Object.values(nodeMap).filter(node => node.isRoot);
+    rootNodes.forEach(node => updateHierarchy(node.id));
+}
+
+// ==========================================================
+// 5. INITIALISATION
+// ==========================================================
+
+// Ajout des nœuds initiaux
+addNode(); // node-1 (Racine)
+addChild('node-1'); // node-2 (Enfant de node-1)
+addPivot('node-1'); // pivot-1 au node-1
+
+// Correction des valeurs initiales de la démo
+// Pour tester la correction, initialisons-les à zéro !
+nodeMap['node-1'].tx = 0;
+nodeMap['node-1'].tz = 0;
+nodeMap['node-2'].ty = 0;
+nodeMap['node-2'].tx = 0;
+
+nodeMap['node-1'].pivots[0].ty = 0;
+nodeMap['node-1'].pivots[0].tx = 0;
+
+// Déclencher le premier rendu et afficher les contrôles
+rebuildControls();
+update();
+</script>
+</body>
+</html>
