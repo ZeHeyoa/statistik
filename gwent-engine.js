@@ -6,48 +6,61 @@
             // Neutres
             "Geralt de Riv": { faction: "Neutre", force: 15, row: "melee", capacity: "Hero", isHero: true },
             "Ciri": { faction: "Neutre", force: 15, row: "melee", capacity: "Hero", isHero: true },
-            "Yennefer": { faction: "Neutre", force: 7, row: "ranged", capacity: "Heal", isHero: true },
-            "Triss": { faction: "Neutre", force: 7, row: "melee", capacity: "Rally", isHero: true },
-            "Avallach": { faction: "Neutre", force: 0, row: "siege", capacity: "Spy", isHero: true },
+            "Yennefer de Vengerberg": { faction: "Neutre", force: 7, row: "ranged", capacity: "Heal", isHero: true },
+            "Triss Merigold": { faction: "Neutre", force: 7, row: "melee", capacity: "Rally", isHero: true },
+            "Avallac'h": { faction: "Neutre", force: 0, row: "siege", capacity: "Spy", isHero: true },
             "Villentretenmerth": { faction: "Neutre", force: 7, row: "melee", capacity: "Scorch3", isHero: false },
-            "Vesemir": { faction: "Neutre", force: 6, row: "melee", capacity: "Rally", isHero: false },
-            "Zoltan": { faction: "Neutre", force: 5, row: "melee", capacity: "Rally", isHero: false },
-            "Dandelion": { faction: "Neutre", force: 2, row: "ranged", capacity: "Rally", isHero: false },
-            "Scorch": { faction: "Neutre", force: 0, row: "special", capacity: "Scorch", isHero: false },
-            "Decoy": { faction: "Neutre", force: 0, row: "special", capacity: "Decoy", isHero: false },
-            "Horn": { faction: "Neutre", force: 0, row: "special", capacity: "Horn", isHero: false },
-            "Frost": { faction: "Neutre", force: 0, row: "weather", capacity: "Frost", isHero: false },
-            "Fog": { faction: "Neutre", force: 0, row: "weather", capacity: "Fog", isHero: false },
-            "Rain": { faction: "Neutre", force: 0, row: "weather", capacity: "Rain", isHero: false },
-            "Clear": { faction: "Neutre", force: 0, row: "weather", capacity: "Clear", isHero: false },
+            "Vésémir": { faction: "Neutre", force: 6, row: "melee", capacity: "Rally", isHero: false },
+            "Zoltan Chivay": { faction: "Neutre", force: 5, row: "melee", capacity: "Rally", isHero: false },
+			"Vieux Sabot": { faction: "Neutre", force: 0, row: "melee", capacity: "Spy", isHero: false },			      
+            "Jaskier": { faction: "Neutre", force: 2, row: "ranged", capacity: "Rally", isHero: false },
+            "Incinération (Terre Brûlée)": { faction: "Neutre", force: 0, row: "special", capacity: "Incinération (Terre Brûlée)", isHero: false },
+            "Leurre": { faction: "Neutre", force: 0, row: "special", capacity: "Leurre", isHero: false },
+            "Corne de Commandant": { faction: "Neutre", force: 0, row: "special", capacity: "Corne de Commandant", isHero: false },
+            "Froid Mordant": { faction: "Neutre", force: 0, row: "weather", capacity: "Froid Mordant", isHero: false },
+            "Brouillard Impénétrable": { faction: "Neutre", force: 0, row: "weather", capacity: "Brouillard Impénétrable", isHero: false },
+            "Pluie Torrentielle": { faction: "Neutre", force: 0, row: "weather", capacity: "Pluie Torrentielle", isHero: false },
+            "Temps Dégagé": { faction: "Neutre", force: 0, row: "weather", capacity: "Temps Dégagé", isHero: false },
             
             // Royaumes du Nord
             "Vernon Roche": { faction: "RN", force: 10, row: "siege", capacity: "Hero", isHero: true },
-            "Philippa": { faction: "RN", force: 10, row: "ranged", capacity: "Hero", isHero: true },
+            "Philippa Eilhart": { faction: "RN", force: 10, row: "ranged", capacity: "Hero", isHero: true },
             "Dijkstra": { faction: "RN", force: 4, row: "melee", capacity: "Spy", isHero: false },
             "Thaler": { faction: "RN", force: 1, row: "siege", capacity: "Spy", isHero: true },
-            "Fantassin": { faction: "RN", force: 1, row: "melee", capacity: "TightBond", isHero: false },
+            "Fantassin Redanien": { faction: "RN", force: 1, row: "melee", capacity: "TightBond", isHero: false },
             "Catapulte": { faction: "RN", force: 8, row: "siege", capacity: "TightBond", isHero: false },
-            "Sorcier Kaedwen": { faction: "RN", force: 5, row: "ranged", capacity: "TightBond", isHero: false },
-            "Medic Temeria": { faction: "RN", force: 5, row: "melee", capacity: "Medic", isHero: false },
-            "Archer": { faction: "RN", force: 3, row: "ranged", capacity: "None", isHero: false },
-            "Chevalier": { faction: "RN", force: 4, row: "melee", capacity: "None", isHero: false },
+            "Sorcier de Kaedwen": { faction: "RN", force: 5, row: "ranged", capacity: "TightBond", isHero: false },
+            "Sorceleur de Temeria": { faction: "RN", force: 5, row: "melee", capacity: "Medic", isHero: false },
+            "Archer Temerien": { faction: "RN", force: 3, row: "ranged", capacity: "None", isHero: false },
+            "Chevalier de la Flamme Éternelle": { faction: "RN", force: 4, row: "melee", capacity: "None", isHero: false },
             "Balista": { faction: "RN", force: 6, row: "siege", capacity: "TightBond", isHero: false },
-            "Trebuchet": { faction: "RN", force: 6, row: "siege", capacity: "None", isHero: false },
+            "Trébuchet": { faction: "RN", force: 6, row: "siege", capacity: "None", isHero: false },
+			"Stennis de Falt": { faction: "RN", force: 5, row: "siege", capacity: "Rally", isHero: false },
+			"Prince Stennis": { faction: "RN", force: 5, row: "melee", capacity: "Spy", isHero: false },
+		    "Archer Aedirnien": { faction: "RN", force: 3, row: "ranged", capacity: "None", isHero: false },
+			"Cavalier Dragonnier": { faction: "RN", force: 3, row: "melee", capacity: "None", isHero: false },			
+			"Cavalier Dragonnier": { faction: "RN", force: 3, row: "melee", capacity: "None", isHero: false },
             
             // Nilfgaard
-            "Tibor": { faction: "NG", force: 10, row: "ranged", capacity: "Hero", isHero: true },
-            "Letho": { faction: "NG", force: 10, row: "melee", capacity: "Hero", isHero: true },
-            "Menno": { faction: "NG", force: 10, row: "melee", capacity: "Hero", isHero: true },
-            "Vattier": { faction: "NG", force: 4, row: "melee", capacity: "Spy", isHero: false },
+            "Tibor Eggebracht": { faction: "NG", force: 10, row: "ranged", capacity: "Hero", isHero: true },
+            "Letho de Gulet": { faction: "NG", force: 10, row: "melee", capacity: "Hero", isHero: true },
+            "Menno Coehoorn": { faction: "NG", force: 10, row: "melee", capacity: "Hero", isHero: true },
+            "Vattier de Rideaux": { faction: "NG", force: 4, row: "melee", capacity: "Spy", isHero: false },
             "Brigade Nauzicaa": { faction: "NG", force: 5, row: "melee", capacity: "TightBond", isHero: false },
-            "Cavalier Albatre": { faction: "NG", force: 4, row: "ranged", capacity: "TightBond", isHero: false },
-            "Archer Asser": { faction: "NG", force: 6, row: "ranged", capacity: "Agile", isHero: false },
-            "Medic Aube": { faction: "NG", force: 5, row: "melee", capacity: "Medic", isHero: false },
-            "Chevalier Legion": { faction: "NG", force: 4, row: "melee", capacity: "None", isHero: false },
-            "Catapulte NG": { faction: "NG", force: 8, row: "siege", capacity: "None", isHero: false },
-            "Trebuchet NG": { faction: "NG", force: 6, row: "siege", capacity: "None", isHero: false },
-            
+            "Cavalier Albâtre": { faction: "NG", force: 4, row: "ranged", capacity: "TightBond", isHero: false },
+            "Archère Asser": { faction: "NG", force: 6, row: "ranged", capacity: "Agile", isHero: false },
+            "Sorcier de l'Aube": { faction: "NG", force: 5, row: "melee", capacity: "Medic", isHero: false },
+            "Chevalier de la Légion": { faction: "NG", force: 4, row: "melee", capacity: "None", isHero: false },
+            "Catapulte Nilfgaardienne": { faction: "NG", force: 8, row: "siege", capacity: "None", isHero: false },
+            "Trébuchet Nilfgaardien": { faction: "NG", force: 6, row: "siege", capacity: "None", isHero: false },
+            "Cahir Mawr Dyffryn": { faction: "NG", force: 6, row: "melee", capacity: "Héros", isHero: true },
+            "Garde Impériale": { faction: "NG", force: 3, row: "melee", capacity: "Spy", isHero: false },
+			"L'Informatrice": { faction: "NG", force: 2, row: "melee", capacity: "Spy", isHero: false },
+			"L'Écumeur": { faction: "NG", force: 6, row: "melee", capacity: "None", isHero: false },
+			"Ingénieur Nilfgaardien": { faction: "NG", force: 2, row: "siege", capacity: "None", isHero: false },
+			"Archer Elfe (Nilfgaard)": { faction: "NG", force: 2, row: "ranged", capacity: "None", isHero: false },
+
+			
             // Monstres
             "Imlerith": { faction: "Monstres", force: 10, row: "melee", capacity: "Hero", isHero: true },
             "Kayran": { faction: "Monstres", force: 8, row: "melee", capacity: "Hero", isHero: true },
@@ -55,9 +68,10 @@
             "Crone": { faction: "Monstres", force: 6, row: "melee", capacity: "Muster", isHero: false },
             "Arachas": { faction: "Monstres", force: 4, row: "melee", capacity: "Muster", isHero: false },
             "Nekker": { faction: "Monstres", force: 2, row: "melee", capacity: "Muster", isHero: false },
-            "Ghoul": { faction: "Monstres", force: 1, row: "melee", capacity: "Medic", isHero: false },
-            "Vampire": { faction: "Monstres", force: 4, row: "melee", capacity: "None", isHero: false },
-            "Griffin": { faction: "Monstres", force: 5, row: "ranged", capacity: "TightBond", isHero: false },
+            "Goule": { faction: "Monstres", force: 1, row: "melee", capacity: "Medic", isHero: false },
+            "Vampire de Dégâts": { faction: "Monstres", force: 4, row: "melee", capacity: "None", isHero: false },
+			"Vampire Fleder": { faction: "Monstres", force: 4, row: "melee", capacity: "None", isHero: false },
+            "Griffon": { faction: "Monstres", force: 5, row: "ranged", capacity: "TightBond", isHero: false },
             "Fiend": { faction: "Monstres", force: 6, row: "melee", capacity: "None", isHero: false },
             "Werewolf": { faction: "Monstres", force: 5, row: "melee", capacity: "None", isHero: false },
             
@@ -84,6 +98,26 @@
             "Archer Clan": { faction: "Skellige", force: 4, row: "ranged", capacity: "None", isHero: false },
             "Jarl": { faction: "Skellige", force: 8, row: "melee", capacity: "None", isHero: false }
         };
+		
+		// Fusionner cardData (gwentdata.js) avec CARD_DATABASE (gwent-engine.js)
+if (typeof cardData !== "undefined" && cardData.gwent_card_collection) {
+    cardData.gwent_card_collection.forEach(c => {
+        // Vérifier si la carte existe déjà dans CARD_DATABASE
+        if (CARD_DATABASE[c.name]) {
+            CARD_DATABASE[c.name].description = c.description;
+        } else {
+            // Sinon, on l’ajoute entièrement
+            CARD_DATABASE[c.name] = {
+                faction: c.faction,
+                force: c.force,
+                row: (c.row || "").toLowerCase(),
+                capacity: c.capacity_type,
+                isHero: c.capacity_type && c.capacity_type.toLowerCase().includes("héros"),
+                description: c.description
+            };
+        }
+    });
+}
 
         const LEADERS = {
             RN: [
@@ -101,7 +135,7 @@
             Monstres: [
                 { name: "Eredin Bringer", ability: "weather", desc: "Jouez une carte Météo" },
                 { name: "Eredin King", ability: "resurrect", desc: "Ressuscitez une carte" },
-                { name: "Eredin Destroyer", ability: "scorch", desc: "Incinération" },
+                { name: "Eredin Destroyer", ability: "scorch", desc: "Incinération (Terre Brûlée)" },
                 { name: "Eredin Commander", ability: "muster", desc: "Nuée sur une carte" }
             ],
             Scoia: [
@@ -236,7 +270,7 @@ function buildDeck(player) {
                 for (let i = 0; i < count; i++) deck.push(name);
             });
             
-            const neutrals = ['Geralt de Riv', 'Ciri', 'Vesemir', 'Zoltan', 'Scorch', 'Decoy', 'Horn', 'Frost', 'Fog', 'Rain', 'Clear'];
+            const neutrals = ['Geralt de Riv', 'Ciri', 'Vésémir', 'Zoltan Chivay', 'Incinération (Terre Brûlée)', 'Leurre', 'Corne de Commandant', 'Froid Mordant', 'Brouillard Impénétrable', 'Pluie Torrentielle', 'Temps Dégagé'];
             neutrals.forEach(name => {
                 if (Math.random() > 0.6) deck.push(name);
             });
@@ -282,6 +316,7 @@ function buildDeck(player) {
                     <div class="force">${card.force || '-'}</div>
                     <div style="margin-top: 5px; flex-grow: 1;">${cardName}</div>
                     <div style="font-size: 9px; color: #888;">${card.capacity}</div>
+					<div style="font-size: 11px; color: #444; margin-top:6px;">${card.description || ''}</div>
                 `;
                 cardEl.onclick = () => toggleMulliganCard(cardName, cardEl);
                 handDiv.appendChild(cardEl);
@@ -379,21 +414,21 @@ function buildDeck(player) {
                 case 'Rally':
                     handleRally(player, cardName, card);
                     break;
-                case 'Scorch':
+                case 'Incinération (Terre Brûlée)':
                     handleScorch();
                     break;
-                case 'Decoy':
+                case 'Leurre':
                     handleDecoy(player);
                     break;
-                case 'Horn':
+                case 'Corne de Commandant':
                     handleHorn(player, targetRow || card.row);
                     break;
-                case 'Frost':
-                case 'Fog':
-                case 'Rain':
+                case 'Froid Mordant':
+                case 'Brouillard Impénétrable':
+                case 'Pluie Torrentielle':
                     handleWeather(card.capacity);
                     break;
-                case 'Clear':
+                case 'Temps Dégagé':
                     handleClearWeather();
                     break;
                 case 'Muster':
@@ -503,7 +538,7 @@ function buildDeck(player) {
                 p.graveyard.push(name);
             });
             
-            logMessage(`🔥 Incinération : ${toDestroy.length} carte(s) détruites (force ${maxForce})`, 'warning');
+            logMessage(`🔥 Incinération (Terre Brûlée) : ${toDestroy.length} carte(s) détruites (force ${maxForce})`, 'warning');
         }
 
         function handleDecoy(player) {
@@ -528,9 +563,9 @@ function buildDeck(player) {
         }
 
         function handleWeather(type) {
-            if (type === 'Frost') gameState.weather.frost = true;
-            if (type === 'Fog') gameState.weather.fog = true;
-            if (type === 'Rain') gameState.weather.rain = true;
+            if (type === 'Froid Mordant') gameState.weather.frost = true;
+            if (type === 'Brouillard Impénétrable') gameState.weather.fog = true;
+            if (type === 'Pluie Torrentielle') gameState.weather.rain = true;
             logMessage(`🌧️ Météo : ${type} activée`, 'warning');
         }
 
@@ -681,7 +716,7 @@ function handleAgile(player, cardName, card, targetRow) {
                 case 'weather':
                     const weatherCards = p.deck.filter(name => {
                         const c = CARD_DATABASE[name];
-                        return c.row === 'weather' && c.capacity !== 'Clear';
+                        return c.row === 'weather' && c.capacity !== 'Temps Dégagé';
                     });
                     if (weatherCards.length > 0) {
                         const weather = weatherCards[0];
@@ -1142,6 +1177,7 @@ function handleAgile(player, cardName, card, targetRow) {
                 <div class="force">${card.force || '-'}</div>
                 <div style="margin: 5px 0; flex-grow: 1; font-size: 10px;">${cardName}</div>
                 <div style="font-size: 8px; color: #888;">${card.capacity}</div>
+			    <div style="font-size: 8px; color: #888;" >${card.description || ''}</div>
             `;
             
             if (canPlay) {
