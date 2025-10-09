@@ -11,7 +11,7 @@
             --surface-2: #242424;
             --muted: #bdbdbd;
             --accent: #2b2b2b;
-            --score: #ffcc00; /* Score Jaune */
+            --score: #503D66; /* Score Jaune */
             --text: #ffffff; /* Texte Blanc */
             --rn: #2196f3;
             --ng: #e91e63;
@@ -87,8 +87,8 @@
     .faction-select { display: grid; grid-template-columns: repeat(auto-fit,minmax(140px,1fr)); gap: 14px; margin: 20px 0; }
     .faction-btn { padding: 14px; border-radius: 10px; background: var(--surface-2); color:var(--text); border: 1px solid transparent; }
     .faction-btn:hover { background:#2f2f2f; }
-    .faction-btn.selected { border-color: var(--score); box-shadow: 0 6px 18px rgba(0,0,0,0.5); }
-    .start-game-btn { background: linear-gradient(90deg, #333 0%, #2a2a2a 100%); color:var(--score); font-weight:700; padding:12px 22px; }
+    .faction-btn.selected { border-color: var(#55555); box-shadow: 0 6px 18px rgba(0,0,0,0.5); }
+    .start-game-btn { background: linear-gradient(90deg, #333 0%, #2a2a2a 100%); color:var(#55555); font-weight:700; padding:12px 22px; }
 
     /* Mulligan (Cartes Claires) */
     #mulligan-screen { max-width: 1000px; margin: 15px auto; padding: 20px; } 
@@ -376,7 +376,7 @@
         position: absolute;
         width: 60px; 
         height: 60px; 
-        background-color: var(--score); 
+        background-color: #F1DD73; 
         border-radius: 50%;
         border: 2px solid var(--text);
         color: #333;
@@ -389,15 +389,22 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); 
         
         /* NOUVELLE Position: En bas à gauche, près du slider de la main */
-        bottom: 20px; 
+        bottom: 20%; 
         left: 0; 
         top: auto; 
         right: auto;
-        transform: translate(-50%, 0); 
+        transform: translate(-50%, -80%); 
     }
 
     /* Suppression de l'en-tête de main */
     .hand-header { display: none; }
+
+.card-description {
+    font-size: 11px;
+    color: #444;
+    margin-top: 6px;
+    text-align: center;
+}
 
     /* *************************************************** */
     /* *************************************************** */
@@ -603,8 +610,6 @@
 </div>
 
 <div id="log-toggle-btn" onclick="toggleLog()">💬</div>
-
-<script src="gwentdata.js"></script>
 
 <script src="gwent-engine.js"></script>
 
