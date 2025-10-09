@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gwent : Règles et Collection Complète (Material Design)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        :root {
+            --color-primary: #00897b; /* Teal (Vert d'eau) - Couleur Material */
+            --color-primary-dark: #00695c;
+            --color-secondary: #ffb300; /* Amber (Ambre) - Accent */
+            --color-bg: #f5f5f5; /* Fond clair */
+            --color-surface: #ffffff; /* Surface Card/Conteneur */
+            --color-text: #212121;
+            --color-text-light: #757575;
+            --color-shadow: rgba(0, 0, 0, 0.12);
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            margin: 0;
+            padding: 0;
+            line-height: 1.5;
+        }
+
+        /* En-tête de l'application (Material AppBar style) */
+        header {
+            background-color: var(--color-primary);
+            color: #ffffff;
+            padding: 20px;
+            box-shadow: 0 4px 5px var(--color-shadow);
+            margin-bottom: 20px;
+        }
+        header h1 {
+            font-weight: 500;
+            margin: 0;
+            font-size: 1.8em;
+            text-align: center;
+        }
+
+        /* Conteneur principal */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 10px 20px 40px;
+        }
+
+        /* Titres de section */
+        h2 {
+            color: var(--color-primary-dark);
+            font-weight: 500;
+            font-size: 1.6em;
+            padding-bottom: 5px;
+            margin-top: 30px;
+            border-bottom: 2px solid var(--color-secondary);
+        }
+
+        /* Composant Card (pour les règles) */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .card {
+            background-color: var(--color-surface);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--color-shadow), 0 3px 6px rgba(0, 0, 0, 0.08);
+            transition: box-shadow 0.3s;
+        }
+        .card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15), 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
+        .card h3 {
+            display: flex;
+            align-items: center;
+            color: var(--color-primary);
+            font-weight: 500;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        .card .material-icons {
+            margin-right: 10px;
+            color: var(--color-secondary);
+        }
+        .card ul {
+            padding-left: 20px;
+            margin: 0;
+            color: var(--color-text-light);
+        }
+        .card li {
+            margin-bottom: 8px;
+        }
+
+        /* --- Tableau des Cartes (Responsiveness) --- */
+        .card-table-container {
+            overflow-x: auto; /* Permet le défilement horizontal sur petits écrans */
+            margin-top: 20px;
+            background-color: var(--color-surface);
+            border-radius: 8px;
+            box-shadow: 0 2px 4px var(--color-shadow);
+        }
+        
+        .gwent-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85em;
+            text-align: left;
+            min-width: 1000px; /* Force le tableau à être scrollable sur mobile */
+        }
+        .gwent-table th, .gwent-table td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #eeeeee;
+        }
+        .gwent-table th {
+            background-color: var(--color-primary-dark);
+            color: #ffffff;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+            position: sticky; /* Pour garder l'en-tête visible lors du scroll horizontal */
+            top: 0;
+        }
+        .gwent-table tr:nth-child(even) {
+            background-color: #fcfcfc;
+        }
+        .gwent-table tr:hover {
+            background-color: #e0f2f1; /* Accentuation Material Light */
+        }
+        
+        /* Styles de Faction et Capacité (pour la couleur de la police) */
+        .faction-Neutre { color: #616161; }
+        .faction-Royaumes-du-Nord { color: #2196f3; }
+        .faction-Nilfgaard { color: #e91e63; }
+        .faction-Monstres { color: #9c27b0; }
+        .faction-Scoia-tael { color: #4caf50; }
+        .faction-Skellige { color: #ff9800; }
+        .capacity-Héros { color: var(--color-secondary); font-weight: bold; }
+        .capacity-Météo, .capacity-Action-Spéciale { font-style: italic; color: #ff5722; }
+
+        /* Media Query pour Mobile */
+        @media (max-width: 600px) {
+            header h1 {
+                font-size: 1.5em;
+            }
+            .container {
+                padding: 10px;
+            }
+            h2 {
+                font-size: 1.4em;
+                margin-top: 20px;
+            }
+            .card {
+                padding: 15px;
+            }
+            /* Masquer certaines colonnes moins essentielles pour un meilleur aperçu */
+            .gwent-table th:nth-child(6), .gwent-table td:nth-child(6) {
+                display: none; /* Cache la description complète sur très petit écran */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚔️ Gwent : Règlement et Collection de Cartes ⚔️</h1>
+    </header>
+
+    <div class="container">
+
+        <h2>Règles Fondamentales du Jeu</h2>
+        
+        <div class="card-grid">
+            <div class="card">
+                <h3><i class="material-icons">flag</i> Objectif et Manches</h3>
+                <ul>
+                    <li>Le jeu se déroule en 3 manches maximum.</li>
+                    <li>Gagner **deux manches** assure la victoire finale.</li>
+                    <li>La manche est gagnée par le joueur ayant le **score total le plus élevé** après que les deux joueurs aient passé leur tour.</li>
+                    <li>Chaque joueur démarre avec **10 cartes** et peut en échanger **deux** une seule fois.</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3><i class="material-icons">view_day</i> Le Plateau et les Rangées</h3>
+                <p>Chaque rangée est vulnérable à un seul type de Météo :</p>
+                <ul>
+                    <li>**Mêlée** : Affectée par le **Froid Mordant**.</li>
+                    <li>**Distance** : Affectée par le **Brouillard Impénétrable**.</li>
+                    <li>**Siège** : Affectée par la **Pluie Torrentielle**.</li>
+                </ul>
+            </div>
+
+            <div class="card">
+                <h3><i class="material-icons">gavel</i> Effets de Score Clés</h3>
+                <ul>
+                    <li>**Héros** : Force fixe, **immunisée** à tout effet (Météo, Incinération).</li>
+                    <li>**Météo** : Réduit la force de toutes les unités **non-Héros** d'une rangée à **1**.</li>
+                    <li>**Corne** : **Double** la force des unités **non-Héros** d'une rangée.</li>
+                    <li>**Lien Rapproché** : **Double** la force de toutes les unités du **même nom** dans la rangée.</li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h3><i class="material-icons">star</i> Bonus de Faction</h3>
+                <ul>
+                    <li>**Royaumes du Nord** : Pioche 1 carte si vous gagnez la manche.</li>
+                    <li>**Nilfgaard** : Gagne la manche en cas d'égalité de score.</li>
+                    <li>**Monstres** : Conserve 1 carte Unité aléatoire (non-Héros) sur le plateau après avoir gagné.</li>
+                    <li>**Scoia'tael** : Choisit qui commence la partie.</li>
+                    <li>**Skellige** : Ressuscite 2 cartes aléatoires du cimetière au début de la 3ème manche.</li>
+                </ul>
+            </div>
+        </div>
+
+        <h2>Collection Complète des 109 Cartes</h2>
+        <p style="text-align: center; color: var(--color-text-light);">Cliquez sur l'en-tête de colonne pour trier. (La colonne 'Description' est masquée sur les très petits écrans.)</p>
+
+        <div class="card-table-container">
+            <table id="gwentTable" class="gwent-table">
+                <thead>
+                    <tr>
+                        <th onclick="sortTable(0)">Faction</th>
+                        <th onclick="sortTable(1)">Nom de la Carte</th>
+                        <th onclick="sortTable(2)">Force</th>
+                        <th onclick="sortTable(3)">Rangée</th>
+                        <th onclick="sortTable(4)">Capacité</th>
+                        <th onclick="sortTable(5)">Description de l'Effet</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <script>
+        // Le flux JSON des 109 cartes fourni par l'utilisateur
+        const cardData = {
+          "gwent_card_collection": [
+            { "faction": "Neutre", "name": "Geralt de Riv", "force": 15, "row": "Mêlée", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros : Sa force est intouchable par les effets Météo et les Capacités Spéciales." },
+            { "faction": "Neutre", "name": "Ciri", "force": 15, "row": "Mêlée", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros : Sa force est intouchable par les effets Météo et les Capacités Spéciales." },
+            { "faction": "Neutre", "name": "Yennefer de Vengerberg", "force": 7, "row": "Distance", "max_copies": 1, "capacity_type": "Soins", "description": "Carte Héros. Soins : Soigne toutes les cartes Unité alliées dans la rangée Mêlée (les remet en jeu)." },
+            { "faction": "Neutre", "name": "Triss Merigold", "force": 7, "row": "Mêlée", "max_copies": 1, "capacity_type": "Ralliement", "description": "Carte Héros. Ralliement : Pioche une carte Unité de votre deck et la joue immédiatement." },
+            { "faction": "Neutre", "name": "Avallac'h", "force": 0, "row": "Siège", "max_copies": 1, "capacity_type": "Espion", "description": "Carte Héros. Espion : Placé dans la rangée adverse, vous permet de piocher 2 cartes de votre deck." },
+            { "faction": "Neutre", "name": "Villentretenmerth", "force": 7, "row": "Mêlée", "max_copies": 1, "capacity_type": "Incinération Temporisée", "description": "Détruit les unités non-Héros ennemies ayant la plus haute force (joué, il s'active après 3 tours)." },
+            { "faction": "Neutre", "name": "Vésémir", "force": 6, "row": "Mêlée", "max_copies": 1, "capacity_type": "Ralliement", "description": "Ralliement : Pioche une carte Unité de votre deck et la joue immédiatement." },
+            { "faction": "Neutre", "name": "Zoltan Chivay", "force": 5, "row": "Mêlée", "max_copies": 1, "capacity_type": "Ralliement", "description": "Ralliement : Pioche une carte Unité de votre deck et la joue immédiatement." },
+            { "faction": "Neutre", "name": "Vieux Sabot", "force": 0, "row": "Mêlée", "max_copies": 1, "capacity_type": "Espion", "description": "Espion : Placé dans la rangée adverse, vous permet de piocher 2 cartes de votre deck." },
+            { "faction": "Neutre", "name": "Jaskier", "force": 2, "row": "Distance", "max_copies": 1, "capacity_type": "Ralliement", "description": "Ralliement : Pioche une carte Unité de votre deck et la joue immédiatement." },
+            { "faction": "Neutre", "name": "Incinération (Terre Brûlée)", "force": 0, "row": "Spéciale", "max_copies": 3, "capacity_type": "Action Spéciale", "description": "Détruit la ou les cartes Unité non-Héros avec la plus haute force sur le champ de bataille." },
+            { "faction": "Neutre", "name": "Leurre", "force": 0, "row": "Spéciale", "max_copies": 3, "capacity_type": "Action Spéciale", "description": "Permet de récupérer une unité alliée sur le plateau pour la remettre dans votre main." },
+            { "faction": "Neutre", "name": "Corne de Commandant", "force": 0, "row": "Spéciale", "max_copies": 3, "capacity_type": "Action Spéciale", "description": "Double la force de toutes les unités non-Héros dans une rangée choisie." },
+            { "faction": "Neutre", "name": "Froid Mordant", "force": 0, "row": "Météo", "max_copies": 3, "capacity_type": "Météo", "description": "Réduit toutes les unités (y compris alliées) de la rangée Mêlée à 1 de force." },
+            { "faction": "Neutre", "name": "Brouillard Impénétrable", "force": 0, "row": "Météo", "max_copies": 3, "capacity_type": "Météo", "description": "Réduit toutes les unités (y compris alliées) de la rangée Distance à 1 de force." },
+            { "faction": "Neutre", "name": "Pluie Torrentielle", "force": 0, "row": "Météo", "max_copies": 3, "capacity_type": "Météo", "description": "Réduit toutes les unités (y compris alliées) de la rangée Siège à 1 de force." },
+            { "faction": "Neutre", "name": "Temps Dégagé", "force": 0, "row": "Météo", "max_copies": 3, "capacity_type": "Météo", "description": "Annule tous les effets Météo actifs sur le plateau." },
+            { "faction": "Royaumes du Nord", "name": "Foltest (Le Féroce)", "force": 0, "row": "Chef", "max_copies": 1, "capacity_type": "Chef (Météo)", "description": "Pioche une carte Météo de votre choix et la joue immédiatement." },
+            { "faction": "Royaumes du Nord", "name": "Foltest (Le Sanguinaire)", "force": 0, "row": "Chef", "max_copies": 1, "capacity_type": "Chef (Météo)", "description": "Annule tous les effets Météo dans une rangée de votre choix." },
+            { "faction": "Royaumes du Nord", "name": "Foltest (Le Vétéran)", "force": 0, "row": "Chef", "max_copies": 1, "capacity_type": "Chef (Incinération)", "description": "Détruit toutes les cartes de Siège ennemies ayant une force de 10 ou plus." },
+            { "faction": "Royaumes du Nord", "name": "Foltest (Le Loyal)", "force": 0, "row": "Chef", "max_copies": 1, "capacity_type": "Chef (Ralliement)", "description": "Ralliement : Pioche une carte Unité de votre deck et la joue immédiatement." },
+            { "faction": "Royaumes du Nord", "name": "Vernon Roche", "force": 10, "row": "Siège", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Royaumes du Nord", "name": "Philippa Eilhart", "force": 10, "row": "Distance", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Royaumes du Nord", "name": "Thaler", "force": 1, "row": "Siège", "max_copies": 1, "capacity_type": "Espion", "description": "Carte Héros. Espion : Placé dans la rangée adverse, piochez 2 cartes." },
+            { "faction": "Royaumes du Nord", "name": "Stennis de Falt", "force": 5, "row": "Siège", "max_copies": 1, "capacity_type": "Ralliement", "description": "Carte Héros. Ralliement : Pioche une unité et la joue immédiatement." },
+            { "faction": "Royaumes du Nord", "name": "Prince Stennis", "force": 5, "row": "Mêlée", "max_copies": 1, "capacity_type": "Espion", "description": "Carte Héros. Espion : Placé dans la rangée adverse, piochez 2 cartes." },
+            { "faction": "Royaumes du Nord", "name": "Dijkstra", "force": 4, "row": "Mêlée", "max_copies": 1, "capacity_type": "Espion", "description": "Espion : Placé dans la rangée adverse, vous permet de piocher 2 cartes." },
+            { "faction": "Royaumes du Nord", "name": "Fantassin Redanien", "force": 1, "row": "Mêlée", "max_copies": 3, "capacity_type": "Lien Rapproché", "description": "Lien Rapproché : Double la force de toutes les cartes du même nom dans la rangée." },
+            { "faction": "Royaumes du Nord", "name": "Catapulte", "force": 8, "row": "Siège", "max_copies": 2, "capacity_type": "Lien Rapproché", "description": "Lien Rapproché : Double la force de toutes les cartes du même nom dans la rangée." },
+            { "faction": "Royaumes du Nord", "name": "Sorcier de Kaedwen", "force": 5, "row": "Distance", "max_copies": 3, "capacity_type": "Lien Rapproché", "description": "Lien Rapproché : Double la force de toutes les cartes du même nom dans la rangée." },
+            { "faction": "Royaumes du Nord", "name": "Sorceleur de Temeria", "force": 5, "row": "Mêlée", "max_copies": 1, "capacity_type": "Médecin", "description": "Médecin : Permet de ramener une carte Unité non-Héros de la défausse." },
+            { "faction": "Royaumes du Nord", "name": "Archer Aedirnien", "force": 3, "row": "Distance", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Royaumes du Nord", "name": "Chevalier de la Flamme Éternelle", "force": 4, "row": "Mêlée", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Royaumes du Nord", "name": "Archer Temerien", "force": 4, "row": "Distance", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Royaumes du Nord", "name": "Balista", "force": 6, "row": "Siège", "max_copies": 2, "capacity_type": "Lien Rapproché", "description": "Lien Rapproché : Double la force de toutes les cartes du même nom dans la rangée." },
+            { "faction": "Royaumes du Nord", "name": "Trébuchet", "force": 6, "row": "Siège", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Royaumes du Nord", "name": "Cavalier Dragonnier", "force": 3, "row": "Mêlée", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Royaumes du Nord", "name": "Bouclier Doré de Kaedwen", "force": 3, "row": "Mêlée", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Nilfgaard", "name": "Emhyr var Emreis (4 variantes)", "force": 0, "row": "Chef", "max_copies": 4, "capacity_type": "Chef (Varié)", "description": "Capacités variées : Pioche de l'adversaire, Espion en main, révélation de cartes, etc." },
+            { "faction": "Nilfgaard", "name": "Morvran Voorhis", "force": 0, "row": "Chef", "max_copies": 1, "capacity_type": "Chef (Révélation)", "description": "Révèle 3 cartes de votre choix dans la main de l'adversaire." },
+            { "faction": "Nilfgaard", "name": "Tibor Eggebracht", "force": 10, "row": "Distance", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Nilfgaard", "name": "Letho de Gulet", "force": 10, "row": "Mêlée", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Nilfgaard", "name": "Menno Coehoorn", "force": 10, "row": "Mêlée", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Nilfgaard", "name": "Cahir Mawr Dyffryn", "force": 6, "row": "Mêlée", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Nilfgaard", "name": "Vattier de Rideaux", "force": 4, "row": "Mêlée", "max_copies": 1, "capacity_type": "Espion", "description": "Espion : Placé dans la rangée adverse, vous permet de piocher 2 cartes." },
+            { "faction": "Nilfgaard", "name": "Garde Impériale", "force": 3, "row": "Mêlée", "max_copies": 2, "capacity_type": "Espion", "description": "Espion : Placé dans la rangée adverse, vous permet de piocher 2 cartes." },
+            { "faction": "Nilfgaard", "name": "L'Informatrice", "force": 2, "row": "Mêlée", "max_copies": 1, "capacity_type": "Espion", "description": "Espion : Placé dans la rangée adverse, vous permet de piocher 2 cartes." },
+            { "faction": "Nilfgaard", "name": "Sorcier de l'Aube", "force": 5, "row": "Mêlée", "max_copies": 1, "capacity_type": "Médecin", "description": "Médecin : Permet de ramener une carte Unité non-Héros de la défausse." },
+            { "faction": "Nilfgaard", "name": "Brigade de Nauzicaa", "force": 5, "row": "Mêlée", "max_copies": 3, "capacity_type": "Lien Rapproché", "description": "Lien Rapproché : Double la force de toutes les cartes du même nom dans la rangée." },
+            { "faction": "Nilfgaard", "name": "Cavalier Albâtre", "force": 4, "row": "Distance", "max_copies": 3, "capacity_type": "Lien Rapproché", "description": "Lien Rapproché : Double la force de toutes les cartes du même nom dans la rangée." },
+            { "faction": "Nilfgaard", "name": "Archère Asser", "force": 6, "row": "Distance", "max_copies": 3, "capacity_type": "Agilité", "description": "Agilité : Peut être placée dans la rangée Mêlée ou Distance." },
+            { "faction": "Nilfgaard", "name": "L'Écumeur", "force": 6, "row": "Mêlée", "max_copies": 3, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Nilfgaard", "name": "Chevalier de la Légion", "force": 4, "row": "Mêlée", "max_copies": 3, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Nilfgaard", "name": "Catapulte Nilfgaardienne", "force": 8, "row": "Siège", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Nilfgaard", "name": "Trébuchet Nilfgaardien", "force": 6, "row": "Siège", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Nilfgaard", "name": "Ingénieur Nilfgaardien", "force": 2, "row": "Siège", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Nilfgaard", "name": "Archer Elfe (Nilfgaard)", "force": 2, "row": "Distance", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Monstres", "name": "Eredin (4 variantes)", "force": 0, "row": "Chef", "max_copies": 4, "capacity_type": "Chef (Varié)", "description": "Capacités variées : Pioche de cimetière, dégâts, Météo." },
+            { "faction": "Monstres", "name": "Imlerith", "force": 10, "row": "Mêlée", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Monstres", "name": "Kayran", "force": 8, "row": "Mêlée", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Monstres", "name": "Ancienne Entité", "force": 6, "row": "Distance", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Monstres", "name": "Gros Monstre", "force": 8, "row": "Mêlée", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Monstres", "name": "Succube", "force": 5, "row": "Distance", "max_copies": 1, "capacity_type": "Médecin", "description": "Médecin : Permet de ramener une carte Unité non-Héros de la défausse." },
+            { "faction": "Monstres", "name": "Chasse Sauvage Cavalier", "force": 2, "row": "Mêlée", "max_copies": 3, "capacity_type": "Nuée", "description": "Nuée : Cherche et joue toutes les cartes du même nom dans la rangée." },
+            { "faction": "Monstres", "name": "Nécrophage", "force": 2, "row": "Mêlée", "max_copies": 3, "capacity_type": "Nuée", "description": "Nuée : Cherche et joue toutes les cartes du même nom dans la rangée." },
+            { "faction": "Monstres", "name": "Brouillard (Brumeux)", "force": 4, "row": "Distance", "max_copies": 3, "capacity_type": "Nuée", "description": "Nuée : Cherche et joue toutes les cartes du même nom dans la rangée." },
+            { "faction": "Monstres", "name": "Goule", "force": 2, "row": "Mêlée", "max_copies": 3, "capacity_type": "Médecin", "description": "Médecin : Permet de ramener une carte Unité non-Héros de la défausse." },
+            { "faction": "Monstres", "name": "Griffon", "force": 5, "row": "Distance", "max_copies": 2, "capacity_type": "Lien Rapproché", "description": "Lien Rapproché : Double la force de toutes les cartes du même nom dans la rangée." },
+            { "faction": "Monstres", "name": "Vampire de Dégâts", "force": 4, "row": "Mêlée", "max_copies": 3, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Monstres", "name": "Vampire Fleder", "force": 4, "row": "Mêlée", "max_copies": 3, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Monstres", "name": "Fiellon", "force": 8, "row": "Mêlée", "max_copies": 1, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Monstres", "name": "Cyclope", "force": 7, "row": "Distance", "max_copies": 1, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Monstres", "name": "Élémentaire de Glace", "force": 5, "row": "Mêlée", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Monstres", "name": "Élémentaire de Terre", "force": 6, "row": "Mêlée", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Monstres", "name": "Vétéran Nécromancien", "force": 3, "row": "Mêlée", "max_copies": 1, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Monstres", "name": "Katakan", "force": 5, "row": "Distance", "max_copies": 1, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Scoia'tael", "name": "Francesca Findabair (4 variantes)", "force": 0, "row": "Chef", "max_copies": 4, "capacity_type": "Chef (Varié)", "description": "Capacités variées : Reprend une carte jouée, rejoue une carte de la main, etc." },
+            { "faction": "Scoia'tael", "name": "Iorveth", "force": 10, "row": "Distance", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Scoia'tael", "name": "Saskia", "force": 5, "row": "Mêlée", "max_copies": 1, "capacity_type": "Ralliement", "description": "Carte Héros. Ralliement : Pioche une unité et la joue immédiatement." },
+            { "faction": "Scoia'tael", "name": "Yaevinn", "force": 2, "row": "Distance", "max_copies": 1, "capacity_type": "Espion", "description": "Espion : Placé dans la rangée adverse, vous permet de piocher 2 cartes." },
+            { "faction": "Scoia'tael", "name": "Gérard d'Aelle", "force": 5, "row": "Mêlée", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Scoia'tael", "name": "Elfe Tireur d'Élite", "force": 2, "row": "Agilité", "max_copies": 3, "capacity_type": "Agilité", "description": "Agilité : Peut être placé dans la rangée Mêlée ou Distance." },
+            { "faction": "Scoia'tael", "name": "Nain Commando", "force": 5, "row": "Agilité", "max_copies": 3, "capacity_type": "Agilité / Lien Rapproché", "description": "Agilité : Peut être placé dans la rangée Mêlée ou Distance. Possède Lien Rapproché." },
+            { "faction": "Scoia'tael", "name": "Vrihedd Cadre", "force": 4, "row": "Agilité", "max_copies": 3, "capacity_type": "Agilité / Lien Rapproché", "description": "Agilité : Peut être placé dans la rangée Mêlée ou Distance. Possède Lien Rapproché." },
+            { "faction": "Scoia'tael", "name": "Nain Vétéran", "force": 5, "row": "Mêlée", "max_copies": 2, "capacity_type": "Lien Rapproché", "description": "Lien Rapproché : Double la force de toutes les cartes du même nom dans la rangée." },
+            { "faction": "Scoia'tael", "name": "Troupes Dryades", "force": 2, "row": "Distance", "max_copies": 2, "capacity_type": "Médecin", "description": "Médecin : Permet de ramener une carte Unité non-Héros de la défausse." },
+            { "faction": "Scoia'tael", "name": "Archer Elfe", "force": 3, "row": "Distance", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Scoia'tael", "name": "Gardien Aelirenn", "force": 0, "row": "Mêlée", "max_copies": 1, "capacity_type": "Ralliement Auto", "description": "Invoquée automatiquement si vous avez 3 cartes Elfe ou plus sur le plateau." },
+            { "faction": "Scoia'tael", "name": "Dragon Vrihedd", "force": 4, "row": "Distance", "max_copies": 1, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Scoia'tael", "name": "Soutien", "force": 2, "row": "Mêlée", "max_copies": 3, "capacity_type": "Lien Rapproché", "description": "Lien Rapproché : Double la force de toutes les cartes du même nom dans la rangée." },
+            { "faction": "Scoia'tael", "name": "Ligne d'Épée", "force": 5, "row": "Mêlée", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Skellige", "name": "Crach an Craite (4 variantes)", "force": 0, "row": "Chef", "max_copies": 4, "capacity_type": "Chef (Varié)", "description": "Capacités variées : Pioche de cimetière, dégâts, etc." },
+            { "faction": "Skellige", "name": "Hjalmar", "force": 10, "row": "Mêlée", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Skellige", "name": "Cerys", "force": 10, "row": "Mêlée", "max_copies": 1, "capacity_type": "Résurrection", "description": "Carte Héros. Résurrection : Invoque toutes les unités 'Mère de Guerrier' du cimetière." },
+            { "faction": "Skellige", "name": "Madman Lugos", "force": 6, "row": "Distance", "max_copies": 1, "capacity_type": "Héros", "description": "Carte Héros." },
+            { "faction": "Skellige", "name": "Kambi", "force": 0, "row": "Mêlée", "max_copies": 1, "capacity_type": "Espion", "description": "Espion : Placé dans la rangée adverse, vous permet de piocher 2 cartes." },
+            { "faction": "Skellige", "name": "Donar an Hindar", "force": 4, "row": "Mêlée", "max_copies": 1, "capacity_type": "Espion", "description": "Espion : Placé dans la rangée adverse, vous permet de piocher 2 cartes." },
+            { "faction": "Skellige", "name": "Guerrier Clan Drummond", "force": 4, "row": "Mêlée", "max_copies": 3, "capacity_type": "Lien Rapproché", "description": "Lien Rapproché : Double la force de toutes les cartes du même nom dans la rangée." },
+            { "faction": "Skellige", "name": "Mère de Guerrier", "force": 6, "row": "Mêlée", "max_copies": 3, "capacity_type": "Lien Rapproché / Résurrection", "description": "Lien Rapproché. Résurrection : Jouée par Cerys ou par la capacité du Chef." },
+            { "faction": "Skellige", "name": "Vétéran Jarl", "force": 8, "row": "Mêlée", "max_copies": 3, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Skellige", "name": "Berserker", "force": 4, "row": "Mêlée", "max_copies": 3, "capacity_type": "Berserk", "description": "Berserk : Se transforme en 'Berserker Enragé' (Force 8) si la capacité du Chef est active." },
+            { "faction": "Skellige", "name": "Berserker Enragé", "force": 8, "row": "Mêlée", "max_copies": 3, "capacity_type": "Transformation", "description": "Forme transformée du Berserker (n'est pas joué directement depuis la main)." },
+            { "faction": "Skellige", "name": "Médecin Skellige", "force": 6, "row": "Siège", "max_copies": 2, "capacity_type": "Médecin", "description": "Médecin : Permet de ramener une carte Unité non-Héros de la défausse." },
+            { "faction": "Skellige", "name": "Catapulte Skellige", "force": 6, "row": "Siège", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Skellige", "name": "Archer Clan Tuirseach", "force": 4, "row": "Distance", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." },
+            { "faction": "Skellige", "name": "Dégâts (Skellige)", "force": 4, "row": "Distance", "max_copies": 2, "capacity_type": "Aucune", "description": "Unité de base." }
+        ]
+        };
+
+        // Fonction pour insérer les données dans le tableau HTML
+        function populateTable() {
+            const tbody = document.getElementById('gwentTable').getElementsByTagName('tbody')[0];
+            const cards = cardData.gwent_card_collection;
+
+            cards.forEach(card => {
+                const row = tbody.insertRow();
+                
+                // Nettoyage pour les classes CSS
+                const factionClass = 'faction-' + card.faction.replace(/\s/g, '-').replace(/'/g, '').replace('é', 'e');
+                const capacityClass = 'capacity-' + card.capacity_type.replace(/\s/g, '-').replace(/[()]/g, '').replace('é', 'e');
+
+                // 1. Colonne Faction
+                let cell = row.insertCell();
+                cell.textContent = card.faction;
+                cell.classList.add(factionClass);
+                
+                // 2. Colonne Nom
+                cell = row.insertCell();
+                cell.textContent = card.name;
+                
+                // 3. Colonne Force
+                cell = row.insertCell();
+                cell.textContent = card.force === 0 ? '-' : card.force;
+                cell.style.fontWeight = 'bold';
+                
+                // 4. Colonne Rangée
+                cell = row.insertCell();
+                cell.textContent = card.row;
+
+                // 5. Colonne Capacité
+                cell = row.insertCell();
+                cell.textContent = card.capacity_type;
+                cell.classList.add(capacityClass);
+
+                // 6. Colonne Description
+                cell = row.insertCell();
+                cell.textContent = card.description;
+            });
+        }
+
+        // Fonction de Tri (simple)
+        let sortDir = {};
+
+        function sortTable(n) {
+            const table = document.getElementById("gwentTable");
+            let rows, switching, i, x, y, shouldSwitch, dir;
+            switching = true;
+            
+            // Initialiser la direction
+            dir = sortDir[n] || "asc";
+            sortDir[n] = (dir === "asc" ? "desc" : "asc");
+            
+            // Nettoyage visuel de l'en-tête (non implémenté pour la simplicité, mais essentiel en Material UI)
+            
+            while (switching) {
+                switching = false;
+                rows = table.rows;
+                
+                // Démarrer la boucle après la ligne d'en-tête (rows[0] est <thead>)
+                for (i = 1; i < (rows.length - 1); i++) {
+                    shouldSwitch = false;
+                    
+                    x = rows[i].getElementsByTagName("TD")[n];
+                    y = rows[i + 1].getElementsByTagName("TD")[n];
+                    
+                    let xContent = x.innerHTML.toLowerCase().trim();
+                    let yContent = y.innerHTML.toLowerCase().trim();
+                    
+                    // Conversion numérique pour la colonne Force
+                    if (n === 2) { 
+                        xContent = parseFloat(x.innerHTML) || 0;
+                        yContent = parseFloat(y.innerHTML) || 0;
+                    }
+
+                    if (dir === "asc") {
+                        if (xContent > yContent) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    } else if (dir === "desc") {
+                        if (xContent < yContent) {
+                            shouldSwitch = true;
+                            break;
+                        }
+                    }
+                }
+                if (shouldSwitch) {
+                    rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+                    switching = true;
+                }
+            }
+        }
+
+        // Exécution de l'insertion des données au chargement de la page
+        document.addEventListener('DOMContentLoaded', populateTable);
+    </script>
+</body>
+</html>
