@@ -1,4 +1,3 @@
-
 // =====================================================================
         // CONFIGURATION ET DONNÉES
         // =====================================================================
@@ -1095,6 +1094,14 @@ function handleAgile(player, cardName, card, targetRow) {
             const div = document.createElement('div');
             div.className = 'card';
             
+            // --- LOGIQUE DATA-ROW POUR LES CARTES SUR LE PLATEAU ---
+            let dataRowValue = card.row;
+            if (dataRowValue === 'agile') {
+                dataRowValue = 'melee,ranged';
+            } 
+            div.setAttribute('data-row', dataRowValue);
+            // --------------------------------------------------
+            
             if (card.isHero) div.classList.add('hero');
             if (card.capacity === 'Spy') div.classList.add('spy');
             
@@ -1119,6 +1126,14 @@ function handleAgile(player, cardName, card, targetRow) {
         function createHandCard(cardName, card) {
             const div = document.createElement('div');
             div.className = 'hand-card';
+            
+            // --- LOGIQUE DATA-ROW POUR LES CARTES DANS LA MAIN (AJOUT) ---
+            let dataRowValue = card.row;
+            if (dataRowValue === 'agile') {
+                dataRowValue = 'melee,ranged';
+            } 
+            div.setAttribute('data-row', dataRowValue);
+            // -----------------------------------------------------------
             
             const canPlay = gameState.activePlayer === 'A' && !gameState.playerA.passed;
             if (canPlay) div.classList.add('playable');
@@ -1207,7 +1222,3 @@ function autoPlayTurn() {
         window.onload = () => {
             logMessage("🎮 Bienvenue dans Gwent !", 'success');
         };
-
-
-
-
