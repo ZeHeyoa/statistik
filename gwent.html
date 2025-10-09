@@ -127,13 +127,18 @@
     }
     .player-zone.active { box-shadow: 0 8px 28px rgba(0,0,0,0.7); border-color: #444; }
     
-    /* MODIFIÉ: Plateau Row (Background Gris Noir) */
+    /* Plateau Row (Effet Enfoncé - Gris Clair) */
     .plateau-row { 
         margin-bottom: 4px; 
         padding: 6px; 
-        min-height:96px; border-radius:8px; 
-        background: linear-gradient(180deg, #181818, #0f0f0f); 
+        min-height:122px; /* Hauteur Réduite de ~5% (128px -> 122px) */
+        
+        /* Style: Gris légèrement clair avec effet enfoncé */
+        background: #333333; 
         border: 1px solid #222;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.8), /* Ombre supérieure (plus foncée) */
+                    inset 0 -2px 4px rgba(255,255,255,0.05); /* Ombre inférieure (plus claire) */
+        border-radius:8px; 
         position: relative; 
     }
     
@@ -157,8 +162,56 @@
         padding:6px; font-size:11px; display:flex; flex-direction:column; justify-content:space-between; 
         z-index: 50; 
         flex-shrink: 0; color: #333333; 
+        position: relative; /* Nécessaire pour les pastilles de row */
     }
     .card:hover { transform: translateY(-6px); box-shadow: 0 10px 30px rgba(0,0,0,0.6); }
+    
+    /* 3. Pastilles de type de combat (Row Markers) */
+    /* *** MODIFIÉ pour inclure .hand-card *** */
+    .card[data-row]:before,
+    .hand-card[data-row]:before { 
+        content: '';
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        border: 1px solid #121212;
+        box-shadow: 0 0 4px rgba(0,0,0,0.8);
+        z-index: 60; 
+    }
+
+    /* Couleurs des lignes individuelles */
+    .card[data-row="melee"]:before, .hand-card[data-row="melee"]:before { background: #EF5350; } /* Rouge Pale (Front) */
+    .card[data-row="ranged"]:before, .hand-card[data-row="ranged"]:before { background: #66BB6A; } /* Vert (Distance) */
+    .card[data-row="siege"]:before, .hand-card[data-row="siege"]:before { background: #42A5F5; } /* Bleu (Longue Distance) */
+
+    /* Couleurs des lignes combinées (dégradés pour simuler le mélange) */
+    .card[data-row*="melee,ranged"]:before,
+    .card[data-row*="ranged,melee"]:before,
+    .hand-card[data-row*="melee,ranged"]:before,
+    .hand-card[data-row*="ranged,melee"]:before { 
+        background: linear-gradient(to right, #EF5350 50%, #66BB6A 50%); /* Rouge & Vert */
+    }
+    .card[data-row*="melee,siege"]:before,
+    .card[data-row*="siege,melee"]:before,
+    .hand-card[data-row*="melee,siege"]:before,
+    .hand-card[data-row*="siege,melee"]:before { 
+        background: linear-gradient(to right, #EF5350 50%, #42A5F5 50%); /* Rouge & Bleu */
+    }
+    .card[data-row*="ranged,siege"]:before,
+    .card[data-row*="siege,ranged"]:before,
+    .hand-card[data-row*="ranged,siege"]:before,
+    .hand-card[data-row*="siege,ranged"]:before { 
+        background: linear-gradient(to right, #66BB6A 50%, #42A5F5 50%); /* Vert & Bleu */
+    }
+    .card[data-row*="melee,ranged,siege"]:before,
+    .hand-card[data-row*="melee,ranged,siege"]:before { 
+        background: linear-gradient(to right, #EF5350 33%, #66BB6A 33%, #66BB6A 66%, #42A5F5 66%); /* Tricolore */
+    }
+    /* *************************************************** */
+    
     .card-force { font-size:18px; font-weight:700; color:var(--score); text-align:center; background: rgba(0,0,0,0.05); padding:2px 6px; border-radius:4px; }
     .card-name{ font-size:10px; text-align:center; color: #333333; }
 
@@ -169,6 +222,7 @@
         border:1px solid #bbbbbb; 
         flex-shrink: 0; cursor: pointer; color: #333333; 
         transition: transform 0.3s ease, box-shadow 0.3s ease; 
+        position: relative; /* GARDER: Nécessaire pour la pastille */
     }
     .hand-card .force{ font-size:34px; font-weight:800; color:var(--score); text-align:center; }
     
@@ -202,7 +256,7 @@
 
     /* Modal Agrandissement Carte (Zoom) */
     .enlarged-card { 
-        width: 80vw !important; max-width: 500px; height: 80vh !important; max-height: 500px;
+        width: 80vw !important; max-width: 500px; height: 80vh !important; max-height: 600px;
         padding: 18px; border-radius:12px; display: flex; flex-direction: column;
         justify-content: space-between; overflow-y: auto; 
     }
@@ -210,6 +264,26 @@
     #enlarged-name { font-size: 30px !important; color: var(--text) !important; }
     #enlarged-description { font-size: 22px !important; text-align:center; color:var(--text); margin: 15px 0; flex-grow: 1; }
     #enlarged-capacity { font-size: 24px !important; }
+    
+    /* NOUVEAU STYLE POUR LES BOUTONS DE LIGNE */
+    .row-select-btn {
+        background: #444;
+        border: 1px solid #666;
+        color: var(--text);
+        padding: 8px 15px;
+        font-weight: 600;
+    }
+    .row-select-btn[data-row="melee"].selected {
+        background: #EF5350; /* Rouge Pale (Front) */
+        border-color: #EF5350;
+        box-shadow: 0 0 10px #EF5350;
+    }
+    .row-select-btn[data-row="ranged"].selected {
+        background: #66BB6A; /* Vert (Distance) */
+        border-color: #66BB6A;
+        box-shadow: 0 0 10px #66BB6A;
+    }
+    /* FIN NOUVEAU STYLE */
 
     /* Responsive tweaks */
     @media (max-width:768px){
@@ -224,11 +298,11 @@
     /* *************************************************** */
     
     :root {
-        /* Position Verticale (ligne distance) pour scores et cartes en main */
-        --distance-line-pos-a: calc(12px + 96px + 4px + 96px / 2);
+        /* Nouvelle hauteur de ligne : 122px (réduit de 5%). Recalcul de la position verticale (Ranged) */
+        --distance-line-pos-a: calc(12px + 122px + 4px + 122px / 2); /* 12px + Siege Row + 4px margin + half Ranged Row */
     }
     
-    /* 1. Conteneurs de Score (Pastille Gris Clair) - À DROITE */
+    /* 1. Conteneurs de Score (Pastille Gris Clair) - Style Général */
     .pastille-score-a, .pastille-score-b {
         position: absolute;
         width: 60px;
@@ -245,34 +319,42 @@
         z-index: 100; 
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); 
     }
-    /* Player A & B: droite (ligne Distance) */
-    .pastille-score-a, .pastille-score-b {
+    
+    /* Player B: droite (ligne Distance) - Position inchangée */
+    .pastille-score-b {
         top: var(--distance-line-pos-a); 
         right: 0; 
         transform: translate(50%, -50%); 
     }
+    
+    /* Player A: REMIS à droite, aligné avec la ligne Distance */
+    .pastille-score-a {
+        top: var(--distance-line-pos-a); 
+        right: 0; 
+        transform: translate(50%, -50%); 
+        left: auto; /* Sécurité */
+        bottom: auto; /* Sécurité */
+    }
 
-    /* 2. Conteneurs de Nom du Joueur (Vertical, à gauche) */
+    /* 2. Conteneurs de Nom du Joueur (Horizontal, au-dessus du plateau) */
     .info-joueur-vertical-a, .info-joueur-vertical-b {
         position: absolute;
         font-size: 1.1em;
         font-weight: 600;
         white-space: nowrap;
-        padding: 5px 8px; 
-        background: rgba(0, 0, 0, 0.4);
+        padding: 5px 12px; 
+        background: rgba(0, 0, 0, 0.6); /* Plus sombre pour la lisibilité */
         border-radius: 8px;
         color: white; 
         z-index: 100; 
         
-        /* Position sur la ligne Ranged (Milieu du plateau - 2e ligne de la zone) */
-        top: calc(12px + 96px + 4px + 96px / 2); 
-        left: 0; 
-        transform-origin: 0 0; 
-        /* Rotation -90deg pour être vertical, et translation pour centrer le bloc sur la ligne */
-        transform: translate(calc(12px - 50% / 2), -50%) rotate(-90deg); 
-        /* Annuler toute propriété 'right' ou 'bottom' précédente */
-        right: auto; 
-        bottom: auto; 
+        /* Au-dessus du plateau (en haut de la player-zone) */
+        top: -24px; 
+        left: 12px; 
+        transform: none; 
+        
+        /* Assure que l'affichage est bien horizontal */
+        display: inline-block; 
     }
     
     /* Réduction de la police du statut PASSÉ */
@@ -281,7 +363,7 @@
         color: #ffcc00; 
         margin-left: 8px;
         font-weight: 700;
-        font-size: 0.8em; /* Réduit */
+        font-size: 0.8em; 
     }
     
     /* 3. Pastille du nombre de Manche (REMOVED: déplacé dans controls) */
@@ -289,30 +371,29 @@
         display: none; /* Cache l'ancienne position */
     }
 
-    /* 4. Pastille du nombre de Cartes en Main (Déplacé au centre vertical de la main) */
+    /* 4. Pastille du nombre de Cartes en Main (Déplacée en bas à gauche, à la place de l'ancien score A) */
     .hand-count-pastille {
         position: absolute;
-        width: 35px;
-        height: 35px;
+        width: 60px; 
+        height: 60px; 
         background-color: var(--score); 
         border-radius: 50%;
         border: 2px solid var(--text);
         color: #333;
-        font-size: 0.9em;
+        font-size: 1.4em; 
         font-weight: bold;
-        line-height: 31px; 
+        line-height: 56px; 
         text-align: center;
         padding: 0; 
         z-index: 100; 
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4); 
         
-        /* NOUVELLE POSITION: Centré sur la main (220px/2 + 40px de marge) */
-        top: auto;
-        /* La main a une hauteur de 220px, et le conteneur hand-cards a un padding inférieur, on centre sur la main. */
-        bottom: 150px; 
-        right: 0; 
-        /* Décalé plus loin à droite que le score A */
-        transform: translate(calc(50% + 50px), 0); 
+        /* NOUVELLE Position: En bas à gauche, près du slider de la main */
+        bottom: 20px; 
+        left: 0; 
+        top: auto; 
+        right: auto;
+        transform: translate(-50%, 0); 
     }
 
     /* Suppression de l'en-tête de main */
@@ -506,9 +587,17 @@
         <div class="name" id="enlarged-name" style="text-align:center;color:var(--text);margin-bottom:6px;"></div>
         <div id="enlarged-description" style="font-size: 22px; text-align:center; color:var(--text); margin: 15px 0; flex-grow: 1;"></div>
         <div class="capacity" id="enlarged-capacity" style="text-align:center;color:var(--muted);"></div>
+        
+        <div id="row-selection-container" style="text-align:center; margin-top:15px; display:none;">
+            <p style="color:var(--text); font-weight:600; margin-bottom: 8px;">Choisir la ligne:</p>
+            <div style="display:flex; justify-content:center; gap:10px;">
+                <button class="row-select-btn" data-row="melee" onclick="selectRowToPlay('melee')">Mêlée</button>
+                <button class="row-select-btn" data-row="ranged" onclick="selectRowToPlay('ranged')">Distance</button>
+            </div>
+        </div>
         <div class="action-buttons" style="display:flex;gap:12px;justify-content:center;margin-top:14px;">
-            <button class="action-btn confirm-btn" id="confirm-play" onclick="playFromModal()">✔️</button>
-            <button class="action-btn cancel-btn" onclick="hideCardModal()">❌</button>
+            <button class="action-btn confirm-btn" id="confirm-play" onclick="playFromModal()">✔️ Jouer</button>
+            <button class="action-btn cancel-btn" onclick="hideCardModal()">❌ Annuler</button>
         </div>
     </div>
 </div>
@@ -585,27 +674,67 @@
     let victoryCleanerInterval = setInterval(cleanVictoryText, 500);
 
     let selectedCardName = null;
+    let selectedRow = null; // Variable globale pour stocker le choix de ligne
 
     // Affiche les informations complètes de la carte (avec très grande police)
     function showCardModal(cardName, card) {
+        // Assurez-vous que c'est le tour du joueur A et qu'il n'a pas passé
+        if (typeof gameState === 'undefined' || gameState.activePlayer !== 'A' || gameState.playerA.passed) return;
+
         selectedCardName = cardName;
+        selectedRow = null; // Réinitialiser la sélection
+        
         document.getElementById('enlarged-force').textContent = card.force || '-';
         document.getElementById('enlarged-name').textContent = cardName;
-        document.getElementById('enlarged-capacity').textContent = card.capacity_type || ''; 
+        document.getElementById('enlarged-capacity').textContent = card.capacity_type || card.capacity || ''; 
         // Récupération de la description pour le zoom
-        const cardObject = cardData.gwent_card_collection.find(c => c.name === cardName);
+        const cardObject = (typeof CARD_DATABASE !== 'undefined' && CARD_DATABASE[cardName]) || (cardData.gwent_card_collection.find(c => c.name === cardName));
         document.getElementById('enlarged-description').textContent = (cardObject && cardObject.description) || card.description || 'Pas de description.'; 
+        
+        const rowSelectionContainer = document.getElementById('row-selection-container');
+        const confirmPlayBtn = document.getElementById('confirm-play');
+
+        // Vérifier si la carte est Agile (multi-lignes)
+        if (cardObject && cardObject.row === 'agile') {
+            rowSelectionContainer.style.display = 'block';
+            confirmPlayBtn.disabled = true; // Désactiver le bouton de jeu tant que la ligne n'est pas choisie
+            document.querySelectorAll('.row-select-btn').forEach(btn => btn.classList.remove('selected'));
+        } else {
+            rowSelectionContainer.style.display = 'none';
+            confirmPlayBtn.disabled = false;
+            // Pour les cartes mono-lignes (y compris spécial/météo), la ligne est définie par défaut.
+            selectedRow = cardObject ? cardObject.row : null; 
+        }
+
         document.getElementById('card-modal').style.display = 'flex';
+    }
+
+    function selectRowToPlay(row) {
+        selectedRow = row;
+        document.getElementById('confirm-play').disabled = false;
+        
+        document.querySelectorAll('.row-select-btn').forEach(btn => btn.classList.remove('selected'));
+        document.querySelector(`.row-select-btn[data-row="${row}"]`).classList.add('selected');
     }
 
     function hideCardModal() {
         selectedCardName = null;
+        selectedRow = null;
         document.getElementById('card-modal').style.display = 'none';
     }
 
     function playFromModal() {
-        if (selectedCardName) {
-            if (typeof playCard === 'function' && playCard('A', selectedCardName)) {
+        const isAgile = document.getElementById('row-selection-container').style.display === 'block';
+
+        if (!selectedCardName || (isAgile && !selectedRow)) {
+            // Empêcher de jouer une carte agile sans sélection de ligne
+            if (isAgile) alert('Veuillez choisir une ligne pour jouer cette carte Agile.');
+            return;
+        }
+
+        // Appel à playCard avec la ligne choisie (ou null pour les cartes dont la ligne est fixe ou spéciales)
+        if (typeof playCard === 'function') {
+            if (playCard('A', selectedCardName, selectedRow)) {
                 if (!gameState.playerA.passed && !gameState.playerB.passed) {
                     if (typeof switchTurn === 'function') switchTurn();
                 } else if (gameState.playerA.passed && gameState.playerB.passed) {
@@ -616,25 +745,25 @@
         }
     }
 
-    // Récupère l'objet carte complet (avec la description) à partir de gwentdata.js
+    // Récupère l'objet carte complet (avec la description) à partir de gwentdata.js (et moteur JS)
     if (typeof createHandCard !== 'undefined') {
         const originalCreateHandCard = createHandCard;
         createHandCard = function(cardName, card) {
             const div = originalCreateHandCard(cardName, card);
-            // ensure it's a clickable element
-            div.onclick = function(ev){
-                // if gameState is available and it's player's turn
-                if (typeof gameState === 'undefined' || gameState.activePlayer === 'A') {
-                    // Trouver l'objet carte complet à partir de cardData (chargé par gwentdata.js)
-                    const cardObject = cardData.gwent_card_collection.find(c => c.name === cardName);
+            
+            // Si la carte est "playable" (selon le moteur JS)
+            if (div.classList.contains('playable')) {
+                div.onclick = function(ev){
+                    // Trouver l'objet carte complet (avec 'row' pour la vérification agile)
+                    const cardObject = (typeof CARD_DATABASE !== 'undefined' && CARD_DATABASE[cardName]) || (cardData.gwent_card_collection.find(c => c.name === cardName));
                     if (cardObject) {
                         showCardModal(cardName, cardObject);
                     } else {
-                        // Fallback au cas où les données complètes ne sont pas trouvées
+                        // Fallback
                         showCardModal(cardName, card);
                     }
-                }
-            };
+                };
+            }
             return div;
         };
     }
