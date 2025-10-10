@@ -66,37 +66,57 @@
             "Kayran": { faction: "Monstres", force: 8, row: "melee", capacity: "Hero", isHero: true },
             "Leshen": { faction: "Monstres", force: 10, row: "ranged", capacity: "Hero", isHero: true },
             "Crone": { faction: "Monstres", force: 6, row: "melee", capacity: "Muster", isHero: false },
-            "Arachas": { faction: "Monstres", force: 4, row: "melee", capacity: "Muster", isHero: false },
-            "Nekker": { faction: "Monstres", force: 2, row: "melee", capacity: "Muster", isHero: false },
+            "Brouillard (Brumeux)": { faction: "Monstres", force: 4, row: "melee", capacity: "Muster", isHero: false },
+            "Nécrophage": { faction: "Monstres", force: 2, row: "melee", capacity: "Muster", isHero: false },
             "Goule": { faction: "Monstres", force: 1, row: "melee", capacity: "Medic", isHero: false },
             "Vampire de Dégâts": { faction: "Monstres", force: 4, row: "melee", capacity: "None", isHero: false },
 			"Vampire Fleder": { faction: "Monstres", force: 4, row: "melee", capacity: "None", isHero: false },
             "Griffon": { faction: "Monstres", force: 5, row: "ranged", capacity: "TightBond", isHero: false },
-            "Fiend": { faction: "Monstres", force: 6, row: "melee", capacity: "None", isHero: false },
-            "Werewolf": { faction: "Monstres", force: 5, row: "melee", capacity: "None", isHero: false },
-            
+            "Élémentaire de Terre": { faction: "Monstres", force: 6, row: "melee", capacity: "None", isHero: false },
+            "Katakan": { faction: "Monstres", force: 5, row: "melee", capacity: "None", isHero: false },
+
+            "Ancienne Entité": { faction: "Monstres", force: 6, row: "ranged", capacity: "Hero", isHero: true },
+            "Gros Monstre": { faction: "Monstres", force: 8, row: "melee", capacity: "Hero", isHero: true },
+            "Succube": { faction: "Monstres", force: 5, row: "ranged", capacity: "Medic", isHero: false },
+            "Chasse Sauvage Cavalier": { faction: "Monstres", force: 2, row: "melee", capacity: "Muster", isHero: false },
+            "Fiellon": { faction: "Monstres", force: 8, row: "melee", capacity: "None", isHero: false },
+            "Cyclope": { faction: "Monstres", force: 7, row: "ranged", capacity: "None", isHero: false },
+            "Élémentaire de Glace": { faction: "Monstres", force: 5, row: "melee", capacity: "None", isHero: false },
+            "Vétéran Nécromancien": { faction: "Monstres", force: 3, row: "melee", capacity: "None", isHero: false },
+		
+			
             // Scoia'tael
             "Iorveth": { faction: "Scoia", force: 10, row: "ranged", capacity: "Hero", isHero: true },
             "Saskia": { faction: "Scoia", force: 5, row: "melee", capacity: "Rally", isHero: true },
             "Yaevinn": { faction: "Scoia", force: 2, row: "ranged", capacity: "Spy", isHero: false },
-            "Elfe Tireur": { faction: "Scoia", force: 2, row: "agile", capacity: "Agile", isHero: false },
+            "Elfe Tireur d'Élite": { faction: "Scoia", force: 2, row: "agile", capacity: "Agile", isHero: false },
             "Nain Commando": { faction: "Scoia", force: 5, row: "agile", capacity: "AgileBond", isHero: false },
-            "Vrihedd": { faction: "Scoia", force: 4, row: "agile", capacity: "AgileBond", isHero: false },
-            "Dryad": { faction: "Scoia", force: 2, row: "ranged", capacity: "Medic", isHero: false },
+            "Vrihedd Cadre": { faction: "Scoia", force: 4, row: "agile", capacity: "AgileBond", isHero: false },
+            "Troupes Dryades": { faction: "Scoia", force: 2, row: "ranged", capacity: "Medic", isHero: false },
             "Havekar": { faction: "Scoia", force: 3, row: "ranged", capacity: "None", isHero: false },
-            "Mahakam": { faction: "Scoia", force: 5, row: "melee", capacity: "TightBond", isHero: false },
-            "Elf Archer": { faction: "Scoia", force: 3, row: "ranged", capacity: "None", isHero: false },
-            
+            "Nain Vétéran": { faction: "Scoia", force: 5, row: "melee", capacity: "TightBond", isHero: false },
+            "Archer Elfe": { faction: "Scoia", force: 3, row: "ranged", capacity: "None", isHero: false },
+            "Gérard d'Aelle": { faction: "Scoia", force: 5, row: "melee", capacity: "Hero", isHero: true },
+			"Gardien Aelirenn": { faction: "Scoia", force: 0, row: "melee", capacity: "Rally auto", isHero: false },
+			"Dragon Vrihedd": { faction: "Scoia", force: 4, row: "ranged", capacity: "None", isHero: false },
+			"Soutien": { faction: "Scoia", force: 2, row: "melee", capacity: "TightBond", isHero: false },
+			"Ligne d'Épée": { faction: "Scoia", force: 5, row: "melee", capacity: "None", isHero: false },
+			
             // Skellige
             "Hjalmar": { faction: "Skellige", force: 10, row: "melee", capacity: "Hero", isHero: true },
             "Cerys": { faction: "Skellige", force: 10, row: "melee", capacity: "Resurrect", isHero: true },
             "Kambi": { faction: "Skellige", force: 0, row: "melee", capacity: "Spy", isHero: false },
-            "Drummond": { faction: "Skellige", force: 4, row: "melee", capacity: "TightBond", isHero: false },
-            "Shield Maiden": { faction: "Skellige", force: 6, row: "melee", capacity: "TightBond", isHero: false },
+            "Guerrier Clan Drummond": { faction: "Skellige", force: 4, row: "melee", capacity: "TightBond", isHero: false },
+            "Mère de Guerrier": { faction: "Skellige", force: 6, row: "melee", capacity: "TightBond", isHero: false },
             "Berserker": { faction: "Skellige", force: 4, row: "melee", capacity: "Berserk", isHero: false },
-            "Medic Skellige": { faction: "Skellige", force: 6, row: "siege", capacity: "Medic", isHero: false },
-            "Archer Clan": { faction: "Skellige", force: 4, row: "ranged", capacity: "None", isHero: false },
-            "Jarl": { faction: "Skellige", force: 8, row: "melee", capacity: "None", isHero: false }
+            "Médecin Skellige": { faction: "Skellige", force: 6, row: "siege", capacity: "Medic", isHero: false },
+            "Archer Clan Tuirseach": { faction: "Skellige", force: 4, row: "ranged", capacity: "None", isHero: false },
+            "Vétéran Jarl": { faction: "Skellige", force: 8, row: "melee", capacity: "None", isHero: false },
+            "Madman Lugos": { faction: "Skellige", force: 6, row: "ranged", capacity: "Hero", isHero: true },
+            "Donar an Hindar": { faction: "Skellige", force: 4, row: "melee", capacity: "Spy", isHero: false },
+            "Berserker Enragé": { faction: "Skellige", force: 8, row: "melee", capacity: "Transformation", isHero: false },
+            "Catapulte Skellige": { faction: "Skellige", force: 6, row: "siege", capacity: "None", isHero: false },
+            "Dégâts (Skellige)": { faction: "Skellige", force: 4, row: "ranged", capacity: "None", isHero: false }
         };
 		
 		// Fusionner cardData (gwentdata.js) avec CARD_DATABASE (gwent-engine.js)
