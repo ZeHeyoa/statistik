@@ -1,0 +1,277 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tests Gwent</title>
+    <script src="gwent_info_carte.js"></script>
+    <script src="gwent_population.js"></script>
+    <script src="gwent_moteur.js"></script>
+    <script src="gwent_deck.js"></script>
+    <script src="gwent_ia.js"></script>
+</head>
+<body>
+    <h1>Tests Gwent</h1>
+    <script>
+        // Accéder aux exports des scripts
+        if (!window.GwentPopulation || !window.GwentMoteur || !window.GwentDeck || !window.GwentIA) {
+            console.error('Erreur: Une ou plusieurs dépendances manquantes. Vérifiez l\'ordre des scripts.');
+            throw new Error('Dépendances manquantes');
+        }
+
+        // Fonction utilitaire pour normaliser la ligne
+        function normalizeLigne(ligne) {
+            if (Array.isArray(ligne) && ligne.length > 0) {
+                return ligne[0].toLowerCase();
+            } else if (typeof ligne === 'string' && ligne.length > 0) {
+                return ligne.toLowerCase();
+            }
+            return 'melee';
+        }
+
+        // Tests unitaires : Combinaisons état + ajout carte
+        function testAjoutCarte() {
+            let plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+            
+            // Test 1: Ajout Héros (Geralt)
+            let carte1 = gwentCardInstances.find(c => c.nom === 'Geralt de Riv');
+            carte1 = { id: carte1.id, nom: carte1.nom, force: 15, forceBase: 15, ligne: ['Melee'], capacite: 'Héros', isHero: true, type: 'Unité'};
+            plateau.joueur1.main = [ carte1 ];
+            plateau = jouerCarte(plateau, 'joueur1', carte1.id, 'melee');
+            console.assert(plateau.joueur1.lignes.melee.length === 1, 'Héros non ajouté');
+            console.assert(plateau.joueur1.score === 15, `Score Héros incorrect: ${plateau.joueur1.score}`);
+            
+            // Test 2: Météo + Héros (immunisé)
+            let carte2 = gwentCardInstances.find(c => c.nom === 'Froid Mordant');
+            carte2 = { id: carte2.id, nom: carte2.nom, force: 0, forceBase: 0, ligne: 'Melee', capacite: 'Meteo', type: 'Spécial'};
+            plateau.joueur1.main = [ carte2 ];
+            plateau = jouerCarte(plateau, 'joueur1', carte2.id, 'melee');
+            console.assert(plateau.joueur1.lignes.melee[0].force === 15, `Héros affecté par météo: ${plateau.joueur1.lignes.melee[0].force}`);
+            console.assert(plateau.meteo.melee === true, 'Météo non appliquée');
+            
+            // Test 3: Lien Fraternel (Fantassin Redanien)
+            plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+            let carte3 = gwentCardInstances.find(c => c.nom === 'Fantassin Redanien');
+            carte3 = { id: carte3.id, nom: carte3.nom, force: 1, forceBase: 1, ligne: ['Melee'], capacite: 'Lien Fraternel', type: 'Unité'};
+            let carte4 = gwentCardInstances.find(c => c.nom === 'Fantassin Redanien' && c.id !== carte3.id);
+            carte4 = { id: carte4.id, nom: carte4.nom, force: 1, forceBase: 1, ligne: ['Melee'], capacite: 'Lien Fraternel', type: 'Unité'};
+            plateau.joueur1.main = [ carte3, carte4 ];
+            plateau = jouerCarte(plateau, 'joueur1', carte3.id, 'melee');
+            plateau = jouerCarte(plateau, 'joueur1', carte4.id, 'melee');
+            console.assert(
+                plateau.joueur1.lignes.melee.every(c => c.nom === 'Fantassin Redanien' && c.force === 2),
+                `Lien Fraternel non doublé: ${plateau.joueur1.lignes.melee.map(c => c.force)}`
+            );
+            
+            // Test 4: Espion
+            plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+            plateau.joueur1.deck = [
+                { id: 100, nom: 'Carte1', force: 5, forceBase: 5, ligne: ['Melee'], type: 'Unité' },
+                { id: 101, nom: 'Carte2', force: 5, forceBase: 5, ligne: ['Melee'], type: 'Unité' }
+            ];
+            let carte5 = gwentCardInstances.find(c => c.nom === 'Vieux Sabot');
+            carte5 = { id: carte5.id, nom: carte5.nom, force: 0, forceBase: 0, ligne: ['Melee'], capacite: 'Espion', type: 'Unité'};
+            plateau.joueur1.main = [ carte5 ];
+            plateau = jouerCarte(plateau, 'joueur1', carte5.id, 'melee');
+            console.assert(plateau.joueur2.lignes.melee.length === 1, 'Espion non placé chez adversaire');
+            console.assert(plateau.joueur1.main.length === 2, `Main incorrecte après Espion: ${plateau.joueur1.main.length}`);
+            
+            // Test 5: Leurre
+            plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+            plateau.joueur1.lignes.melee = [
+                { id: 200, nom: 'Soldat', force: 5, forceBase: 5, ligne: ['Melee'], capacite: '', type: 'Unité', isHero: false }
+            ];
+            let carte6 = gwentCardInstances.find(c => c.nom === 'Leurre');
+            carte6 = { id: carte6.id, nom: carte6.nom, force: 0, forceBase: 0, ligne: 'Amélioration', capacite: 'Leurre', type: 'Spécial'};
+            plateau.joueur1.main = [ carte6 ];
+            const cible = plateau.joueur1.lignes.melee[0];
+            plateau = jouerCarte(plateau, 'joueur1', carte6.id, cible);
+            console.assert(plateau.joueur1.lignes.melee.length === 1, 'Leurre: Carte non échangée correctement');
+            console.assert(plateau.joueur1.lignes.melee[0].nom === 'Leurre', `Leurre: Mauvaise carte sur le plateau: ${plateau.joueur1.lignes.melee[0].nom}`);
+            console.assert(plateau.joueur1.main.some(c => c.nom === 'Soldat'), 'Leurre: Carte cible non renvoyée en main');
+            
+            // Test 6: Fallback Strategy with Invalid Ligne
+            plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+            let carte7 = gwentCardInstances.find(c => c.nom === 'Fantassin Redanien');
+            carte7 = { id: carte7.id, nom: carte7.nom, force: 1, forceBase: 1, ligne: 'Invalid', capacite: 'Lien Fraternel', type: 'Unité'};
+            plateau.joueur1.main = [ carte7 ];
+            plateau = jouerCarte(plateau, 'joueur1', carte7.id, 'melee');
+            console.assert(plateau.joueur1.lignes.melee.length === 1, 'Fallback: Carte non ajoutée');
+            console.assert(plateau.joueur1.lignes.melee[0].nom === 'Fantassin Redanien', `Fallback: Mauvaise carte ajoutée: ${plateau.joueur1.lignes.melee[0].nom}`);
+            
+            // Test 7: Chef (Foltest le Féroce - pioche et joue une Météo)
+            plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+            let carteMeteo = gwentCardInstances.find(c => c.nom === 'Froid Mordant');
+            carteMeteo = { id: carteMeteo.id, nom: carteMeteo.nom, force: 0, forceBase: 0, ligne: 'Melee', capacite: 'Meteo', type: 'Spécial' };
+            plateau.joueur1.deck = [ carteMeteo ];
+            let carteChef = gwentCardInstances.find(c => c.nom === 'Foltest le Féroce');
+            if (!carteChef) {
+                console.warn('Carte chef "Foltest le Féroce" non trouvée, sautez le test');
+                return;
+            }
+            carteChef = { id: carteChef.id, nom: carteChef.nom, force: 0, forceBase: 0, ligne: 'Chef', capacite: 'Chef (Meteo)', type: 'Chef', isHero: true };
+            plateau.joueur1.main = [ carteChef ];
+            plateau = jouerCarte(plateau, 'joueur1', carteChef.id);
+            console.assert(plateau.joueur1.chef && plateau.joueur1.chef.nom === 'Foltest le Féroce', 'Chef non placé');
+            console.assert(plateau.meteo.melee === true, 'Effet Météo du chef non appliqué');
+            console.assert(plateau.joueur1.deck.length === 0, 'Carte Météo non piochée du deck');
+
+            // Test 8: Incinération Temporisée (Villentretenmerth)
+            plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+            plateau.joueur2.lignes.melee = [
+                { id: 300, nom: 'Unité Ennemie', force: 10, forceBase: 10, ligne: ['Melee'], capacite: '', type: 'Unité', isHero: false }
+            ];
+            let carte8 = gwentCardInstances.find(c => c.nom === 'Villentretenmerth');
+            carte8 = { id: carte8.id, nom: carte8.nom, force: 7, forceBase: 7, ligne: ['Melee'], capacite: 'Incinération Temporisée', type: 'Unité', isHero: false };
+            plateau.joueur1.main = [ carte8 ];
+            plateau = jouerCarte(plateau, 'joueur1', carte8.id, 'melee');
+            console.assert(plateau.joueur1.lignes.melee.some(c => c.nom === 'Villentretenmerth'), 'Incinération Temporisée: Carte non placée sur la ligne melee');
+            console.assert(plateau.effetsDifferes && plateau.effetsDifferes.length === 1, 'Incinération Temporisée: Effet différé non enregistré');
+            console.assert(plateau.joueur2.lignes.melee.length === 1, 'Incinération Temporisée: Unité ennemie supprimée trop tôt');
+            // Simuler 3 tours
+            for (let i = 0; i < 3; i++) {
+                plateau = passerTour(plateau, 'joueur1');
+                plateau = passerTour(plateau, 'joueur2');
+            }
+            console.assert(plateau.joueur2.lignes.melee.length === 0, 'Incinération Temporisée: Unité ennemie non supprimée après 3 tours');
+            console.assert(plateau.joueur2.defausse.length === 1, 'Incinération Temporisée: Unité ennemie non déplacée vers défausse');
+            console.assert(plateau.effetsDifferes.length === 0, 'Incinération Temporisée: Effet différé non supprimé après exécution');
+
+            // Test 9: Cor de Chasse
+            plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+            plateau.joueur1.lignes.melee = [
+                { id: 400, nom: 'Soldat', force: 5, forceBase: 5, ligne: ['Melee'], capacite: '', type: 'Unité', isHero: false }
+            ];
+            let carte9 = gwentCardInstances.find(c => c.nom === 'Cor de Chasse');
+            carte9 = { id: carte9.id, nom: carte9.nom, force: 0, forceBase: 0, ligne: 'Amélioration', capacite: 'Cor de Chasse', type: 'Spécial' };
+            plateau.joueur1.main = [ carte9 ];
+            plateau = jouerCarte(plateau, 'joueur1', carte9.id, 'melee');
+            console.assert(plateau.joueur1.lignes.melee[0].force === 10, `Cor de Chasse: Force non doublée: ${plateau.joueur1.lignes.melee[0].force}`);
+
+            // Test 10: Temps Dégagé
+            plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+            plateau.meteo.melee = true;
+            plateau.joueur1.lignes.melee = [
+                { id: 500, nom: 'Soldat', force: 1, forceBase: 5, ligne: ['Melee'], capacite: '', type: 'Unité', isHero: false }
+            ];
+            let carte10 = gwentCardInstances.find(c => c.nom === 'Temps Dégagé') || { id: 600, nom: 'Temps Dégagé', force: 0, forceBase: 0, ligne: 'Amélioration', capacite: 'Temps Dégagé', type: 'Spécial' };
+            plateau.joueur1.main = [ carte10 ];
+            plateau = jouerCarte(plateau, 'joueur1', carte10.id);
+            console.assert(plateau.meteo.melee === false, 'Temps Dégagé: Effet météo non supprimé');
+            console.assert(plateau.joueur1.lignes.melee[0].force === 5, `Temps Dégagé: Force non restaurée: ${plateau.joueur1.lignes.melee[0].force}`);
+
+            // Test 11: Soif de Sang
+            plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+			let carte11_1 = gwentCardInstances.find(c => c.nom === 'Nekker');
+			let carte11_2 = gwentCardInstances.find(c => c.nom === 'Nekker');
+            plateau.joueur2.defausse = [
+                { id: 700, nom: 'Carte1', force: 5, forceBase: 5, ligne: ['Melee'], type: 'Unité' },
+                { id: 701, nom: 'Carte2', force: 5, forceBase: 5, ligne: ['Melee'], type: 'Unité' }
+            ];
+            plateau.joueur1.defausse = [];
+			let carte11 = gwentCardInstances.find(c => c.nom === 'Guerrier Skellige');
+            plateau.joueur1.main = [ carte11 ];
+            plateau = jouerCarte(plateau, 'joueur1', carte11.id, 'melee');
+            console.assert(plateau.joueur1.lignes.melee[0].force === 12, `Soif de Sang: Force non doublée: ${plateau.joueur1.lignes.melee[0].force}`);
+
+            // Test 12: Transformation (Jeune Berserker)
+            plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+            plateau.meteo.melee = true;
+			let carte12 = gwentCardInstances.find(c => c.nom === 'Jeune Berserker');
+            plateau.joueur1.main = [ carte12 ];
+            plateau = jouerCarte(plateau, 'joueur1', carte12.id, 'melee');
+            console.assert(plateau.joueur1.lignes.melee[0].nom === 'Berserker Enragé', `Transformation: Non transformé: ${plateau.joueur1.lignes.melee[0].nom}`);
+            console.assert(plateau.joueur1.lignes.melee[0].force === 8, `Transformation: Force incorrecte: ${plateau.joueur1.lignes.melee[0].force}`);
+
+            // Test 13: Nuée
+            plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+			let carte13 = gwentCardInstances.find(c => c.nom === 'Nécrophage');
+			let carte13_1 = gwentCardInstances.find(c => c.nom === 'Nécrophage');
+			let carte13_2 = gwentCardInstances.find(c => c.nom === 'Nécrophage');
+            plateau.joueur1.deck = [
+               carte13_1, carte13_2                
+            ];
+            plateau.joueur1.main = [ carte13 ];
+            plateau = jouerCarte(plateau, 'joueur1', carte13.id, 'melee');
+            console.assert(plateau.joueur1.lignes.melee.length === 3, `Nuée: Copies non placées: ${plateau.joueur1.lignes.melee.length}`);
+            console.assert(plateau.joueur1.deck.length === 0, 'Nuée: Deck non vidé des copies');
+
+            // Test 14: Agile
+            plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+			let carte14 = gwentCardInstances.find(c => c.nom === 'Vattier de Rideaux');
+            plateau.joueur1.main = [ carte14 ];
+            plateau = jouerCarte(plateau, 'joueur1', carte14.id, 'ranged');
+            console.assert(plateau.joueur2.lignes.ranged.length === 1, 'Agile: Non placé sur ranged');
+            console.assert(plateau.joueur2.lignes.siege.length === 0, 'Agile: Placé sur siege par erreur');
+            plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+            plateau.joueur1.main = [ carte14 ];
+            plateau = jouerCarte(plateau, 'joueur1', carte14.id, 'siege');
+            console.assert(plateau.joueur2.lignes.siege.length === 1, 'Agile: Non placé sur siege');
+            console.assert(plateau.joueur2.lignes.ranged.length === 0, 'Agile: Placé sur ranged par erreur');
+        }
+        
+        // Test scénario complet : 2 IAs
+        async function testPartieComplete(royaumeJ1, royaumeJ2) {
+            let plateau = JSON.parse(JSON.stringify(PlateauTemplate));
+            plateau.joueur1.deck = genererDeck(royaumeJ1, 10);
+            plateau.joueur2.deck = genererDeck(royaumeJ2, 10);
+            
+            for (let i = 0; i < 10 && plateau.joueur1.deck.length > 0; i++) {
+                plateau.joueur1.main.push(plateau.joueur1.deck.shift());
+                plateau.joueur2.main.push(plateau.joueur2.deck.shift());
+            }
+            
+            let logs = [];
+            let manches = 0;
+            
+            while (manches < 3 && plateau.manches <= 3 && (plateau.joueur1.deck.length > 0 || plateau.joueur1.main.length > 0 || plateau.joueur2.deck.length > 0 || plateau.joueur2.main.length > 0)) {
+                while (plateau.joueur1.statut !== 'passe' || plateau.joueur2.statut !== 'passe') {
+                    if (plateau.joueur1.statut !== 'passe') {
+                        let carteId = await proposerCarte(plateau, 'joueur1');
+                        if (carteId) {
+                            const carte = plateau.joueur1.main.find(c => c.id === carteId);
+                            const position = carte && carte.ligne ? normalizeLigne(carte.ligne) : 'melee';
+                            plateau = jouerCarte(plateau, 'joueur1', carteId, position);
+                            logs.push(`J1 joue ${carteId}`);
+                        } else {
+                            plateau = passerTour(plateau, 'joueur1');
+                            logs.push('J1 passe');
+                        }
+                    }
+                    if (plateau.joueur2.statut !== 'passe') {
+                        let carteId = await proposerCarte(plateau, 'joueur2');
+                        if (carteId) {
+                            const carte = plateau.joueur2.main.find(c => c.id === carteId);
+                            const position = carte && carte.ligne ? normalizeLigne(carte.ligne) : 'melee';
+                            plateau = jouerCarte(plateau, 'joueur2', carteId, position);
+                            logs.push(`J2 joue ${carteId}`);
+                        } else {
+                            plateau = passerTour(plateau, 'joueur2');
+                            logs.push('J2 passe');
+                        }
+                    }
+                }
+                plateau = finManche(plateau, royaumeJ1, royaumeJ2);
+                logs.push(`Fin manche ${plateau.manches}, Scores: J1=${plateau.joueur1.score}, J2=${plateau.joueur2.score}`);
+                manches++;
+            }
+            
+            console.log(logs.join('\n'));
+            console.assert(manches <= 3, 'Partie non terminée');
+            console.assert(plateau.joueur1.statut === 'actif' && plateau.joueur2.statut === 'actif', 'Statuts non réinitialisés');
+            console.assert(plateau.manches <= 4, `Trop de manches jouées: ${plateau.manches}`);
+        }
+        
+        // Exécuter les tests
+        try {
+            testAjoutCarte();
+            console.log('Tests unitaires passés avec succès');
+            testPartieComplete('Royaumes du Nord', 'Nilfgaard').then(() => {
+                console.log('Test de partie complète terminé');
+            });
+        } catch (e) {
+            console.error('Erreur lors des tests:', e);
+        }
+    </script>
+</body>
+</html>

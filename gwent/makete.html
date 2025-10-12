@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gwent CSS3D Demo - Dynamic Bar & Vivid Colors (Final)</title>
+    <style>
+        /* CONSTANTES DE COULEURS POUR LES LIGNES */
+        
+        /* Mêlée : Vert POMME VIF */
+        .C_MELEE_LIGHT { background: linear-gradient(135deg, #A8E61D, #8ac018); border-color: #A8E61D; } 
+        .C_MELEE_DARK { background-color: #618A1D; } 
+        
+        /* Distance : Jaune TRÈS VIF */
+        .C_RANGE_LIGHT { background: linear-gradient(135deg, #FFD700, #CCAA00); border-color: #FFD700; } 
+        .C_RANGE_DARK { background-color: #CCAA00; } 
+        
+        /* Siège : Marron très pâle */
+        .C_SIEGE_LIGHT { background: linear-gradient(135deg, #fffaeb, #e0d0b0); border-color: #fffaeb; }
+        .C_SIEGE_DARK { background-color: #997352; } 
+        
+        /* BASE & BACKGROUND */
+        body { 
+            margin: 0; 
+            overflow: hidden; 
+            /* CORRECTION: Gris foncé pour que le bleu transparent soit visible */
+            background: #333333; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            perspective: 1000px;
+            box-shadow: inset 0 0 100px rgba(120, 0, 255, 0.2); 
+        }
+        
+        /* UI SCORE */
+        .ui {
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            color: #d1b453;
+            z-index: 100;
+            background: rgba(0,0,0,0.7);
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #7800ff;
+            box-shadow: 0 0 10px #7800ff;
+        }
+        
+        /* CARTES */
+        .card { 
+            width: 160px;
+            height: 240px;
+            border: 3px solid #7800ff;
+            border-radius: 12px;
+            box-shadow: 0 0 30px rgba(120, 0, 255, 0.8), inset 0 0 5px rgba(255,255,255,0.3);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 64px;
+            font-weight: bold;
+            color: white; 
+            text-shadow: 0 0 5px #000;
+            cursor: pointer;
+            transform-style: preserve-3d;
+            backface-visibility: hidden;
+            position: relative;
+            overflow: hidden;
+            transition: opacity 0.3s ease;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.3), transparent, rgba(255,255,255,0.1));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .card:hover::before { opacity: 1; }
+
+        /* Barre de couleur en haut de chaque carte */
+        .card-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px; 
+            border-top-left-radius: 9px;
+            border-top-right-radius: 9px;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); 
+            z-index: 3;
+        }
+
+        /* --- Application des couleurs de LIGNE (Fonds de carte) --- */
+        .card.melee { 
+            background: linear-gradient(135deg, #A8E61D, #8ac018); /* Vert Pomme */
+            border-color: #A8E61D;
+        }
+        .card.range { 
+            background: linear-gradient(135deg, #FFD700, #CCAA00); 
+            border-color: #FFD700;
+        }
+        .card.siege { 
+            background: linear-gradient(135deg, #fffaeb, #e0d0b0); 
+            border-color: #fffaeb;
+        }
+
+        /* --- Application des couleurs de BARRE (Frise) --- */
+        .card .C_MELEE_DARK { background-color: #618A1D; }
+        .card .C_RANGE_DARK { background-color: #CCAA00; } 
+        .card .C_SIEGE_DARK { background-color: #997352; }
+
+        .player-frise {
+            opacity: 0.0; 
+        }
+
+        .card.off-board {
+            opacity: 0.2;
+            filter: grayscale(80%);
+            border-color: #333333;
+            box-shadow: none;
+        }
+        
+        /* PROGRESS BAR UI */
+        .progress-bar {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 5px;
+            background: rgba(120, 0, 255, 0.3);
+            border-radius: 2px;
+            z-index: 100;
+        }
+        .progress-fill {
+            height: 50%;
+            background: #00ffff;
+            border-radius: 2px;
+            transition: height 1s ease;
+        }
+        
+        /* NOUVEAU: Zone de transition sous la barre pour le joueur A */
+        .transition-zone {
+            /* Sera stylée dynamiquement en JS */
+        }
+    </style>
+</head>
+<body>
+    <div class="ui">
+        <div>Joueur A: <span id="scoreA">0</span></div>
+        <div>Joueur B: <span id="scoreB">0</span></div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/renderers/CSS3DRenderer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script>
+        // Constantes
+        const cardWidth = 160; 
+        const cardHeight = 240; 
+        const halfCardHeight = cardHeight / 2;
+        const gap = 20;
+        const PLATEAU_Z = 0;
+        
+        let scene, camera, renderer;
+        let boardGroup, progressBar3D, boardBottom, boardTop, transitionZoneA;
+        let a_cards = [];
+        let b_cards = [];
+        let scoreA = 0;
+        let scoreB = 0;
+        let a_card_positions = [];
+        let b_card_positions = [];
+        let time = 0;
+        let currentBarY = 0;
+        
+        const cardTypes = ['melee', 'range', 'siege'];
+        
+        const BOARD_TOTAL_HEIGHT = 8000;
+        let boardWidth = window.innerWidth * 2;
+        
+        const bottomY = -BOARD_TOTAL_HEIGHT / 2;
+        const topY = BOARD_TOTAL_HEIGHT / 2;
+        const margin = 50;
+        const cameraDistance = 2500;
+        
+        const FOUNDATION_COLOR_LIGHT = '#00ffff'; 
+        const FOUNDATION_COLOR_DARK = '#7800ff'; 
+        
+        // Couleur de fond du plateau (Bleu transparent à 60%)
+        const BACKGROUND_COLOR = 'rgba(0, 0, 255, 0.6)'; 
+        // Couleur de la zone de transition A
+        const TRANSITION_COLOR_A = 'rgba(255, 255, 255, 0.7)'; 
+
+        const ENTRY_OFFSET = 1000; 
+        const STACK_FACTOR = 0.5;
+        // 200% d'agrandissement de la zone de transition
+        const TRANSITION_ZONE_SCALE = 2.0; 
+
+        function init() {
+            scene = new THREE.Scene();
+            
+            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+            camera.position.set(0, 0, cameraDistance);
+            camera.lookAt(0, 0, 0);
+
+            renderer = new THREE.CSS3DRenderer();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.domElement.style.position = 'absolute';
+            renderer.domElement.style.top = 0;
+            document.body.appendChild(renderer.domElement);
+
+            boardGroup = new THREE.Group();
+            scene.add(boardGroup);
+
+            // --- Plateau du bas (Zone B - Visible dès le départ) ---
+            const bottomDiv = document.createElement('div');
+            bottomDiv.style.width = `${boardWidth}px`;
+            bottomDiv.style.height = `${BOARD_TOTAL_HEIGHT / 2}px`;
+            bottomDiv.style.backgroundColor = BACKGROUND_COLOR; 
+            bottomDiv.style.backgroundImage = `
+                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
+            `;
+            bottomDiv.style.backgroundSize = '100px 100px'; 
+            bottomDiv.style.opacity = '1'; 
+            bottomDiv.style.boxShadow = `inset 0 0 50px rgba(0, 0, 0, 0.1)`;
+            boardBottom = new THREE.CSS3DObject(bottomDiv);
+            boardBottom.position.set(0, bottomY + BOARD_TOTAL_HEIGHT / 4, -50); 
+            boardGroup.add(boardBottom);
+
+            // --- Plateau du haut (Zone A - Visible dès le départ) ---
+            const topDiv = document.createElement('div');
+            topDiv.style.width = `${boardWidth}px`;
+            topDiv.style.height = `${BOARD_TOTAL_HEIGHT / 2}px`;
+            topDiv.style.backgroundColor = BACKGROUND_COLOR; 
+            topDiv.style.backgroundImage = `
+                linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)
+            `;
+            topDiv.style.backgroundSize = '100px 100px';
+            topDiv.style.opacity = '1'; 
+            topDiv.style.boxShadow = `inset 0 0 50px rgba(0, 0, 0, 0.1)`;
+            boardTop = new THREE.CSS3DObject(topDiv);
+            boardTop.position.set(0, topY - BOARD_TOTAL_HEIGHT / 4, -50); 
+            boardGroup.add(boardTop);
+            
+            // --- Zone de transition A (Blanc Transparent - CACHÉE initialement) ---
+            const transitionDivA = document.createElement('div');
+            transitionDivA.className = 'transition-zone';
+            transitionDivA.style.width = `${boardWidth}px`;
+            // Hauteur à l'échelle
+            transitionDivA.style.height = `${(BOARD_TOTAL_HEIGHT / 4) * TRANSITION_ZONE_SCALE}px`; 
+            transitionDivA.style.backgroundColor = TRANSITION_COLOR_A;
+            transitionDivA.style.boxShadow = `inset 0 -10px 20px rgba(0, 0, 0, 0.2)`;
+            transitionDivA.style.opacity = '0'; // CACHÉE
+            transitionZoneA = new THREE.CSS3DObject(transitionDivA);
+            
+            // Positionnement arbitraire, car il sera animé dans startGame()
+            transitionZoneA.position.set(0, -500, -40); 
+            boardGroup.add(transitionZoneA);
+
+
+            // --- Barre de progression 3D (CACHÉE initialement) ---
+            const barDiv = document.createElement('div');
+            barDiv.style.width = `${boardWidth}px`;
+            barDiv.style.height = '16px'; 
+            barDiv.style.background = `linear-gradient(90deg, ${FOUNDATION_COLOR_DARK}, ${FOUNDATION_COLOR_LIGHT}, ${FOUNDATION_COLOR_DARK})`;
+            barDiv.style.borderRadius = '8px';
+            barDiv.style.boxShadow = `0 0 30px ${FOUNDATION_COLOR_LIGHT}, inset 0 0 10px rgba(255,255,255,0.4)`;
+            barDiv.style.opacity = '0'; // CACHÉE
+            progressBar3D = new THREE.CSS3DObject(barDiv);
+            progressBar3D.position.set(0, 0, 10);
+            boardGroup.add(progressBar3D);
+
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+
+            animate();
+            startGame();
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            time += 0.01;
+            
+            const lateralAmplitude = 400;
+            const longitudinalAmplitude = 100;
+            const speed = 0.0015;
+            
+            const offsetX = Math.sin(time * speed) * lateralAmplitude;
+            const offsetY = Math.cos(time * speed * 0.7) * longitudinalAmplitude;
+            
+            camera.position.x = offsetX;
+            camera.position.y = currentBarY + offsetY;
+            camera.position.z = cameraDistance;
+            camera.lookAt(offsetX, currentBarY, 0);
+            
+            renderer.render(scene, camera);
+        }
+
+        function createCard(player) {
+            const power = Math.floor(Math.random() * 10) + 1;
+            const type = cardTypes[Math.floor(Math.random() * cardTypes.length)];
+            
+            const cardDiv = document.createElement('div');
+            cardDiv.className = `card ${player} ${type}`; 
+            
+            let barClass;
+            switch(type) {
+                case 'melee': barClass = 'C_MELEE_DARK'; break;
+                case 'range': barClass = 'C_RANGE_DARK'; break;
+                case 'siege': barClass = 'C_SIEGE_DARK'; break;
+                default: barClass = '';
+            }
+            
+            cardDiv.innerHTML = `
+                <div class="card-bar ${barClass}"></div>
+                <div class="player-frise"></div>
+                <div style="position: relative; z-index: 2; margin-top: 15%;">
+                    ${power}
+                </div>
+            `;
+            cardDiv.style.transform = 'translateZ(10px)';
+            cardDiv.style.opacity = '0';
+            
+            const cardObj = new THREE.CSS3DObject(cardDiv);
+            cardObj.position.set(0, 0, PLATEAU_Z);
+            cardObj.scale.set(0.1, 0.1, 0.1);
+            
+            return { obj: cardObj, power, type, element: cardDiv };
+        }
+
+        function getNextAvailableX(teamPositions) {
+            let attempts = 0;
+            const maxAttempts = 300;
+            
+            while (attempts < maxAttempts) {
+                const x = (Math.random() - 0.5) * boardWidth * 0.8;
+                
+                const halfCardWidth = cardWidth / 2 + margin;
+                const occupied = teamPositions.some(posX => 
+                    Math.abs(x - posX) < halfCardWidth * 2
+                );
+                
+                if (!occupied) {
+                    return x;
+                }
+                attempts++;
+            }
+            
+            return attempts % 2 === 0 ? -(boardWidth / 2) + cardWidth : (boardWidth / 2) - cardWidth;
+        }
+
+        function updateCardsVerticalPositions(barY) {
+            const cardTargets = [];
+            
+            // Calcul du décalage vertical à 50%
+            const verticalOffset = STACK_FACTOR * (cardHeight + gap);
+            
+            // --- Joueur A (descend à partir de la barre) ---
+            let previousY_A = barY - (halfCardHeight + gap);
+            a_cards.forEach((card, i) => {
+                let targetY;
+                if (i === 0) {
+                    targetY = previousY_A;
+                } else {
+                    targetY = previousY_A - verticalOffset; 
+                }
+                previousY_A = targetY;
+                
+                const isOnBoard = targetY - halfCardHeight > bottomY;
+                
+                cardTargets.push({ card: card.obj.position, y: targetY });
+                
+                card.obj.position.x = a_card_positions[i];
+                card.obj.position.z = PLATEAU_Z;
+                card.element.classList[isOnBoard ? 'remove' : 'add']('off-board');
+            });
+
+            // --- Joueur B (monte à partir de la barre) ---
+            let previousY_B = barY + (halfCardHeight + gap);
+            b_cards.forEach((card, i) => {
+                let targetY;
+                if (i === 0) {
+                    targetY = previousY_B;
+                } else {
+                    targetY = previousY_B + verticalOffset; 
+                }
+                previousY_B = targetY;
+                
+                const isOnBoard = targetY + halfCardHeight < topY;
+
+                cardTargets.push({ card: card.obj.position, y: targetY });
+
+                card.obj.position.x = b_card_positions[i];
+                card.obj.position.z = PLATEAU_Z;
+                card.element.classList[isOnBoard ? 'remove' : 'add']('off-board');
+            });
+            
+            return cardTargets;
+        }
+
+        function updateBar(barY, animate = true) {
+            currentBarY = barY;
+            
+            const duration = animate ? 1 : 0;
+            
+            // Bar 3D (Seulement le positionnement)
+            gsap.to(progressBar3D.position, { y: barY, duration: duration, ease: "power2.out" });
+            // L'animation d'opacité de la barre est désormais gérée dans addTurn.
+
+            // Fond du plateau : Positionnement correct pour encadrer la barre mobile
+            const halfBoardHeight = BOARD_TOTAL_HEIGHT / 2;
+            const bottomPosition = barY - halfBoardHeight / 2;
+            const topPosition = barY + halfBoardHeight / 2;
+            
+            gsap.to(boardBottom.position, { 
+                y: bottomPosition, 
+                duration: duration, 
+                ease: "power2.out"
+            });
+            gsap.to(boardTop.position, { 
+                y: topPosition, 
+                duration: duration, 
+                ease: "power2.out"
+            });
+            
+            // Mouvement de la zone de transition A
+            const zoneHeight = (BOARD_TOTAL_HEIGHT / 4) * TRANSITION_ZONE_SCALE; 
+            const transitionPositionA = barY - zoneHeight / 2;
+            
+            gsap.to(transitionZoneA.position, {
+                y: transitionPositionA,
+                duration: duration, 
+                ease: "power2.out"
+            });
+            // Rend visible en cas d'animation (ou instantané si animate=false)
+            if (animate) {
+                 gsap.to(transitionZoneA.element.style, { opacity: 1, duration: 0.5 }, 0); 
+            } else {
+                 transitionZoneA.element.style.opacity = '1';
+            }
+            transitionZoneA.element.style.height = `${zoneHeight}px`; 
+
+            
+            gsap.to(boardBottom.element, { 
+                height: `${BOARD_TOTAL_HEIGHT / 2}px`, 
+                width: `${boardWidth}px`,
+                duration: duration, 
+                ease: "power2.out"
+            });
+            gsap.to(boardTop.element, { 
+                height: `${BOARD_TOTAL_HEIGHT / 2}px`,
+                width: `${boardWidth}px`,
+                duration: duration, 
+                ease: "power2.out"
+            });
+            transitionZoneA.element.style.width = `${boardWidth}px`;
+            
+            // Mise à jour des scores UI et barre de progression (toujours animée)
+            const total = scoreA + scoreB || 1;
+            const progressPercent = (scoreA / total) * 100;
+            gsap.to('#progressFill', { height: `${progressPercent}%`, duration: 1 });
+            document.getElementById('scoreA').textContent = scoreA;
+            document.getElementById('scoreB').textContent = scoreB;
+        }
+        
+        async function addTurn(turn) {
+            
+            const isPlayerA = turn % 2 === 0;
+            const player = isPlayerA ? 'A' : 'B';
+            const newCard = createCard(player);
+            const teamPositions = isPlayerA ? a_card_positions : b_card_positions;
+            const newX = getNextAvailableX(teamPositions);
+            
+            // 1. Mise à jour des scores et listes
+            if (isPlayerA) {
+                a_card_positions.push(newX);
+                a_cards.push(newCard);
+                scoreA += newCard.power;
+            } else {
+                b_card_positions.push(newX);
+                b_cards.push(newCard);
+                scoreB += newCard.power;
+            }
+
+            const total = scoreA + scoreB;
+            const newBarY = bottomY + (scoreA / total) * BOARD_TOTAL_HEIGHT; 
+
+            // Position d'entrée lointaine
+            const entryY = isPlayerA ? newBarY - ENTRY_OFFSET : newBarY + ENTRY_OFFSET;
+            
+            newCard.obj.position.set(newX, entryY, PLATEAU_Z);
+            boardGroup.add(newCard.obj);
+            
+            // 2. Précalcul des positions finales de TOUTES les cartes
+            const cardTargets = updateCardsVerticalPositions(newBarY); 
+
+            // 3. Orchestration de toutes les animations
+            const mainTimeline = gsap.timeline();
+            const cardDuration = 1.2; 
+            const barDuration = 1;
+            const oldCardsStartTime = 0.1; 
+
+            // A. Mouvement de la BARRE, du PLATEAU et de la ZONE BLANCHE (Utilise updateBar en mode animé)
+            updateBar(newBarY, true); 
+
+            // NOUVEAU: Animation d'apparition de la barre pour la deuxième carte (turn = 1)
+            if (turn === 1) { 
+                // La caméra et la barre bougent avec la même durée que l'animation de la carte (1s)
+                gsap.to(progressBar3D.element.style, { opacity: 1, duration: 0.5, ease: "power2.out" }, 0);
+            }
+
+            // B. Gère le mouvement de la caméra (currentBarY)
+            if (turn === 1) {
+                // CAS SPÉCIAL (1ère carte Joueur B) : Retarde le mouvement de la caméra
+                gsap.to(window, {
+                    currentBarY: newBarY, 
+                    duration: barDuration, 
+                    ease: "power2.out", 
+                    delay: cardDuration * 0.5 
+                });
+            } else {
+                // Mouvement normal : La caméra suit la barre
+                gsap.to(window, {
+                    currentBarY: newBarY, 
+                    duration: barDuration, 
+                    ease: "power2.out"
+                });
+            }
+
+            // C. Mouvement Y de la NOUVELLE carte (vers sa position finale)
+            const newCardTarget = cardTargets.find(t => t.card === newCard.obj.position);
+            mainTimeline.to(newCard.obj.position, { 
+                y: newCardTarget.y, 
+                duration: cardDuration, 
+                ease: "power2.out" 
+            }, 0); 
+
+            // D. Animation d'entrée de la NOUVELLE carte (échelle, opacité)
+            mainTimeline.fromTo(newCard.obj.scale, 
+                { x: 0.1, y: 0.1, z: 0.1 },
+                { x: 1, y: 1, z: 1, duration: cardDuration, ease: "back.out(1.7)" }, 0
+            );
+            mainTimeline.to(newCard.element, { opacity: 1, duration: 0.8 }, 0.4);
+
+            // E. Mouvement de TOUTES les ANCIENNES cartes (réalignement)
+            const oldCardTargets = cardTargets.filter(t => t.card !== newCard.obj.position);
+            
+            oldCardTargets.forEach(target => {
+                 mainTimeline.to(target.card, { 
+                    y: target.y, 
+                    duration: barDuration,
+                    ease: "power2.out"
+                }, oldCardsStartTime);
+            });
+
+            // 4. Attente de la fin du cycle
+            await new Promise(resolve => mainTimeline.eventCallback("onComplete", resolve));
+            await new Promise(resolve => setTimeout(resolve, 200)); 
+        }
+
+        async function startGame() {
+            // Création de la première carte (cachée, petite, prête à être animée)
+            const firstCard = createCard('A');
+            const firstX = 0;
+            a_card_positions.push(firstX);
+            firstCard.obj.scale.set(0.1, 0.1, 0.1);
+            firstCard.element.style.opacity = '0';
+            a_cards.push(firstCard);
+            scoreA += firstCard.power;
+            
+            // Calcul de la position finale pour le premier tour
+            const initialBarY = bottomY + (scoreA / (scoreA + scoreB)) * BOARD_TOTAL_HEIGHT;
+            const entryY = initialBarY - ENTRY_OFFSET; // Point de départ hors-écran
+            
+            firstCard.obj.position.set(firstX, entryY, PLATEAU_Z);
+            boardGroup.add(firstCard.obj);
+            
+            // Prépare les positions finales
+            const cardTargets = updateCardsVerticalPositions(initialBarY);
+            const firstCardTarget = cardTargets.find(t => t.card === firstCard.obj.position);
+            
+            // --- Orchestration de l'animation d'entrée de la 1ère carte, barre et zone blanche ---
+            const initialTimeline = gsap.timeline();
+            const initialDuration = 1.2;
+
+            // Fait démarrer l'animation de la barre et du fond bleu/blanc (La barre reste cachée)
+            updateBar(initialBarY, true);
+
+            // Animer la cible de la caméra pour suivre la barre
+            gsap.to(window, { currentBarY: initialBarY, duration: initialDuration, ease: "power2.out" }, 0); 
+
+            // Carte: Remontée vers sa position finale
+            initialTimeline.to(firstCard.obj.position, {
+                y: firstCardTarget.y, 
+                duration: initialDuration, 
+                ease: "power2.out"
+            }, 0);
+            initialTimeline.fromTo(firstCard.obj.scale, 
+                { x: 0.1, y: 0.1, z: 0.1 },
+                { x: 1, y: 1, z: 1, duration: initialDuration, ease: "back.out(1.7)" }, 0
+            );
+            initialTimeline.to(firstCard.element, { opacity: 1, duration: 0.8 }, 0.4);
+
+            // Mise à jour des scores UI
+            const total = scoreA + scoreB || 1;
+            const progressPercent = (scoreA / total) * 100;
+            gsap.to('#progressFill', { height: `${progressPercent}%`, duration: initialDuration });
+            document.getElementById('scoreA').textContent = scoreA;
+            document.getElementById('scoreB').textContent = scoreB;
+            
+            await new Promise(resolve => initialTimeline.eventCallback("onComplete", resolve));
+
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+
+            for (let turn = 1; turn < 20; turn++) {
+                await addTurn(turn);
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            boardWidth = window.innerWidth * 2;
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            
+            boardBottom.element.style.width = `${boardWidth}px`;
+            boardTop.element.style.width = `${boardWidth}px`;
+            progressBar3D.element.style.width = `${boardWidth}px`;
+            transitionZoneA.element.style.width = `${boardWidth}px`; 
+            
+            // Positionne instantanément la barre/zone (animate=false)
+            updateBar(currentBarY, false);
+            updateCardsVerticalPositions(currentBarY);
+        });
+
+        init();
+    </script>
+</body>
+</html>
