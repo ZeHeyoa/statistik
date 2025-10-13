@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gwent CSS3D Demo - Style Stacklands (Final)</title>
+    <title>Gwent CSS3D Demo - Style Stacklands (Pan & Zoom)</title>
     <style>
         /* CONSTANTES DE COULEURS POUR LES LIGNES (Simplifiées et vives) */
         
@@ -45,15 +45,14 @@
         
         /* CARTES (Style Stacklands : Carré et Plat) */
         .card { 
-            /* TAILLE CIBLÉE POUR LE STYLE STACKLANDS */
             width: 150px;
             height: 180px; 
-            border: 2px solid rgba(0,0,0,0.5); /* Bordure discrète */
+            border: 2px solid rgba(0,0,0,0.5); 
             border-radius: 10px; 
-            box-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Ombre portée simple */
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3); 
             display: flex;
             flex-direction: column;
-            justify-content: space-between; /* Pour placer le score en bas et l'icône/type en haut */
+            justify-content: space-between; 
             align-items: center;
             font-size: 40px; 
             font-weight: bold;
@@ -93,12 +92,11 @@
         }
 
         /* Application des couleurs de LIGNE (Fonds de carte) */
-        .card.melee { background-color: #A8E61D; } /* Vert Pomme */
-        .card.range { background-color: #FFD700; } /* Jaune Vif */
-        .card.siege { background-color: #B0E0E6; } /* Bleu Pâle */
+        .card.melee { background-color: #A8E61D; } 
+        .card.range { background-color: #FFD700; } 
+        .card.siege { background-color: #B0E0E6; } 
 
         .card.melee .card-power, .card.range .card-power, .card.siege .card-power {
-             /* Couleur du texte dynamique basée sur l'arrière-plan */
             color: #333; 
             text-shadow: 1px 1px 0 rgba(255,255,255,0.3);
         }
@@ -131,11 +129,16 @@
         
         /* Style pour la zone totale du plateau (fond bleu) */
         .board-area {
-            /* Garde un fond simple et sombre */
             background: #AEEA9C; 
             overflow: auto;
             box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.1); 
             opacity: 1;
+        }
+        
+        /* Style pour la zone de remplissage du score A */
+        .score-fill-A {
+            /* IMPORTANT : Retrait de tout style de positionnement CSS */
+            /* La position est gérée entièrement par Three.js */
         }
     </style>
 </head>
@@ -153,11 +156,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script>
         // Constantes
-        // NOUVELLES TAILLES POUR LE STYLE STACKLANDS
         const cardWidth = 150; 
         const cardHeight = 180; 
         const halfCardHeight = cardHeight / 2;
-        const gap = 10; // Espace entre les cartes
+        const gap = 10; 
         const PLATEAU_Z = 0;
         
         let scene, camera, renderer;
@@ -174,30 +176,33 @@
         
         const cardTypes = ['melee', 'range', 'siege'];
         
-        // Tailles du plateau conservées pour l'échelle
         const BOARD_TOTAL_HEIGHT = 4400; 
         let boardWidth = 7200; 
         
-        const bottomY = -BOARD_TOTAL_HEIGHT / 2; // -2200
-        const topY = BOARD_TOTAL_HEIGHT / 2;     // 2200
+        const bottomY = -BOARD_TOTAL_HEIGHT / 2; 
+        const topY = BOARD_TOTAL_HEIGHT / 2;     
         const margin = 100; 
         
         // PARAMÈTRES DE LA CAMÉRA (Fixe et centrée)
         const defaultCameraDistance = 2000; 
-        const minCameraDistance = 500;
+        const minCameraDistance = 1500;
         const maxCameraDistance = 8000;
         let cameraDistance = defaultCameraDistance;
         
-        const FOUNDATION_COLOR_LIGHT = '#00ffff'; 
-        const FOUNDATION_COLOR_DARK = '#DDC3A6'; 
+        // COULEUR POUR L'EFFET LUMINEUX DANS LA BARRE (MAINTENANT GRIS/NOIR)
+        const FOUNDATION_COLOR_LIGHT = '#444444'; 
         
-        const SCORE_FILL_COLOR_A = 'rgba(255, 255, 255, 0.4)'; 
+        const SCORE_FILL_COLOR_A = 'rgba(0, 0, 0, 0.2)'; 
 
         const ENTRY_OFFSET = 2000; 
-        // Facteur d'empilement ajusté pour le nouveau format de carte
         const STACK_FACTOR = 0.5; 
 
-        // Variables pour le zoom tactile
+        // --- VARIABLES DE TRANSLATION (PANNING) ---
+        let isDragging = false;
+        let previousMousePosition = { x: 0, y: 0 };
+        let panFactor = 1; 
+
+        // Variables pour le zoom tactile (pinch)
         let initialPinchDistance = null;
         
         function init() {
@@ -205,10 +210,8 @@
             
             currentBarY = 0; 
 
-            // FOV de 100 pour englober la hauteur du plateau (4400)
             camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 1, 10000);
             
-            // Caméra de face, fixe et centrée sur Y=0.
             camera.position.set(0, 0, cameraDistance); 
             camera.lookAt(0, 0, 0); 
             
@@ -227,10 +230,10 @@
             borderDiv.style.width = `${boardWidth}px`;
             borderDiv.style.height = `${BOARD_TOTAL_HEIGHT}px`;
             borderDiv.style.backgroundColor = 'transparent'; 
-            borderDiv.style.border = '10px solid #7800ff'; // Bordure violette pour le contraste
+            borderDiv.style.border = '30px solid rgba(50, 50, 50, 0.8)'; 
             
             boardBorder = new THREE.CSS3DObject(borderDiv);
-            boardBorder.position.set(0, 0, -50); 
+            boardBorder.position.set(0, -500, -50); 
             boardGroup.add(boardBorder);
 
             // 2. --- Plateau Total (Fond) ---
@@ -240,7 +243,7 @@
             areaDiv.style.height = `${BOARD_TOTAL_HEIGHT}px`;
             
             boardArea = new THREE.CSS3DObject(areaDiv);
-            boardArea.position.set(0, 0, -45); 
+            boardArea.position.set(0, 0, -50); 
             boardGroup.add(boardArea);
             
             // 3. --- Zone de remplissage du Score A (Blanc - Masque le fond) ---
@@ -250,18 +253,19 @@
             scoreFillDivA.style.backgroundColor = SCORE_FILL_COLOR_A;
             scoreFillDivA.style.boxShadow = `none`; 
             scoreFillDivA.style.opacity = '0'; 
+            
             scoreFillA = new THREE.CSS3DObject(scoreFillDivA);
-            scoreFillA.position.set(0, 0, -1); 
+            scoreFillA.position.set(0, 0, -45); 
             boardGroup.add(scoreFillA);
 
 
             // 4. --- Barre de progression 3D (La plus proche) ---
             const barDiv = document.createElement('div');
             barDiv.style.width = `${boardWidth}px`;
-            barDiv.style.height = '12px'; 
-            barDiv.style.background = `linear-gradient(90deg, #7800ff, #00ffff, #7800ff)`; // Couleurs plus vives
+            barDiv.style.height = '22px'; 
+            barDiv.style.background = `linear-gradient(90deg, #333333, #666666, #333333)`; 
             barDiv.style.borderRadius = '16px';
-            barDiv.style.boxShadow = `0 0 60px ${FOUNDATION_COLOR_LIGHT}, inset 0 0 20px rgba(255,255,255,0.4)`;
+            barDiv.style.boxShadow = `0 0 60px ${FOUNDATION_COLOR_LIGHT}, inset 0 0 20px rgba(255,255,255,0.1)`;
             barDiv.style.opacity = '0'; 
             progressBar3D = new THREE.CSS3DObject(barDiv);
             progressBar3D.position.set(0, 0, 20); 
@@ -270,20 +274,102 @@
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
             
-            // AJOUT DES GESTIONNAIRES D'ÉVÉNEMENTS
+            // --- AJOUT DES GESTIONNAIRES D'ÉVÉNEMENTS POUR LE PANNING ---
+            renderer.domElement.addEventListener('mousedown', handleMouseDown, false);
+            renderer.domElement.addEventListener('mousemove', handleMouseMove, false);
+            window.addEventListener('mouseup', handleMouseUp, false); 
+            
+            renderer.domElement.addEventListener('touchstart', handleTouchStartPan, false);
+            renderer.domElement.addEventListener('touchmove', handleTouchMovePan, false);
+            renderer.domElement.addEventListener('touchend', handleTouchEndPan, false);
+            
+            // Gestionnaire de zoom (wheel)
             window.addEventListener('wheel', handleMouseWheel, { passive: false });
-            window.addEventListener('touchstart', handleTouchStart, { passive: false });
-            window.addEventListener('touchmove', handleTouchMove, { passive: false });
-            window.addEventListener('touchend', handleTouchEnd, { passive: false });
-
+            
+            // Gestionnaire de zoom (pinch)
+            window.addEventListener('touchstart', handleTouchStartPinch, { passive: false });
+            window.addEventListener('touchmove', handleTouchMovePinch, { passive: false });
+            window.addEventListener('touchend', handleTouchEndPinch, { passive: false });
+            
+            updatePanFactor(); 
+            
             updateBar(currentBarY, false);
-
-
             animate();
             startGame();
         }
 
-        // --- GESTIONNAIRE DE ZOOM (SOURIS) ---
+        // --- UTILS POUR LA CONVERSION DE PIXELS EN UNITÉS 3D ---
+        function updatePanFactor() {
+            const vFOV = camera.fov * Math.PI / 180;
+            const height = 2 * Math.tan(vFOV / 2) * camera.position.z;
+            panFactor = height / window.innerHeight;
+        }
+
+        function panCamera(deltaX, deltaY) {
+            camera.position.x -= deltaX * panFactor;
+            camera.position.y += deltaY * panFactor;
+            
+            camera.lookAt(camera.position.x, camera.position.y, 0);
+        }
+
+        // --- GESTIONNAIRES DE PANNING (SOURIS) ---
+        function handleMouseDown(event) {
+            if (event.button === 0) { 
+                isDragging = true;
+                previousMousePosition.x = event.clientX;
+                previousMousePosition.y = event.clientY;
+                event.preventDefault(); 
+            }
+        }
+
+        function handleMouseMove(event) {
+            if (!isDragging) return;
+            
+            const deltaX = event.clientX - previousMousePosition.x;
+            const deltaY = event.clientY - previousMousePosition.y;
+
+            panCamera(deltaX, deltaY);
+
+            previousMousePosition.x = event.clientX;
+            previousMousePosition.y = event.clientY;
+        }
+
+        function handleMouseUp() {
+            isDragging = false;
+        }
+        
+        // --- GESTIONNAIRES DE PANNING (TOUCHER) ---
+        function handleTouchStartPan(event) {
+            if (event.touches.length === 1) {
+                isDragging = true;
+                previousMousePosition.x = event.touches[0].clientX;
+                previousMousePosition.y = event.touches[0].clientY;
+            }
+        }
+
+        function handleTouchMovePan(event) {
+            if (isDragging && event.touches.length === 1) {
+                event.preventDefault();
+                
+                const deltaX = event.touches[0].clientX - previousMousePosition.x;
+                const deltaY = event.touches[0].clientY - previousMousePosition.y;
+
+                panCamera(deltaX, deltaY);
+
+                previousMousePosition.x = event.touches[0].clientX;
+                previousMousePosition.y = event.touches[0].clientY;
+            }
+        }
+
+        function handleTouchEndPan() {
+            if (event.touches.length === 0) {
+                 isDragging = false;
+            }
+        }
+        // -------------------------------------
+
+
+        // --- GESTIONNAIRES DE ZOOM (WHEEL/PINCH) ---
         function handleMouseWheel(event) {
             event.preventDefault(); 
             
@@ -293,20 +379,20 @@
             updateCameraDistance(camera.position.z + zoomAmount);
         }
 
-        // --- GESTIONNAIRE DE ZOOM (TACTILE) ---
         function getPinchDistance(touches) {
             const dx = touches[0].clientX - touches[1].clientX;
             const dy = touches[0].clientY - touches[1].clientY;
             return Math.sqrt(dx * dx + dy * dy);
         }
         
-        function handleTouchStart(event) {
+        function handleTouchStartPinch(event) {
             if (event.touches.length === 2) {
                 initialPinchDistance = getPinchDistance(event.touches);
             }
+            isDragging = false; 
         }
 
-        function handleTouchMove(event) {
+        function handleTouchMovePinch(event) {
             if (event.touches.length === 2) {
                 event.preventDefault(); 
                 const currentPinchDistance = getPinchDistance(event.touches);
@@ -322,20 +408,27 @@
             }
         }
         
-        function handleTouchEnd(event) {
+        function handleTouchEndPinch(event) {
             initialPinchDistance = null;
+            if (event.touches.length === 1) {
+                isDragging = true;
+                previousMousePosition.x = event.touches[0].clientX;
+                previousMousePosition.y = event.touches[0].clientY;
+            }
         }
 
         function updateCameraDistance(newZ) {
             const clampedZ = Math.max(minCameraDistance, Math.min(maxCameraDistance, newZ));
             camera.position.z = clampedZ;
             cameraDistance = clampedZ; 
+            
+            updatePanFactor();
         }
         // -------------------------------------
 
+
         function animate() {
             requestAnimationFrame(animate);
-            // La caméra ne bouge plus ici.
             renderer.render(scene, camera);
         }
 
@@ -358,7 +451,6 @@
                 <div class="card-type-label">${typeLabel}</div>
                 <div class="card-power">${power}</div>
             `;
-            // Les cartes sont affichées en 3D (Z=10)
             cardDiv.style.transform = 'translateZ(10px)'; 
             cardDiv.style.opacity = '0';
             
@@ -393,11 +485,10 @@
         function updateCardsVerticalPositions(barY) {
             const cardTargets = [];
             
-            // STACK_FACTOR AJUSTÉ POUR LE NOUVEAU FORMAT
             const verticalOffset = STACK_FACTOR * (cardHeight + gap);
             const halfCardHeightWithGap = halfCardHeight + gap;
             
-            const jitterRange = 30; // Gigue réduite pour un look plus "stackable"
+            const jitterRange = 30; 
 
             // --- Joueur A (descend à partir de la barre) ---
             let base_Y_A = barY - halfCardHeightWithGap;
@@ -412,7 +503,6 @@
                 cardTargets.push({ card: card.obj.position, y: targetY });
                 
                 card.obj.position.x = a_card_positions[i];
-                // Z augmenté pour que l'empilement soit visible
                 card.obj.position.z = PLATEAU_Z + i * 5; 
                 card.element.classList[isOnBoard ? 'remove' : 'add']('off-board');
             });
@@ -430,7 +520,6 @@
                 cardTargets.push({ card: card.obj.position, y: targetY });
 
                 card.obj.position.x = b_card_positions[i];
-                // Z augmenté pour que l'empilement soit visible
                 card.obj.position.z = PLATEAU_Z + i * 5;
                 card.element.classList[isOnBoard ? 'remove' : 'add']('off-board');
             });
@@ -446,10 +535,7 @@
             // Bar 3D (Le plus en avant)
             gsap.to(progressBar3D.position, { y: barY, duration: duration, ease: "power2.out" });
             
-            // Mise à jour du Plateau (Bordure, Fond, Zone de score A)
-            // La logique reste la même pour l'extension visuelle des zones.
-
-            // ----------------------------------------------------------------------
+            // Mise à jour du Plateau (Bordure, Fond)
             gsap.to(boardBorder.element.style, { 
                 width: `${boardWidth}px`,
                 height: `${BOARD_TOTAL_HEIGHT}px`,
@@ -465,19 +551,20 @@
                 ease: "power2.out"
             });
             boardArea.position.set(0, 0, -45); 
-            // ----------------------------------------------------------------------
-
+            
             // --- Mouvement de la zone de score A (Blanc) (Z: -1) ---
             const heightA = barY - bottomY;
-            const centerA = (bottomY + barY) / 2; 
+            // Le centre vertical de la zone A (hauteur heightA) doit être positionné par rapport au centre de la scène (Y=0)
+            // CentreA = BottomY + (HeightA / 2)
+            const centerA = bottomY + (heightA / 2); 
             
             gsap.to(scoreFillA.element.style, { 
                 height: `${heightA}px`, 
-                width: `${boardWidth}px`,
                 duration: duration, 
                 ease: "power2.out"
             });
 
+            // Positionnement Y centré
             gsap.to(scoreFillA.position, {
                 y: centerA,
                 duration: duration, 
@@ -489,8 +576,7 @@
             } else {
                 gsap.to(scoreFillA.element.style, { opacity: 0, duration: 0.5 });
             }
-            // --------------------------------------------------------
-
+            
             // Mise à jour des scores UI
             const total = scoreA + scoreB || 1;
             const progressPercent = (scoreA / total) * 100;
@@ -507,7 +593,6 @@
             const teamPositions = isPlayerA ? a_card_positions : b_card_positions;
             const newX = getNextAvailableX(teamPositions);
             
-            // 1. Mise à jour des scores et listes
             if (isPlayerA) {
                 a_card_positions.push(newX);
                 a_cards.push(newCard);
@@ -524,14 +609,12 @@
             const entryY = isPlayerA ? newBarY - ENTRY_OFFSET : newBarY + ENTRY_OFFSET;
             
             const newCardIndex = (isPlayerA ? a_cards.length : b_cards.length) - 1;
-            newCard.obj.position.set(newX, entryY, PLATEAU_Z + newCardIndex * 5); // Z ajusté
+            newCard.obj.position.set(newX, entryY, PLATEAU_Z + newCardIndex * 5); 
 
             boardGroup.add(newCard.obj);
             
-            // 2. Précalcul des positions finales de TOUTES les cartes
             const cardTargets = updateCardsVerticalPositions(newBarY); 
 
-            // 3. Orchestration de toutes les animations
             const mainTimeline = gsap.timeline();
             const cardDuration = 1.2; 
             const barDuration = 1;
@@ -545,10 +628,8 @@
                 scoreFillA.element.style.opacity = '1';
             }
 
-            // A. Mouvement de la BARRE, du PLATEAU et de la zone de score A 
             updateBar(newBarY, true); 
 
-            // C. Mouvement Y de la NOUVELLE carte 
             const newCardTarget = cardTargets.find(t => t.card === newCard.obj.position);
             mainTimeline.to(newCard.obj.position, { 
                 y: newCardTarget.y, 
@@ -556,14 +637,12 @@
                 ease: "power2.out" 
             }, 0); 
 
-            // D. Animation d'entrée de la NOUVELLE carte 
             mainTimeline.fromTo(newCard.obj.scale, 
                 { x: 0.1, y: 0.1, z: 0.1 },
                 { x: 1, y: 1, z: 1, duration: cardDuration, ease: "back.out(1.7)" }, 0
             );
             mainTimeline.to(newCard.element, { opacity: 1, duration: 0.8 }, 0.4);
 
-            // E. Mouvement de TOUTES les ANCIENNES cartes (réalignement)
             const oldCardTargets = cardTargets.filter(t => t.card !== newCard.obj.position);
             
             oldCardTargets.forEach(target => {
@@ -574,13 +653,12 @@
                 }, oldCardsStartTime);
             });
 
-            // 4. Attente de la fin du cycle
             await new Promise(resolve => mainTimeline.eventCallback("onComplete", resolve));
             await new Promise(resolve => setTimeout(resolve, 200)); 
         }
 
         async function startGame() {
-            // Création de la première carte 
+            // Création de la première carte (logique inchangée)
             const firstCard = createCard('A');
             const firstX = 0;
             a_card_positions.push(firstX);
@@ -603,7 +681,8 @@
 
             updateBar(initialBarY, true);
 
-            // Carte: Remontée vers sa position finale
+            firstCard.obj.position.y = entryY; 
+
             initialTimeline.to(firstCard.obj.position, {
                 y: firstCardTarget.y, 
                 duration: initialDuration, 
@@ -616,7 +695,6 @@
             );
             initialTimeline.to(firstCard.element, { opacity: 1, duration: 0.8 }, 0.4);
 
-            // Mise à jour des scores UI
             const total = scoreA + scoreB || 1;
             const progressPercent = (scoreA / total) * 100;
             gsap.to('#progressFill', { height: `${progressPercent}%`, duration: initialDuration });
@@ -638,7 +716,6 @@
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
             
-            // Les éléments doivent conserver la taille fixe de boardWidth
             boardArea.element.style.width = `${boardWidth}px`;
             boardBorder.element.style.width = `${boardWidth}px`;
             progressBar3D.element.style.width = `${boardWidth}px`;
@@ -646,6 +723,8 @@
             
             updateBar(currentBarY, false);
             updateCardsVerticalPositions(currentBarY);
+            
+            updatePanFactor();
         });
 
         init();
