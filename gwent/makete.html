@@ -185,8 +185,8 @@
         
         // PARAMÈTRES DE LA CAMÉRA (Fixe et centrée)
         const defaultCameraDistance = 2000; 
-        const minCameraDistance = 1500;
-        const maxCameraDistance = 8000;
+        const minCameraDistance = 1000;
+        const maxCameraDistance = 3000;
         let cameraDistance = defaultCameraDistance;
         
         // COULEUR POUR L'EFFET LUMINEUX DANS LA BARRE (MAINTENANT GRIS/NOIR)
@@ -255,7 +255,7 @@
             scoreFillDivA.style.opacity = '0'; 
             
             scoreFillA = new THREE.CSS3DObject(scoreFillDivA);
-            scoreFillA.position.set(0, 0, -45); 
+            scoreFillA.position.set(0, 0, 0); 
             boardGroup.add(scoreFillA);
 
 
