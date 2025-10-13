@@ -3,31 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gwent CSS3D Demo - Dynamic Bar & Vivid Colors (Final)</title>
+    <title>Gwent CSS3D Demo - Style Stacklands (Final)</title>
     <style>
-        /* CONSTANTES DE COULEURS POUR LES LIGNES */
+        /* CONSTANTES DE COULEURS POUR LES LIGNES (Simplifiées et vives) */
         
         /* Mêlée : Vert POMME VIF */
-        .C_MELEE_LIGHT { background: linear-gradient(135deg, #A8E61D, #8ac018); border-color: #A8E61D; } 
+        .C_MELEE_COLOR { background-color: #A8E61D; color: #333; } 
         .C_MELEE_DARK { background-color: #618A1D; } 
         
-        /* Distance : Jaune TRÈS VIF */
-        .C_RANGE_LIGHT { background: linear-gradient(135deg, #FFD700, #CCAA00); border-color: #FFD700; } 
+        /* Distance : Jaune VIF */
+        .C_RANGE_COLOR { background-color: #FFD700; color: #333; } 
         .C_RANGE_DARK { background-color: #CCAA00; } 
         
-        /* Siège : Marron très pâle */
-        .C_SIEGE_LIGHT { background: linear-gradient(135deg, #fffaeb, #e0d0b0); border-color: #fffaeb; }
-        .C_SIEGE_DARK { background-color: #997352; } 
+        /* Siège : Bleu PÂLE (pour le contraste et l'effet "technologique") */
+        .C_SIEGE_COLOR { background-color: #B0E0E6; color: #333; } 
+        .C_SIEGE_DARK { background-color: #6A8D93; } 
         
         /* BASE & BACKGROUND */
         body { 
             margin: 0; 
             overflow: hidden; 
-            /* CORRECTION: Gris foncé pour que le bleu transparent soit visible */
-            background: #333333; 
+            background: #C7D8C2; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             perspective: 1000px;
-            box-shadow: inset 0 0 100px rgba(120, 0, 255, 0.2); 
+            touch-action: none; 
         }
         
         /* UI SCORE */
@@ -44,75 +43,64 @@
             box-shadow: 0 0 10px #7800ff;
         }
         
-        /* CARTES */
+        /* CARTES (Style Stacklands : Carré et Plat) */
         .card { 
-            width: 160px;
-            height: 240px;
-            border: 3px solid #7800ff;
-            border-radius: 12px;
-            box-shadow: 0 0 30px rgba(120, 0, 255, 0.8), inset 0 0 5px rgba(255,255,255,0.3);
+            /* TAILLE CIBLÉE POUR LE STYLE STACKLANDS */
+            width: 150px;
+            height: 180px; 
+            border: 2px solid rgba(0,0,0,0.5); /* Bordure discrète */
+            border-radius: 10px; 
+            box-shadow: 2px 2px 4px rgba(0,0,0,0.3); /* Ombre portée simple */
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between; /* Pour placer le score en bas et l'icône/type en haut */
             align-items: center;
-            font-size: 64px;
+            font-size: 40px; 
             font-weight: bold;
-            color: white; 
-            text-shadow: 0 0 5px #000;
+            text-shadow: none;
             cursor: pointer;
             transform-style: preserve-3d;
             backface-visibility: hidden;
             position: relative;
             overflow: hidden;
             transition: opacity 0.3s ease;
-        }
-        .card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.3), transparent, rgba(255,255,255,0.1));
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-        .card:hover::before { opacity: 1; }
-
-        /* Barre de couleur en haut de chaque carte */
-        .card-bar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 8px; 
-            border-top-left-radius: 9px;
-            border-top-right-radius: 9px;
-            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5); 
-            z-index: 3;
+            padding: 10px;
+            box-sizing: border-box;
+            text-align: center;
         }
 
-        /* --- Application des couleurs de LIGNE (Fonds de carte) --- */
-        .card.melee { 
-            background: linear-gradient(135deg, #A8E61D, #8ac018); /* Vert Pomme */
-            border-color: #A8E61D;
+        /* Effet de brillance au survol (Stacklands) */
+        .card:hover {
+            transform: translateZ(15px);
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 2px 2px 4px rgba(0,0,0,0.3);
+            z-index: 10;
         }
-        .card.range { 
-            background: linear-gradient(135deg, #FFD700, #CCAA00); 
-            border-color: #FFD700;
-        }
-        .card.siege { 
-            background: linear-gradient(135deg, #fffaeb, #e0d0b0); 
-            border-color: #fffaeb;
+        
+        /* Contenu de la carte */
+        .card-power {
+            font-size: 60px;
+            line-height: 1;
+            margin-bottom: 5px;
+            z-index: 2;
         }
 
-        /* --- Application des couleurs de BARRE (Frise) --- */
-        .card .C_MELEE_DARK { background-color: #618A1D; }
-        .card .C_RANGE_DARK { background-color: #CCAA00; } 
-        .card .C_SIEGE_DARK { background-color: #997352; }
+        .card-type-label {
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            opacity: 0.7;
+            z-index: 2;
+        }
 
-        .player-frise {
-            opacity: 0.0; 
+        /* Application des couleurs de LIGNE (Fonds de carte) */
+        .card.melee { background-color: #A8E61D; } /* Vert Pomme */
+        .card.range { background-color: #FFD700; } /* Jaune Vif */
+        .card.siege { background-color: #B0E0E6; } /* Bleu Pâle */
+
+        .card.melee .card-power, .card.range .card-power, .card.siege .card-power {
+             /* Couleur du texte dynamique basée sur l'arrière-plan */
+            color: #333; 
+            text-shadow: 1px 1px 0 rgba(255,255,255,0.3);
         }
 
         .card.off-board {
@@ -128,22 +116,26 @@
             top: 0;
             left: 50%;
             transform: translateX(-50%);
-            width: 100px;
-            height: 5px;
+            width: 200px; 
+            height: 4px; 
             background: rgba(120, 0, 255, 0.3);
-            border-radius: 2px;
+            border-radius: 4px; 
             z-index: 100;
         }
         .progress-fill {
             height: 50%;
             background: #00ffff;
-            border-radius: 2px;
+            border-radius: 4px;
             transition: height 1s ease;
         }
         
-        /* NOUVEAU: Zone de transition sous la barre pour le joueur A */
-        .transition-zone {
-            /* Sera stylée dynamiquement en JS */
+        /* Style pour la zone totale du plateau (fond bleu) */
+        .board-area {
+            /* Garde un fond simple et sombre */
+            background: #AEEA9C; 
+            overflow: auto;
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.1); 
+            opacity: 1;
         }
     </style>
 </head>
@@ -161,14 +153,15 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script>
         // Constantes
-        const cardWidth = 160; 
-        const cardHeight = 240; 
+        // NOUVELLES TAILLES POUR LE STYLE STACKLANDS
+        const cardWidth = 150; 
+        const cardHeight = 180; 
         const halfCardHeight = cardHeight / 2;
-        const gap = 20;
+        const gap = 10; // Espace entre les cartes
         const PLATEAU_Z = 0;
         
         let scene, camera, renderer;
-        let boardGroup, progressBar3D, boardBottom, boardTop, transitionZoneA;
+        let boardGroup, progressBar3D, boardArea, scoreFillA, boardBorder;
         let a_cards = [];
         let b_cards = [];
         let scoreA = 0;
@@ -176,38 +169,49 @@
         let a_card_positions = [];
         let b_card_positions = [];
         let time = 0;
-        let currentBarY = 0;
+        
+        let currentBarY = 0; 
         
         const cardTypes = ['melee', 'range', 'siege'];
         
-        const BOARD_TOTAL_HEIGHT = 8000;
-        let boardWidth = window.innerWidth * 2;
+        // Tailles du plateau conservées pour l'échelle
+        const BOARD_TOTAL_HEIGHT = 4400; 
+        let boardWidth = 7200; 
         
-        const bottomY = -BOARD_TOTAL_HEIGHT / 2;
-        const topY = BOARD_TOTAL_HEIGHT / 2;
-        const margin = 50;
-        const cameraDistance = 2500;
+        const bottomY = -BOARD_TOTAL_HEIGHT / 2; // -2200
+        const topY = BOARD_TOTAL_HEIGHT / 2;     // 2200
+        const margin = 100; 
+        
+        // PARAMÈTRES DE LA CAMÉRA (Fixe et centrée)
+        const defaultCameraDistance = 2000; 
+        const minCameraDistance = 500;
+        const maxCameraDistance = 8000;
+        let cameraDistance = defaultCameraDistance;
         
         const FOUNDATION_COLOR_LIGHT = '#00ffff'; 
-        const FOUNDATION_COLOR_DARK = '#7800ff'; 
+        const FOUNDATION_COLOR_DARK = '#DDC3A6'; 
         
-        // Couleur de fond du plateau (Bleu transparent à 60%)
-        const BACKGROUND_COLOR = 'rgba(0, 0, 255, 0.6)'; 
-        // Couleur de la zone de transition A
-        const TRANSITION_COLOR_A = 'rgba(255, 255, 255, 0.7)'; 
+        const SCORE_FILL_COLOR_A = 'rgba(255, 255, 255, 0.4)'; 
 
-        const ENTRY_OFFSET = 1000; 
-        const STACK_FACTOR = 0.5;
-        // 200% d'agrandissement de la zone de transition
-        const TRANSITION_ZONE_SCALE = 2.0; 
+        const ENTRY_OFFSET = 2000; 
+        // Facteur d'empilement ajusté pour le nouveau format de carte
+        const STACK_FACTOR = 0.5; 
 
+        // Variables pour le zoom tactile
+        let initialPinchDistance = null;
+        
         function init() {
             scene = new THREE.Scene();
             
-            camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-            camera.position.set(0, 0, cameraDistance);
-            camera.lookAt(0, 0, 0);
+            currentBarY = 0; 
 
+            // FOV de 100 pour englober la hauteur du plateau (4400)
+            camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 1, 10000);
+            
+            // Caméra de face, fixe et centrée sur Y=0.
+            camera.position.set(0, 0, cameraDistance); 
+            camera.lookAt(0, 0, 0); 
+            
             renderer = new THREE.CSS3DRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.domElement.style.position = 'absolute';
@@ -217,89 +221,121 @@
             boardGroup = new THREE.Group();
             scene.add(boardGroup);
 
-            // --- Plateau du bas (Zone B - Visible dès le départ) ---
-            const bottomDiv = document.createElement('div');
-            bottomDiv.style.width = `${boardWidth}px`;
-            bottomDiv.style.height = `${BOARD_TOTAL_HEIGHT / 2}px`;
-            bottomDiv.style.backgroundColor = BACKGROUND_COLOR; 
-            bottomDiv.style.backgroundImage = `
-                linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)
-            `;
-            bottomDiv.style.backgroundSize = '100px 100px'; 
-            bottomDiv.style.opacity = '1'; 
-            bottomDiv.style.boxShadow = `inset 0 0 50px rgba(0, 0, 0, 0.1)`;
-            boardBottom = new THREE.CSS3DObject(bottomDiv);
-            boardBottom.position.set(0, bottomY + BOARD_TOTAL_HEIGHT / 4, -50); 
-            boardGroup.add(boardBottom);
-
-            // --- Plateau du haut (Zone A - Visible dès le départ) ---
-            const topDiv = document.createElement('div');
-            topDiv.style.width = `${boardWidth}px`;
-            topDiv.style.height = `${BOARD_TOTAL_HEIGHT / 2}px`;
-            topDiv.style.backgroundColor = BACKGROUND_COLOR; 
-            topDiv.style.backgroundImage = `
-                linear-gradient(rgba(255,255,255,0.08) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.08) 1px, transparent 1px)
-            `;
-            topDiv.style.backgroundSize = '100px 100px';
-            topDiv.style.opacity = '1'; 
-            topDiv.style.boxShadow = `inset 0 0 50px rgba(0, 0, 0, 0.1)`;
-            boardTop = new THREE.CSS3DObject(topDiv);
-            boardTop.position.set(0, topY - BOARD_TOTAL_HEIGHT / 4, -50); 
-            boardGroup.add(boardTop);
+            // 1. --- Zone de Bordure (La plus éloignée) ---
+            const borderDiv = document.createElement('div');
+            borderDiv.className = 'border-area';
+            borderDiv.style.width = `${boardWidth}px`;
+            borderDiv.style.height = `${BOARD_TOTAL_HEIGHT}px`;
+            borderDiv.style.backgroundColor = 'transparent'; 
+            borderDiv.style.border = '10px solid #7800ff'; // Bordure violette pour le contraste
             
-            // --- Zone de transition A (Blanc Transparent - CACHÉE initialement) ---
-            const transitionDivA = document.createElement('div');
-            transitionDivA.className = 'transition-zone';
-            transitionDivA.style.width = `${boardWidth}px`;
-            // Hauteur à l'échelle
-            transitionDivA.style.height = `${(BOARD_TOTAL_HEIGHT / 4) * TRANSITION_ZONE_SCALE}px`; 
-            transitionDivA.style.backgroundColor = TRANSITION_COLOR_A;
-            transitionDivA.style.boxShadow = `inset 0 -10px 20px rgba(0, 0, 0, 0.2)`;
-            transitionDivA.style.opacity = '0'; // CACHÉE
-            transitionZoneA = new THREE.CSS3DObject(transitionDivA);
+            boardBorder = new THREE.CSS3DObject(borderDiv);
+            boardBorder.position.set(0, 0, -50); 
+            boardGroup.add(boardBorder);
+
+            // 2. --- Plateau Total (Fond) ---
+            const areaDiv = document.createElement('div');
+            areaDiv.className = 'board-area';
+            areaDiv.style.width = `${boardWidth}px`;
+            areaDiv.style.height = `${BOARD_TOTAL_HEIGHT}px`;
             
-            // Positionnement arbitraire, car il sera animé dans startGame()
-            transitionZoneA.position.set(0, -500, -40); 
-            boardGroup.add(transitionZoneA);
+            boardArea = new THREE.CSS3DObject(areaDiv);
+            boardArea.position.set(0, 0, -45); 
+            boardGroup.add(boardArea);
+            
+            // 3. --- Zone de remplissage du Score A (Blanc - Masque le fond) ---
+            const scoreFillDivA = document.createElement('div');
+            scoreFillDivA.className = 'score-fill-A';
+            scoreFillDivA.style.width = `${boardWidth}px`;
+            scoreFillDivA.style.backgroundColor = SCORE_FILL_COLOR_A;
+            scoreFillDivA.style.boxShadow = `none`; 
+            scoreFillDivA.style.opacity = '0'; 
+            scoreFillA = new THREE.CSS3DObject(scoreFillDivA);
+            scoreFillA.position.set(0, 0, -1); 
+            boardGroup.add(scoreFillA);
 
 
-            // --- Barre de progression 3D (CACHÉE initialement) ---
+            // 4. --- Barre de progression 3D (La plus proche) ---
             const barDiv = document.createElement('div');
             barDiv.style.width = `${boardWidth}px`;
-            barDiv.style.height = '16px'; 
-            barDiv.style.background = `linear-gradient(90deg, ${FOUNDATION_COLOR_DARK}, ${FOUNDATION_COLOR_LIGHT}, ${FOUNDATION_COLOR_DARK})`;
-            barDiv.style.borderRadius = '8px';
-            barDiv.style.boxShadow = `0 0 30px ${FOUNDATION_COLOR_LIGHT}, inset 0 0 10px rgba(255,255,255,0.4)`;
-            barDiv.style.opacity = '0'; // CACHÉE
+            barDiv.style.height = '12px'; 
+            barDiv.style.background = `linear-gradient(90deg, #7800ff, #00ffff, #7800ff)`; // Couleurs plus vives
+            barDiv.style.borderRadius = '16px';
+            barDiv.style.boxShadow = `0 0 60px ${FOUNDATION_COLOR_LIGHT}, inset 0 0 20px rgba(255,255,255,0.4)`;
+            barDiv.style.opacity = '0'; 
             progressBar3D = new THREE.CSS3DObject(barDiv);
-            progressBar3D.position.set(0, 0, 10);
+            progressBar3D.position.set(0, 0, 20); 
             boardGroup.add(progressBar3D);
 
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
             scene.add(ambientLight);
+            
+            // AJOUT DES GESTIONNAIRES D'ÉVÉNEMENTS
+            window.addEventListener('wheel', handleMouseWheel, { passive: false });
+            window.addEventListener('touchstart', handleTouchStart, { passive: false });
+            window.addEventListener('touchmove', handleTouchMove, { passive: false });
+            window.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+            updateBar(currentBarY, false);
+
 
             animate();
             startGame();
         }
 
+        // --- GESTIONNAIRE DE ZOOM (SOURIS) ---
+        function handleMouseWheel(event) {
+            event.preventDefault(); 
+            
+            const zoomSpeed = 200; 
+            const zoomAmount = event.deltaY > 0 ? zoomSpeed : -zoomSpeed;
+            
+            updateCameraDistance(camera.position.z + zoomAmount);
+        }
+
+        // --- GESTIONNAIRE DE ZOOM (TACTILE) ---
+        function getPinchDistance(touches) {
+            const dx = touches[0].clientX - touches[1].clientX;
+            const dy = touches[0].clientY - touches[1].clientY;
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+        
+        function handleTouchStart(event) {
+            if (event.touches.length === 2) {
+                initialPinchDistance = getPinchDistance(event.touches);
+            }
+        }
+
+        function handleTouchMove(event) {
+            if (event.touches.length === 2) {
+                event.preventDefault(); 
+                const currentPinchDistance = getPinchDistance(event.touches);
+                
+                if (initialPinchDistance) {
+                    const delta = currentPinchDistance - initialPinchDistance;
+                    const zoomFactor = -delta * 5; 
+                    
+                    updateCameraDistance(camera.position.z + zoomFactor);
+                    
+                    initialPinchDistance = currentPinchDistance; 
+                }
+            }
+        }
+        
+        function handleTouchEnd(event) {
+            initialPinchDistance = null;
+        }
+
+        function updateCameraDistance(newZ) {
+            const clampedZ = Math.max(minCameraDistance, Math.min(maxCameraDistance, newZ));
+            camera.position.z = clampedZ;
+            cameraDistance = clampedZ; 
+        }
+        // -------------------------------------
+
         function animate() {
             requestAnimationFrame(animate);
-            time += 0.01;
-            
-            const lateralAmplitude = 400;
-            const longitudinalAmplitude = 100;
-            const speed = 0.0015;
-            
-            const offsetX = Math.sin(time * speed) * lateralAmplitude;
-            const offsetY = Math.cos(time * speed * 0.7) * longitudinalAmplitude;
-            
-            camera.position.x = offsetX;
-            camera.position.y = currentBarY + offsetY;
-            camera.position.z = cameraDistance;
-            camera.lookAt(offsetX, currentBarY, 0);
-            
+            // La caméra ne bouge plus ici.
             renderer.render(scene, camera);
         }
 
@@ -310,22 +346,20 @@
             const cardDiv = document.createElement('div');
             cardDiv.className = `card ${player} ${type}`; 
             
-            let barClass;
+            let typeLabel;
             switch(type) {
-                case 'melee': barClass = 'C_MELEE_DARK'; break;
-                case 'range': barClass = 'C_RANGE_DARK'; break;
-                case 'siege': barClass = 'C_SIEGE_DARK'; break;
-                default: barClass = '';
+                case 'melee': typeLabel = 'Mêlée'; break;
+                case 'range': typeLabel = 'Distance'; break;
+                case 'siege': typeLabel = 'Siège'; break;
+                default: typeLabel = '';
             }
             
             cardDiv.innerHTML = `
-                <div class="card-bar ${barClass}"></div>
-                <div class="player-frise"></div>
-                <div style="position: relative; z-index: 2; margin-top: 15%;">
-                    ${power}
-                </div>
+                <div class="card-type-label">${typeLabel}</div>
+                <div class="card-power">${power}</div>
             `;
-            cardDiv.style.transform = 'translateZ(10px)';
+            // Les cartes sont affichées en 3D (Z=10)
+            cardDiv.style.transform = 'translateZ(10px)'; 
             cardDiv.style.opacity = '0';
             
             const cardObj = new THREE.CSS3DObject(cardDiv);
@@ -353,52 +387,51 @@
                 attempts++;
             }
             
-            return attempts % 2 === 0 ? -(boardWidth / 2) + cardWidth : (boardWidth / 2) - cardWidth;
+            return (Math.random() - 0.5) * boardWidth * 0.8; 
         }
 
         function updateCardsVerticalPositions(barY) {
             const cardTargets = [];
             
-            // Calcul du décalage vertical à 50%
+            // STACK_FACTOR AJUSTÉ POUR LE NOUVEAU FORMAT
             const verticalOffset = STACK_FACTOR * (cardHeight + gap);
+            const halfCardHeightWithGap = halfCardHeight + gap;
             
+            const jitterRange = 30; // Gigue réduite pour un look plus "stackable"
+
             // --- Joueur A (descend à partir de la barre) ---
-            let previousY_A = barY - (halfCardHeight + gap);
+            let base_Y_A = barY - halfCardHeightWithGap;
             a_cards.forEach((card, i) => {
-                let targetY;
-                if (i === 0) {
-                    targetY = previousY_A;
-                } else {
-                    targetY = previousY_A - verticalOffset; 
-                }
-                previousY_A = targetY;
+                const baseTargetY = base_Y_A - (i * verticalOffset);
+                
+                const jitterY = Math.random() * jitterRange - (jitterRange / 2); 
+                const targetY = baseTargetY + jitterY; 
                 
                 const isOnBoard = targetY - halfCardHeight > bottomY;
                 
                 cardTargets.push({ card: card.obj.position, y: targetY });
                 
                 card.obj.position.x = a_card_positions[i];
-                card.obj.position.z = PLATEAU_Z;
+                // Z augmenté pour que l'empilement soit visible
+                card.obj.position.z = PLATEAU_Z + i * 5; 
                 card.element.classList[isOnBoard ? 'remove' : 'add']('off-board');
             });
 
             // --- Joueur B (monte à partir de la barre) ---
-            let previousY_B = barY + (halfCardHeight + gap);
+            let base_Y_B = barY + halfCardHeightWithGap;
             b_cards.forEach((card, i) => {
-                let targetY;
-                if (i === 0) {
-                    targetY = previousY_B;
-                } else {
-                    targetY = previousY_B + verticalOffset; 
-                }
-                previousY_B = targetY;
+                const baseTargetY = base_Y_B + (i * verticalOffset);
+                
+                const jitterY = Math.random() * jitterRange - (jitterRange / 2); 
+                const targetY = baseTargetY + jitterY;
                 
                 const isOnBoard = targetY + halfCardHeight < topY;
 
                 cardTargets.push({ card: card.obj.position, y: targetY });
 
                 card.obj.position.x = b_card_positions[i];
-                card.obj.position.z = PLATEAU_Z;
+                // Z augmenté pour que l'empilement soit visible
+                card.obj.position.z = PLATEAU_Z + i * 5;
                 card.element.classList[isOnBoard ? 'remove' : 'add']('off-board');
             });
             
@@ -410,59 +443,55 @@
             
             const duration = animate ? 1 : 0;
             
-            // Bar 3D (Seulement le positionnement)
+            // Bar 3D (Le plus en avant)
             gsap.to(progressBar3D.position, { y: barY, duration: duration, ease: "power2.out" });
-            // L'animation d'opacité de la barre est désormais gérée dans addTurn.
+            
+            // Mise à jour du Plateau (Bordure, Fond, Zone de score A)
+            // La logique reste la même pour l'extension visuelle des zones.
 
-            // Fond du plateau : Positionnement correct pour encadrer la barre mobile
-            const halfBoardHeight = BOARD_TOTAL_HEIGHT / 2;
-            const bottomPosition = barY - halfBoardHeight / 2;
-            const topPosition = barY + halfBoardHeight / 2;
-            
-            gsap.to(boardBottom.position, { 
-                y: bottomPosition, 
+            // ----------------------------------------------------------------------
+            gsap.to(boardBorder.element.style, { 
+                width: `${boardWidth}px`,
+                height: `${BOARD_TOTAL_HEIGHT}px`,
                 duration: duration, 
                 ease: "power2.out"
             });
-            gsap.to(boardTop.position, { 
-                y: topPosition, 
+            boardBorder.position.set(0, 0, -50); 
+
+            gsap.to(boardArea.element.style, { 
+                width: `${boardWidth}px`,
+                height: `${BOARD_TOTAL_HEIGHT}px`,
+                duration: duration, 
+                ease: "power2.out"
+            });
+            boardArea.position.set(0, 0, -45); 
+            // ----------------------------------------------------------------------
+
+            // --- Mouvement de la zone de score A (Blanc) (Z: -1) ---
+            const heightA = barY - bottomY;
+            const centerA = (bottomY + barY) / 2; 
+            
+            gsap.to(scoreFillA.element.style, { 
+                height: `${heightA}px`, 
+                width: `${boardWidth}px`,
+                duration: duration, 
+                ease: "power2.out"
+            });
+
+            gsap.to(scoreFillA.position, {
+                y: centerA,
                 duration: duration, 
                 ease: "power2.out"
             });
             
-            // Mouvement de la zone de transition A
-            const zoneHeight = (BOARD_TOTAL_HEIGHT / 4) * TRANSITION_ZONE_SCALE; 
-            const transitionPositionA = barY - zoneHeight / 2;
-            
-            gsap.to(transitionZoneA.position, {
-                y: transitionPositionA,
-                duration: duration, 
-                ease: "power2.out"
-            });
-            // Rend visible en cas d'animation (ou instantané si animate=false)
-            if (animate) {
-                 gsap.to(transitionZoneA.element.style, { opacity: 1, duration: 0.5 }, 0); 
+            if (animate || heightA > 0) {
+                gsap.to(scoreFillA.element.style, { opacity: 1, duration: 0.5 }, 0); 
             } else {
-                 transitionZoneA.element.style.opacity = '1';
+                gsap.to(scoreFillA.element.style, { opacity: 0, duration: 0.5 });
             }
-            transitionZoneA.element.style.height = `${zoneHeight}px`; 
+            // --------------------------------------------------------
 
-            
-            gsap.to(boardBottom.element, { 
-                height: `${BOARD_TOTAL_HEIGHT / 2}px`, 
-                width: `${boardWidth}px`,
-                duration: duration, 
-                ease: "power2.out"
-            });
-            gsap.to(boardTop.element, { 
-                height: `${BOARD_TOTAL_HEIGHT / 2}px`,
-                width: `${boardWidth}px`,
-                duration: duration, 
-                ease: "power2.out"
-            });
-            transitionZoneA.element.style.width = `${boardWidth}px`;
-            
-            // Mise à jour des scores UI et barre de progression (toujours animée)
+            // Mise à jour des scores UI
             const total = scoreA + scoreB || 1;
             const progressPercent = (scoreA / total) * 100;
             gsap.to('#progressFill', { height: `${progressPercent}%`, duration: 1 });
@@ -492,10 +521,11 @@
             const total = scoreA + scoreB;
             const newBarY = bottomY + (scoreA / total) * BOARD_TOTAL_HEIGHT; 
 
-            // Position d'entrée lointaine
             const entryY = isPlayerA ? newBarY - ENTRY_OFFSET : newBarY + ENTRY_OFFSET;
             
-            newCard.obj.position.set(newX, entryY, PLATEAU_Z);
+            const newCardIndex = (isPlayerA ? a_cards.length : b_cards.length) - 1;
+            newCard.obj.position.set(newX, entryY, PLATEAU_Z + newCardIndex * 5); // Z ajusté
+
             boardGroup.add(newCard.obj);
             
             // 2. Précalcul des positions finales de TOUTES les cartes
@@ -506,35 +536,19 @@
             const cardDuration = 1.2; 
             const barDuration = 1;
             const oldCardsStartTime = 0.1; 
+            
+            if (turn === 1) {
+                const overflowBarY = topY; 
+                updateBar(overflowBarY, false); 
+                currentBarY = overflowBarY;     
+                progressBar3D.element.style.opacity = '1';
+                scoreFillA.element.style.opacity = '1';
+            }
 
-            // A. Mouvement de la BARRE, du PLATEAU et de la ZONE BLANCHE (Utilise updateBar en mode animé)
+            // A. Mouvement de la BARRE, du PLATEAU et de la zone de score A 
             updateBar(newBarY, true); 
 
-            // NOUVEAU: Animation d'apparition de la barre pour la deuxième carte (turn = 1)
-            if (turn === 1) { 
-                // La caméra et la barre bougent avec la même durée que l'animation de la carte (1s)
-                gsap.to(progressBar3D.element.style, { opacity: 1, duration: 0.5, ease: "power2.out" }, 0);
-            }
-
-            // B. Gère le mouvement de la caméra (currentBarY)
-            if (turn === 1) {
-                // CAS SPÉCIAL (1ère carte Joueur B) : Retarde le mouvement de la caméra
-                gsap.to(window, {
-                    currentBarY: newBarY, 
-                    duration: barDuration, 
-                    ease: "power2.out", 
-                    delay: cardDuration * 0.5 
-                });
-            } else {
-                // Mouvement normal : La caméra suit la barre
-                gsap.to(window, {
-                    currentBarY: newBarY, 
-                    duration: barDuration, 
-                    ease: "power2.out"
-                });
-            }
-
-            // C. Mouvement Y de la NOUVELLE carte (vers sa position finale)
+            // C. Mouvement Y de la NOUVELLE carte 
             const newCardTarget = cardTargets.find(t => t.card === newCard.obj.position);
             mainTimeline.to(newCard.obj.position, { 
                 y: newCardTarget.y, 
@@ -542,7 +556,7 @@
                 ease: "power2.out" 
             }, 0); 
 
-            // D. Animation d'entrée de la NOUVELLE carte (échelle, opacité)
+            // D. Animation d'entrée de la NOUVELLE carte 
             mainTimeline.fromTo(newCard.obj.scale, 
                 { x: 0.1, y: 0.1, z: 0.1 },
                 { x: 1, y: 1, z: 1, duration: cardDuration, ease: "back.out(1.7)" }, 0
@@ -566,7 +580,7 @@
         }
 
         async function startGame() {
-            // Création de la première carte (cachée, petite, prête à être animée)
+            // Création de la première carte 
             const firstCard = createCard('A');
             const firstX = 0;
             a_card_positions.push(firstX);
@@ -575,26 +589,19 @@
             a_cards.push(firstCard);
             scoreA += firstCard.power;
             
-            // Calcul de la position finale pour le premier tour
-            const initialBarY = bottomY + (scoreA / (scoreA + scoreB)) * BOARD_TOTAL_HEIGHT;
-            const entryY = initialBarY - ENTRY_OFFSET; // Point de départ hors-écran
+            const initialBarY = topY; 
+            const entryY = initialBarY - ENTRY_OFFSET; 
             
             firstCard.obj.position.set(firstX, entryY, PLATEAU_Z);
             boardGroup.add(firstCard.obj);
             
-            // Prépare les positions finales
             const cardTargets = updateCardsVerticalPositions(initialBarY);
             const firstCardTarget = cardTargets.find(t => t.card === firstCard.obj.position);
             
-            // --- Orchestration de l'animation d'entrée de la 1ère carte, barre et zone blanche ---
             const initialTimeline = gsap.timeline();
             const initialDuration = 1.2;
 
-            // Fait démarrer l'animation de la barre et du fond bleu/blanc (La barre reste cachée)
             updateBar(initialBarY, true);
-
-            // Animer la cible de la caméra pour suivre la barre
-            gsap.to(window, { currentBarY: initialBarY, duration: initialDuration, ease: "power2.out" }, 0); 
 
             // Carte: Remontée vers sa position finale
             initialTimeline.to(firstCard.obj.position, {
@@ -602,6 +609,7 @@
                 duration: initialDuration, 
                 ease: "power2.out"
             }, 0);
+
             initialTimeline.fromTo(firstCard.obj.scale, 
                 { x: 0.1, y: 0.1, z: 0.1 },
                 { x: 1, y: 1, z: 1, duration: initialDuration, ease: "back.out(1.7)" }, 0
@@ -626,17 +634,16 @@
         }
 
         window.addEventListener('resize', () => {
-            boardWidth = window.innerWidth * 2;
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
             
-            boardBottom.element.style.width = `${boardWidth}px`;
-            boardTop.element.style.width = `${boardWidth}px`;
+            // Les éléments doivent conserver la taille fixe de boardWidth
+            boardArea.element.style.width = `${boardWidth}px`;
+            boardBorder.element.style.width = `${boardWidth}px`;
             progressBar3D.element.style.width = `${boardWidth}px`;
-            transitionZoneA.element.style.width = `${boardWidth}px`; 
+            scoreFillA.element.style.width = `${boardWidth}px`; 
             
-            // Positionne instantanément la barre/zone (animate=false)
             updateBar(currentBarY, false);
             updateCardsVerticalPositions(currentBarY);
         });
