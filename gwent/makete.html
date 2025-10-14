@@ -1,23 +1,19 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gwent CSS3D Demo - Style Stacklands (Pan & Zoom)</title>
+    <title>Gwent CSS3D Demo - Fusion avec Pile de Cartes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
     <style>
-        /* CONSTANTES DE COULEURS POUR LES LIGNES (Simplifiées et vives) */
+        /* ======================================================= */
+        /* === STYLES DU PLATEAU 3D (makete.html) === */
+        /* ======================================================= */
         
-        /* Mêlée : Vert POMME VIF */
+        /* CONSTANTES DE COULEURS POUR LES LIGNES */
         .C_MELEE_COLOR { background-color: #A8E61D; color: #333; } 
-        .C_MELEE_DARK { background-color: #618A1D; } 
-        
-        /* Distance : Jaune VIF */
         .C_RANGE_COLOR { background-color: #FFD700; color: #333; } 
-        .C_RANGE_DARK { background-color: #CCAA00; } 
-        
-        /* Siège : Bleu PÂLE (pour le contraste et l'effet "technologique") */
         .C_SIEGE_COLOR { background-color: #B0E0E6; color: #333; } 
-        .C_SIEGE_DARK { background-color: #6A8D93; } 
         
         /* BASE & BACKGROUND */
         body { 
@@ -31,20 +27,23 @@
         
         /* UI SCORE */
         .ui {
+            /* Gardé en 'fixed' car le score DOIT rester en overlay 2D standard */
             position: fixed;
-            top: 10px;
+            /* REMONTÉE VISUELLE */
+            top: 5px;
             left: 10px;
             color: #d1b453;
-            z-index: 100;
+            z-index: 1000; /* Augmenté pour être au-dessus du plateau et de la pile */
             background: rgba(0,0,0,0.7);
-            padding: 10px;
+            /* Resserrement du padding */
+            padding: 5px 8px;
             border-radius: 5px;
             border: 1px solid #7800ff;
             box-shadow: 0 0 10px #7800ff;
         }
         
-        /* CARTES (Style Stacklands : Carré et Plat) */
-        .card { 
+        /* CARTES PLATEAU */
+        .card.A, .card.B { 
             width: 150px;
             height: 180px; 
             border: 2px solid rgba(0,0,0,0.5); 
@@ -68,14 +67,13 @@
             text-align: center;
         }
 
-        /* Effet de brillance au survol (Stacklands) */
-        .card:hover {
+        .card.A:hover, .card.B:hover {
             transform: translateZ(15px);
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 2px 2px 4px rgba(0,0,0,0.3);
             z-index: 10;
         }
         
-        /* Contenu de la carte */
+        /* Contenu de la carte Plateau */
         .card-power {
             font-size: 60px;
             line-height: 1;
@@ -91,7 +89,7 @@
             z-index: 2;
         }
 
-        /* Application des couleurs de LIGNE (Fonds de carte) */
+        /* Application des couleurs de LIGNE */
         .card.melee { background-color: #A8E61D; } 
         .card.range { background-color: #FFD700; } 
         .card.siege { background-color: #B0E0E6; } 
@@ -118,7 +116,7 @@
             height: 4px; 
             background: rgba(120, 0, 255, 0.3);
             border-radius: 4px; 
-            z-index: 100;
+            z-index: 1000;
         }
         .progress-fill {
             height: 50%;
@@ -134,12 +132,155 @@
             box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.1); 
             opacity: 1;
         }
-        
-        /* Style pour la zone de remplissage du score A */
-        .score-fill-A {
-            /* IMPORTANT : Retrait de tout style de positionnement CSS */
-            /* La position est gérée entièrement par Three.js */
+
+        /* ======================================================= */
+        /* === STYLES DE LA PILE (menu.html) === */
+        /* ======================================================= */
+        :root {
+            --card-width-menu: 100px;
+            --card-height-menu: 140px;
+            --z-gap: 1px;
+            --bg-green: #bff5bf;
+            --bg-blue: #c9e5ff;
+            --bg-orange: #ffe5b0;
+            --bg-white: #ffffff;
+            --bg-darkgrey: #777777;
+            --border-dark: #333;
+            --counter-bg: #e67e22;
+            --text-dark: #333;
         }
+
+        /* Positionnement géré par THREE.js */
+        .scene-menu { 
+            position: absolute; 
+            width: 300px;     
+            height: 400px;    
+            pointer-events: none; 
+        }
+        
+        .scene-menu > * {
+            pointer-events: auto; 
+        }
+        
+        .card-counter {
+            position: absolute;
+            bottom: 70%; 
+            /* Décalage interne conservé */
+            left: 55%; 
+            transform: translateX(-50%);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--counter-bg);
+            border: 3px solid var(--border-dark);
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+        }
+
+        .toggle-indicator {
+            position: absolute;
+            top: 80%; 
+            /* Décalage interne conservé */
+            left: 55%; 
+            transform: translateX(-50%);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 5px solid #444;
+            display: none; 
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease;
+            z-index: 500;
+        }
+        .toggle-indicator:hover {
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        .card-stack {
+            position: absolute; 
+            width: var(--card-width-menu);
+            height: var(--card-height-menu);
+            transform-style: preserve-3d;
+            top: 50%; /* Centré dans le conteneur scene-menu */
+            left: 50%; 
+            transition: transform 0.2s ease-out; 
+            transform: translate(-50%, -50%) rotateX(10deg);
+        }
+
+        /* Classes de rebond */
+        .card-stack.bounce-x {
+            transform: translate(calc(-50% + 5px), -50%) rotateX(10deg); 
+            transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .card-stack.bounce-y {
+            transform: translate(-50%, calc(-50% + 5px)) rotateX(10deg); 
+            transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .card-stack:not(.bounce-x):not(.bounce-y) {
+            transition: transform 0.25s ease-out;
+        }
+
+        /* Cartes de la pile (Distinction des cartes Plateau) */
+        .card.menu-card {
+            position: absolute;
+            width: var(--card-width-menu);
+            height: var(--card-height-menu);
+            border: 2px solid var(--border-dark);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            font-size: 30px;
+            font-weight: bold;
+            color: var(--text-dark);
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            transition: transform 0.25s ease-out, box-shadow 0.25s ease-out, background-color 0.3s ease;
+            box-shadow: 0 3px 4px rgba(0,0,0,0.25);
+            font-family: 'Fredoka One', cursive, Arial, sans-serif;
+        }
+        .card.menu-card .card-count {
+            font-size: 16px;
+            background: rgba(255,255,255,0.7);
+            border-radius: 5px;
+            padding: 2px 8px;
+            border: 1px solid var(--border-dark);
+        }
+
+        .card.menu-card.is-dragging {
+            box-shadow: 6px 6px 15px rgba(0,0,0,0.5);
+        }
+
+        /* HALO FIN, FLUO ET ESPACÉ */
+        .card.menu-card.highlight-halo {
+            box-shadow: 
+                0 0 0 5px rgba(0, 0, 0, 0), 
+                0 0 5px 6px currentColor,  
+                0 0 10px 8px currentColor, 
+                0 4px 8px rgba(0,0,0,0.4); 
+        }
+
+        .card.menu-card.cycle-out {
+            z-index: -1;
+            transition: transform 0.25s cubic-bezier(0.68,-0.55,0.265,1.55);
+            transform: translateZ(-200px) translateY(-100px) scale(0.8);
+        }
+        .card.menu-card.remove-left, .card.menu-card.remove-right {
+            z-index: 100;
+            transition: transform 0.3s cubic-bezier(0.68,-0.55,0.265,1.55), opacity 0.3s ease-in;
+            opacity: 0; pointer-events: none;
+        }
+        .card.menu-card.remove-left { transform: translateX(-400px) rotateZ(-15deg) translateZ(-50px); }
+        .card.menu-card.remove-right { transform: translateX(400px) rotateZ(15deg) translateZ(-50px); }
     </style>
 </head>
 <body>
@@ -150,12 +291,20 @@
             <div class="progress-fill" id="progressFill"></div>
         </div>
     </div>
+    
+    <div class="scene-menu">
+        <div class="card-counter">0</div>
+        <div class="card-stack"></div>
+        <div class="toggle-indicator" id="colorToggle"></div>
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/renderers/CSS3DRenderer.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script>
-        // Constantes
+        /* ======================================================= */
+        /* === LOGIQUE THREE.JS (makete.html) === */
+        /* ======================================================= */
         const cardWidth = 150; 
         const cardHeight = 180; 
         const halfCardHeight = cardHeight / 2;
@@ -170,7 +319,7 @@
         let scoreB = 0;
         let a_card_positions = [];
         let b_card_positions = [];
-        let time = 0;
+        let menuObject; 
         
         let currentBarY = 0; 
         
@@ -183,35 +332,105 @@
         const topY = BOARD_TOTAL_HEIGHT / 2;     
         const margin = 100; 
         
-        // PARAMÈTRES DE LA CAMÉRA (Fixe et centrée)
         const defaultCameraDistance = 2000; 
         const minCameraDistance = 1000;
         const maxCameraDistance = 3000;
         let cameraDistance = defaultCameraDistance;
         
-        // COULEUR POUR L'EFFET LUMINEUX DANS LA BARRE (MAINTENANT GRIS/NOIR)
         const FOUNDATION_COLOR_LIGHT = '#444444'; 
-        
         const SCORE_FILL_COLOR_A = 'rgba(0, 0, 0, 0.2)'; 
 
         const ENTRY_OFFSET = 2000; 
         const STACK_FACTOR = 0.5; 
+        
+        // PARAMÈTRES DE LA PILE
+        const MENU_CONTAINER_WIDTH = 300; 
+        const MENU_CONTAINER_HEIGHT = 400; 
+        // CHANGEMENT : 4.5 * 2 = 9.0 (Augmentation totale à 400% de la taille initiale)
+        const MENU_SCALE = 9.0;         
+        // MODIFIÉ : Changé de -0.20 à -0.10 pour décaler l'ensemble de la pile 10% plus à droite
+        const LEFT_OFFSET_PERCENT = -0.10; 
+        
+        // NOUVEAU PARAMÈTRE : Alignement vertical à 50% du haut de la fenêtre.
+        const TOP_ALIGNMENT_PERCENTAGE = 0.5; 
 
-        // --- VARIABLES DE TRANSLATION (PANNING) ---
+        // Variables de panning/zoom
         let isDragging = false;
         let previousMousePosition = { x: 0, y: 0 };
         let panFactor = 1; 
-
-        // Variables pour le zoom tactile (pinch)
         let initialPinchDistance = null;
+        
+        /**
+         * Calcule la position X dans l'espace 3D pour que le bord gauche du menu 
+         * soit à 1% du bord gauche de la fenêtre.
+         */
+        function getMenuXPosition() {
+            // Calculer la largeur de la vue 3D à la distance de la caméra
+            const aspect = window.innerWidth / window.innerHeight;
+            const vFOV = camera.fov * Math.PI / 180;
+            const viewHeight = 2 * Math.tan(vFOV / 2) * camera.position.z;
+            const viewWidth = viewHeight * aspect;
+            
+            // Largeur de l'objet .scene-menu dans l'espace 3D
+            const menuWidth3D = MENU_CONTAINER_WIDTH * MENU_SCALE;
+            
+            // La position X du bord gauche de la vue 3D
+            const viewLeftEdge = camera.position.x - (viewWidth / 2);
+            
+            // Application du décalage (maintenant possiblement négatif)
+            const targetXOffset = viewWidth * LEFT_OFFSET_PERCENT;
+            
+            // Position X du centre du menu pour que son bord gauche soit à viewLeftEdge + targetXOffset
+            const targetCenterX = viewLeftEdge + targetXOffset + (menuWidth3D / 2);
+            
+            return targetCenterX;
+        }
+
+        /**
+         * Calcule la position Y dans l'espace 3D pour aligner verticalement le centre de la pile
+         * avec 50% du haut de la fenêtre.
+         */
+        function getMenuYPosition() {
+            // Facteur de conversion des pixels écran en unités 3D à la distance de la caméra
+            const vFOV = camera.fov * Math.PI / 180;
+            const viewHeight = 2 * Math.tan(vFOV / 2) * camera.position.z;
+            const unitsPerPixel = viewHeight / window.innerHeight;
+
+            // Décalage en unités 3D correspondant à 50% de la hauteur de l'écran
+            const targetTopOffset3D = (window.innerHeight * TOP_ALIGNMENT_PERCENTAGE) * unitsPerPixel;
+
+            // Hauteur de l'objet .scene-menu dans l'espace 3D
+            const menuHeight3D = MENU_CONTAINER_HEIGHT * MENU_SCALE;
+            
+            // La position Y du bord supérieur de la vue 3D
+            const viewTopEdge = camera.position.y + (viewHeight / 2);
+            
+            // Le centre de la pile doit être placé pour que son centre soit à viewTopEdge - targetTopOffset3D.
+            // (La position Y de l'objet est son centre)
+            const targetCenterY = viewTopEdge - targetTopOffset3D;
+            
+            return targetCenterY;
+        }
+
+        /**
+         * Met à jour la position du menu Object (X et Y) dans la scène 3D.
+         */
+        function updateMenuPosition() {
+            if (!menuObject) return;
+            
+            const targetX = getMenuXPosition();
+            const targetY = getMenuYPosition();
+            
+            // La position Z reste 0 pour que la pile soit toujours visible au niveau de la caméra.
+            menuObject.position.set(targetX, targetY, 0); 
+            menuObject.scale.set(MENU_SCALE, MENU_SCALE, MENU_SCALE);
+        }
         
         function init() {
             scene = new THREE.Scene();
-            
             currentBarY = 0; 
 
             camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 1, 10000);
-            
             camera.position.set(0, 0, cameraDistance); 
             camera.lookAt(0, 0, 0); 
             
@@ -224,42 +443,35 @@
             boardGroup = new THREE.Group();
             scene.add(boardGroup);
 
-            // 1. --- Zone de Bordure (La plus éloignée) ---
+            // ... (Ajout des éléments du plateau comme avant)
             const borderDiv = document.createElement('div');
             borderDiv.className = 'border-area';
             borderDiv.style.width = `${boardWidth}px`;
             borderDiv.style.height = `${BOARD_TOTAL_HEIGHT}px`;
             borderDiv.style.backgroundColor = 'transparent'; 
             borderDiv.style.border = '30px solid rgba(50, 50, 50, 0.8)'; 
-            
             boardBorder = new THREE.CSS3DObject(borderDiv);
             boardBorder.position.set(0, -500, -50); 
             boardGroup.add(boardBorder);
 
-            // 2. --- Plateau Total (Fond) ---
             const areaDiv = document.createElement('div');
             areaDiv.className = 'board-area';
             areaDiv.style.width = `${boardWidth}px`;
             areaDiv.style.height = `${BOARD_TOTAL_HEIGHT}px`;
-            
             boardArea = new THREE.CSS3DObject(areaDiv);
-            boardArea.position.set(0, 0, -50); 
+            boardArea.position.set(0, 0, -45); 
             boardGroup.add(boardArea);
             
-            // 3. --- Zone de remplissage du Score A (Blanc - Masque le fond) ---
             const scoreFillDivA = document.createElement('div');
             scoreFillDivA.className = 'score-fill-A';
             scoreFillDivA.style.width = `${boardWidth}px`;
             scoreFillDivA.style.backgroundColor = SCORE_FILL_COLOR_A;
             scoreFillDivA.style.boxShadow = `none`; 
             scoreFillDivA.style.opacity = '0'; 
-            
             scoreFillA = new THREE.CSS3DObject(scoreFillDivA);
-            scoreFillA.position.set(0, 0, 0); 
+            scoreFillA.position.set(0, 0, -40); 
             boardGroup.add(scoreFillA);
 
-
-            // 4. --- Barre de progression 3D (La plus proche) ---
             const barDiv = document.createElement('div');
             barDiv.style.width = `${boardWidth}px`;
             barDiv.style.height = '22px'; 
@@ -271,34 +483,42 @@
             progressBar3D.position.set(0, 0, 20); 
             boardGroup.add(progressBar3D);
 
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene.add(ambientLight);
+            scene.add(new THREE.AmbientLight(0xffffff, 0.6));
             
-            // --- AJOUT DES GESTIONNAIRES D'ÉVÉNEMENTS POUR LE PANNING ---
+            // -------------------------------------
+            // === INTÉGRATION DE LA PILE (SCENE MENU) DANS CSS3DRenderer ===
+            // -------------------------------------
+            const menuEl = document.querySelector('.scene-menu');
+            menuObject = new THREE.CSS3DObject(menuEl);
+            // La pile est ajoutée à la scene, PAS au boardGroup, ce qui la rend HUD.
+            scene.add(menuObject);
+            
+            // Positionnement dynamique
+            updateMenuPosition(); 
+            
+            // Événements (inchangés)
             renderer.domElement.addEventListener('mousedown', handleMouseDown, false);
             renderer.domElement.addEventListener('mousemove', handleMouseMove, false);
             window.addEventListener('mouseup', handleMouseUp, false); 
-            
             renderer.domElement.addEventListener('touchstart', handleTouchStartPan, false);
             renderer.domElement.addEventListener('touchmove', handleTouchMovePan, false);
             renderer.domElement.addEventListener('touchend', handleTouchEndPan, false);
-            
-            // Gestionnaire de zoom (wheel)
             window.addEventListener('wheel', handleMouseWheel, { passive: false });
-            
-            // Gestionnaire de zoom (pinch)
             window.addEventListener('touchstart', handleTouchStartPinch, { passive: false });
             window.addEventListener('touchmove', handleTouchMovePinch, { passive: false });
             window.addEventListener('touchend', handleTouchEndPinch, { passive: false });
             
             updatePanFactor(); 
-            
             updateBar(currentBarY, false);
+            
+            initializeMenu(); 
+            
             animate();
             startGame();
         }
 
-        // --- UTILS POUR LA CONVERSION DE PIXELS EN UNITÉS 3D ---
+        // ... (Fonctions de Panning/Zoom, Animate, CreateCard, etc.)
+
         function updatePanFactor() {
             const vFOV = camera.fov * Math.PI / 180;
             const height = 2 * Math.tan(vFOV / 2) * camera.position.z;
@@ -308,13 +528,14 @@
         function panCamera(deltaX, deltaY) {
             camera.position.x -= deltaX * panFactor;
             camera.position.y += deltaY * panFactor;
-            
             camera.lookAt(camera.position.x, camera.position.y, 0);
+            
+            // Mise à jour de la pile lors du pan pour qu'elle reste dans la vue (HUD)
+            updateMenuPosition(); 
         }
 
-        // --- GESTIONNAIRES DE PANNING (SOURIS) ---
         function handleMouseDown(event) {
-            if (event.button === 0) { 
+            if (event.button === 0 && !isDraggingMenu) { 
                 isDragging = true;
                 previousMousePosition.x = event.clientX;
                 previousMousePosition.y = event.clientY;
@@ -323,7 +544,7 @@
         }
 
         function handleMouseMove(event) {
-            if (!isDragging) return;
+            if (!isDragging || isDraggingMenu) return;
             
             const deltaX = event.clientX - previousMousePosition.x;
             const deltaY = event.clientY - previousMousePosition.y;
@@ -338,9 +559,8 @@
             isDragging = false;
         }
         
-        // --- GESTIONNAIRES DE PANNING (TOUCHER) ---
         function handleTouchStartPan(event) {
-            if (event.touches.length === 1) {
+            if (event.touches.length === 1 && !isDraggingMenu) {
                 isDragging = true;
                 previousMousePosition.x = event.touches[0].clientX;
                 previousMousePosition.y = event.touches[0].clientY;
@@ -348,7 +568,7 @@
         }
 
         function handleTouchMovePan(event) {
-            if (isDragging && event.touches.length === 1) {
+            if (isDragging && event.touches.length === 1 && !isDraggingMenu) {
                 event.preventDefault();
                 
                 const deltaX = event.touches[0].clientX - previousMousePosition.x;
@@ -366,16 +586,11 @@
                  isDragging = false;
             }
         }
-        // -------------------------------------
 
-
-        // --- GESTIONNAIRES DE ZOOM (WHEEL/PINCH) ---
         function handleMouseWheel(event) {
             event.preventDefault(); 
-            
             const zoomSpeed = 200; 
             const zoomAmount = event.deltaY > 0 ? zoomSpeed : -zoomSpeed;
-            
             updateCameraDistance(camera.position.z + zoomAmount);
         }
 
@@ -386,23 +601,21 @@
         }
         
         function handleTouchStartPinch(event) {
-            if (event.touches.length === 2) {
+            if (event.touches.length === 2 && !isDraggingMenu) {
                 initialPinchDistance = getPinchDistance(event.touches);
             }
             isDragging = false; 
         }
 
         function handleTouchMovePinch(event) {
-            if (event.touches.length === 2) {
+            if (event.touches.length === 2 && !isDraggingMenu) {
                 event.preventDefault(); 
                 const currentPinchDistance = getPinchDistance(event.touches);
                 
                 if (initialPinchDistance) {
                     const delta = currentPinchDistance - initialPinchDistance;
                     const zoomFactor = -delta * 5; 
-                    
                     updateCameraDistance(camera.position.z + zoomFactor);
-                    
                     initialPinchDistance = currentPinchDistance; 
                 }
             }
@@ -410,7 +623,7 @@
         
         function handleTouchEndPinch(event) {
             initialPinchDistance = null;
-            if (event.touches.length === 1) {
+            if (event.touches.length === 1 && !isDraggingMenu) {
                 isDragging = true;
                 previousMousePosition.x = event.touches[0].clientX;
                 previousMousePosition.y = event.touches[0].clientY;
@@ -421,12 +634,12 @@
             const clampedZ = Math.max(minCameraDistance, Math.min(maxCameraDistance, newZ));
             camera.position.z = clampedZ;
             cameraDistance = clampedZ; 
-            
             updatePanFactor();
+            
+            // Mise à jour de la pile lors du zoom pour qu'elle garde sa position relative
+            updateMenuPosition(); 
         }
-        // -------------------------------------
-
-
+        
         function animate() {
             requestAnimationFrame(animate);
             renderer.render(scene, camera);
@@ -532,44 +745,19 @@
             
             const duration = animate ? 1 : 0;
             
-            // Bar 3D (Le plus en avant)
             gsap.to(progressBar3D.position, { y: barY, duration: duration, ease: "power2.out" });
             
-            // Mise à jour du Plateau (Bordure, Fond)
-            gsap.to(boardBorder.element.style, { 
-                width: `${boardWidth}px`,
-                height: `${BOARD_TOTAL_HEIGHT}px`,
-                duration: duration, 
-                ease: "power2.out"
-            });
+            gsap.to(boardBorder.element.style, { width: `${boardWidth}px`, height: `${BOARD_TOTAL_HEIGHT}px`, duration: duration, ease: "power2.out" });
             boardBorder.position.set(0, 0, -50); 
 
-            gsap.to(boardArea.element.style, { 
-                width: `${boardWidth}px`,
-                height: `${BOARD_TOTAL_HEIGHT}px`,
-                duration: duration, 
-                ease: "power2.out"
-            });
+            gsap.to(boardArea.element.style, { width: `${boardWidth}px`, height: `${BOARD_TOTAL_HEIGHT}px`, duration: duration, ease: "power2.out" });
             boardArea.position.set(0, 0, -45); 
             
-            // --- Mouvement de la zone de score A (Blanc) (Z: -1) ---
             const heightA = barY - bottomY;
-            // Le centre vertical de la zone A (hauteur heightA) doit être positionné par rapport au centre de la scène (Y=0)
-            // CentreA = BottomY + (HeightA / 2)
             const centerA = bottomY + (heightA / 2); 
             
-            gsap.to(scoreFillA.element.style, { 
-                height: `${heightA}px`, 
-                duration: duration, 
-                ease: "power2.out"
-            });
-
-            // Positionnement Y centré
-            gsap.to(scoreFillA.position, {
-                y: centerA,
-                duration: duration, 
-                ease: "power2.out"
-            });
+            gsap.to(scoreFillA.element.style, { height: `${heightA}px`, duration: duration, ease: "power2.out" });
+            gsap.to(scoreFillA.position, { y: centerA, duration: duration, ease: "power2.out" });
             
             if (animate || heightA > 0) {
                 gsap.to(scoreFillA.element.style, { opacity: 1, duration: 0.5 }, 0); 
@@ -631,11 +819,7 @@
             updateBar(newBarY, true); 
 
             const newCardTarget = cardTargets.find(t => t.card === newCard.obj.position);
-            mainTimeline.to(newCard.obj.position, { 
-                y: newCardTarget.y, 
-                duration: cardDuration, 
-                ease: "power2.out" 
-            }, 0); 
+            mainTimeline.to(newCard.obj.position, { y: newCardTarget.y, duration: cardDuration, ease: "power2.out" }, 0); 
 
             mainTimeline.fromTo(newCard.obj.scale, 
                 { x: 0.1, y: 0.1, z: 0.1 },
@@ -646,11 +830,7 @@
             const oldCardTargets = cardTargets.filter(t => t.card !== newCard.obj.position);
             
             oldCardTargets.forEach(target => {
-                 mainTimeline.to(target.card, { 
-                    y: target.y, 
-                    duration: barDuration,
-                    ease: "power2.out"
-                }, oldCardsStartTime);
+                 mainTimeline.to(target.card, { y: target.y, duration: barDuration, ease: "power2.out"}, oldCardsStartTime);
             });
 
             await new Promise(resolve => mainTimeline.eventCallback("onComplete", resolve));
@@ -658,7 +838,6 @@
         }
 
         async function startGame() {
-            // Création de la première carte (logique inchangée)
             const firstCard = createCard('A');
             const firstX = 0;
             a_card_positions.push(firstX);
@@ -683,11 +862,7 @@
 
             firstCard.obj.position.y = entryY; 
 
-            initialTimeline.to(firstCard.obj.position, {
-                y: firstCardTarget.y, 
-                duration: initialDuration, 
-                ease: "power2.out"
-            }, 0);
+            initialTimeline.to(firstCard.obj.position, { y: firstCardTarget.y, duration: initialDuration, ease: "power2.out" }, 0);
 
             initialTimeline.fromTo(firstCard.obj.scale, 
                 { x: 0.1, y: 0.1, z: 0.1 },
@@ -725,9 +900,282 @@
             updateCardsVerticalPositions(currentBarY);
             
             updatePanFactor();
+            // Mise à jour du menu lors du resize et du pan
+            updateMenuPosition(); 
         });
 
-        init();
+        /* ======================================================= */
+        /* === LOGIQUE DE PILE (menu.html) === */
+        /* ======================================================= */
+        const stackEl = document.querySelector('.card-stack');
+        const counterEl = document.querySelector('.card-counter');
+        const toggleEl = document.getElementById('colorToggle');
+
+        const COLORS = {
+            green: '#bff5bf',
+            blue: '#c9e5ff',
+            orange: '#ffe5b0',
+            white: '#ffffff',
+            darkgrey: '#777777'
+        };
+
+        const CARD_COUNT_MENU = 12; 
+        const Z_GAP = 1;
+        const SWIPE_THRESHOLD = 80;
+
+        let topCard = null;
+        let isDraggingMenu = false; 
+        let startX = 0, startY = 0, currentX = 0, currentY = 0;
+        let currentToggleColor = null;
+        let togglePair = null; 
+
+        function randomColorGroup(i) {
+            const groups = ['green','blue','orange','white','darkgrey'];
+            return groups[i % groups.length];
+        }
+
+        function initializeMenu() {
+            stackEl.innerHTML = '';
+            for (let i = 0; i < CARD_COUNT_MENU; i++) {
+                const group = randomColorGroup(i);
+                const card = document.createElement('div');
+                card.className = 'card menu-card'; 
+                card.dataset.group = group;
+                card.style.backgroundColor = COLORS[group];
+                card.innerHTML = `
+                    <div class="card-icon">${group === 'orange' ? '🔥' : group === 'blue' ? '💧' : group === 'green' ? '🌿' : group === 'darkgrey' ? '⬛' : '⚪'}</div>
+                    <div class="card-count">${group}</div>
+                `;
+                stackEl.appendChild(card);
+            }
+            updateTopCardReference();
+            updateCardIndices();
+            updateCounter();
+        }
+
+        function updateTopCardReference() {
+            if (topCard) {
+                topCard.removeEventListener('mousedown', startDragMenu);
+                topCard.removeEventListener('touchstart', startDragMenu);
+                topCard.classList.remove('highlight-halo'); 
+            }
+            topCard = stackEl.firstElementChild;
+            if (!topCard) {
+                 toggleEl.style.display = 'none';
+                 return;
+            }
+
+            if (topCard.dataset.group !== 'white' && topCard.dataset.group !== 'darkgrey') {
+                topCard.removeAttribute('data-is-toggled');
+            }
+
+            topCard.addEventListener('mousedown', startDragMenu);
+            topCard.addEventListener('touchstart', startDragMenu);
+
+            if (topCard.dataset.group === 'white') {
+                currentToggleColor = null; 
+                togglePair = { left: 'green', right: 'blue' };
+                showToggle();
+            } else if (topCard.dataset.group === 'darkgrey') {
+                currentToggleColor = null; 
+                togglePair = { left: 'green', right: 'orange' };
+                showToggle();
+            } else {
+                toggleEl.style.display = 'none';
+                togglePair = null;
+            }
+        }
+
+        function showToggle() {
+            toggleEl.style.display = 'flex';
+            toggleEl.style.background = `linear-gradient(90deg, ${COLORS[togglePair.left]} 50%, ${COLORS[togglePair.right]} 50%)`;
+        }
+
+        function updateCounter() {
+            counterEl.textContent = stackEl.children.length;
+        }
+
+        function updateCardIndices() {
+            const cards = Array.from(stackEl.children);
+            cards.forEach((card, index) => {
+                const zPos = -index * Z_GAP;
+                card.style.transform = `translateZ(${zPos}px)`;
+                card.style.color = 'var(--text-dark)'; 
+            });
+        }
+
+        function bounceStack(axis = 'x') {
+            const className = `bounce-${axis}`;
+            stackEl.classList.add(className);
+            
+            setTimeout(() => {
+                stackEl.classList.remove(className);
+                stackEl.style.transform = 'translate(-50%, -50%) rotateX(10deg)'; 
+            }, 250); 
+        }
+
+        function startDragMenu(e) {
+            if (!topCard || isDraggingMenu) return;
+            isDraggingMenu = true;
+            const client = e.touches ? e.touches[0] : e;
+            startX = client.clientX;
+            startY = client.clientY;
+            topCard.classList.add('is-dragging');
+            document.addEventListener('mousemove', dragMenu);
+            document.addEventListener('mouseup', endDragMenu);
+            document.addEventListener('touchmove', dragMenu, { passive: false });
+            document.addEventListener('touchend', endDragMenu);
+        }
+
+        function dragMenu(e) {
+            if (!isDraggingMenu) return;
+            const client = e.touches ? e.touches[0] : e;
+            currentX = client.clientX - startX;
+            currentY = client.clientY - startY;
+            const rotation = currentX / 20;
+            
+            const cards = Array.from(stackEl.children);
+
+            cards.forEach((card, index) => {
+                const zPos = -index * Z_GAP;
+                const scaleFactor = Math.pow(0.5, index);
+                const translateX = currentX * scaleFactor;
+                const translateY = currentY * scaleFactor;
+                const rotateZ = rotation * scaleFactor * 0.3; 
+
+                card.style.transform = `translateX(${translateX}px) translateY(${translateY}px) rotateZ(${rotateZ}deg) translateZ(${zPos}px)`;
+            });
+
+            const absX = Math.abs(currentX);
+            const absY = Math.abs(currentY);
+            const cardGroup = topCard.dataset.group;
+            const isSpecialCard = cardGroup === 'white' || cardGroup === 'darkgrey';
+            const isToggledToNewColor = isSpecialCard && topCard.dataset.isToggled === 'true';
+
+            const isPotentialRemoval = absX > SWIPE_THRESHOLD && absX > absY && (!isSpecialCard || isToggledToNewColor);
+
+            if (isPotentialRemoval) {
+                topCard.style.color = topCard.style.backgroundColor;
+                topCard.classList.add('highlight-halo');
+            } else {
+                topCard.classList.remove('highlight-halo');
+                topCard.style.color = 'var(--text-dark)'; 
+            }
+
+            if (e.cancelable) e.preventDefault();
+        }
+
+        function endDragMenu() {
+            if (!isDraggingMenu) return;
+            isDraggingMenu = false;
+            topCard.classList.remove('is-dragging');
+            topCard.classList.remove('highlight-halo'); 
+            topCard.style.color = 'var(--text-dark)'; 
+            
+            const absX = Math.abs(currentX);
+            const absY = Math.abs(currentY);
+            const cardGroup = topCard.dataset.group;
+
+            const isSpecialCard = cardGroup === 'white' || cardGroup === 'darkgrey';
+            const isToggledToNewColor = isSpecialCard && topCard.dataset.isToggled === 'true'; 
+
+            let actionTaken = false;
+
+            if (absX > SWIPE_THRESHOLD && absX > absY) {
+                if (isSpecialCard && !isToggledToNewColor) { 
+                    handleCycle(true); // Rebond X
+                    actionTaken = true;
+                } else {
+                    handleRemoval(currentX > 0 ? 'right' : 'left');
+                    actionTaken = true;
+                }
+            } else if (absY > SWIPE_THRESHOLD && absY > absX) {
+                handleCycle(false, true); // Rebond Y
+                actionTaken = true;
+            }
+
+            if (!actionTaken) {
+                if (absX > absY) bounceStack('x');
+                else bounceStack('y');
+                handleReset();
+            }
+
+            document.removeEventListener('mousemove', dragMenu);
+            document.removeEventListener('mouseup', endDragMenu);
+            document.removeEventListener('touchmove', dragMenu);
+            document.removeEventListener('touchend', endDragMenu);
+        }
+
+        function handleReset() {
+            currentX = currentY = 0;
+            updateCardIndices(); 
+        }
+
+        function handleCycle(bounceX = false, bounceY = false) {
+            topCard.style.transform = `translateZ(0px)`;
+            topCard.classList.remove('highlight-halo'); 
+            topCard.style.color = 'var(--text-dark)'; 
+            topCard.classList.add('cycle-out');
+
+            if (bounceX) bounceStack('x');
+            if (bounceY) bounceStack('y');
+            
+            setTimeout(() => {
+                topCard.classList.remove('cycle-out');
+                stackEl.removeChild(topCard);
+                
+                if (topCard.dataset.group === 'white' || topCard.dataset.group === 'darkgrey') {
+                    topCard.style.backgroundColor = COLORS[topCard.dataset.group];
+                    topCard.innerHTML = `<div class="card-icon">${topCard.dataset.group === 'white' ? '⚪' : '⬛'}</div><div class="card-count">${topCard.dataset.group}</div>`;
+                    topCard.removeAttribute('data-is-toggled'); 
+                }
+                
+                stackEl.appendChild(topCard);
+                updateCardIndices();
+                updateTopCardReference();
+            }, 250);
+        }
+
+        function handleRemoval(direction) {
+            topCard.classList.remove('highlight-halo'); 
+            topCard.style.color = 'var(--text-dark)'; 
+
+            topCard.classList.add(`remove-${direction}`);
+            
+            if (direction === 'left') bounceStack('x');
+            else bounceStack('x');
+
+            setTimeout(() => {
+                stackEl.removeChild(topCard);
+                updateCardIndices();
+                updateCounter();
+                updateTopCardReference();
+                if (stackEl.children.length === 0) setTimeout(initializeMenu, 500);
+            }, 300);
+        }
+
+        // Clique sur pastille => change la teinte
+        toggleEl.addEventListener('click', () => {
+            if (!topCard || !togglePair) return;
+
+            currentToggleColor = (currentToggleColor === togglePair.left) ? togglePair.right : togglePair.left;
+            const chosenColor = COLORS[currentToggleColor];
+            const chosenText = `teinte: ${currentToggleColor}`;
+            const icon = currentToggleColor === 'green' ? '🌿' :
+                         currentToggleColor === 'blue' ? '💧' : '🔥';
+            
+            topCard.style.backgroundColor = chosenColor;
+            topCard.innerHTML = `
+                <div class="card-icon">${icon}</div>
+                <div class="card-count">${chosenText}</div>
+            `;
+            
+            topCard.dataset.isToggled = 'true'; 
+        });
+
+
+        // Lancement de l'initialisation de Three.js
+        window.addEventListener('load', init); 
     </script>
 </body>
 </html>
