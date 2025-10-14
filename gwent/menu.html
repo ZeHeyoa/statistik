@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pile de Cartes 3D - Blanc & Gris avec Toggle Bicolore</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+<style>
+:root {
+    --card-width: 100px;
+    --card-height: 140px;
+    --z-gap: 1px;
+    --bg-green: #bff5bf;
+    --bg-blue: #c9e5ff;
+    --bg-orange: #ffe5b0;
+    --bg-white: #ffffff;
+    --bg-darkgrey: #777777;
+    --border-dark: #333;
+    --counter-bg: #e67e22;
+    --text-dark: #333;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    background: #d3f3d2;
+    font-family: 'Fredoka One', cursive, Arial, sans-serif;
+    overflow: hidden;
+}
+
+.scene {
+    perspective: 1000px;
+    position: relative;
+}
+
+/* 🔹 Compteur au-dessus de la pile */
+.card-counter {
+    position: absolute;
+    bottom: calc(50% + var(--card-height) / 2 + 100px);
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--counter-bg);
+    border: 3px solid var(--border-dark);
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.4);
+}
+
+/* 🔹 Pastille toggle bicolore sous la pile */
+.toggle-indicator {
+    position: absolute;
+    top: calc(50% + var(--card-height) / 2 + 40px); /* plus proche de la pile */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 5px solid #444;
+    display: none; /* cachée par défaut */
+    cursor: pointer;
+    transition: transform 0.2s ease, background 0.3s ease;
+    z-index: 500;
+}
+.toggle-indicator:hover {
+    transform: translateX(-50%) scale(1.1);
+}
+
+.card-stack {
+    position: relative;
+    width: var(--card-width);
+    height: var(--card-height);
+    transform-style: preserve-3d;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotateX(10deg);
+}
+
+.card {
+    position: absolute;
+    width: var(--card-width);
+    height: var(--card-height);
+    border: 2px solid var(--border-dark);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    font-size: 30px;
+    font-weight: bold;
+    color: var(--text-dark);
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    transition: transform 0.25s ease-out, box-shadow 0.25s ease-out, background-color 0.3s ease;
+    box-shadow: 0 3px 4px rgba(0,0,0,0.25);
+}
+.card .card-count {
+    font-size: 16px;
+    background: rgba(255,255,255,0.7);
+    border-radius: 5px;
+    padding: 2px 8px;
+    border: 1px solid var(--border-dark);
+}
+
+.card.is-dragging {
+    box-shadow: 6px 6px 15px rgba(0,0,0,0.5);
+}
+.card.cycle-out {
+    z-index: -1;
+    transition: transform 0.25s cubic-bezier(0.68,-0.55,0.265,1.55);
+    transform: translateZ(-200px) translateY(-100px) scale(0.8);
+}
+.card.remove-left, .card.remove-right {
+    z-index: 100;
+    transition: transform 0.3s cubic-bezier(0.68,-0.55,0.265,1.55), opacity 0.3s ease-in;
+    opacity: 0; pointer-events: none;
+}
+.card.remove-left { transform: translateX(-400px) rotateZ(-15deg) translateZ(-50px); }
+.card.remove-right { transform: translateX(400px) rotateZ(15deg) translateZ(-50px); }
+.card.bounce-back {
+    transition: transform 0.5s cubic-bezier(0.68,-0.75,0.265,1.75);
+}
+</style>
+</head>
+<body>
+
+<div class="scene">
+    <div class="card-counter">0</div>
+    <div class="card-stack"></div>
+    <div class="toggle-indicator" id="colorToggle"></div>
+</div>
+
+<script>
+const stackEl = document.querySelector('.card-stack');
+const counterEl = document.querySelector('.card-counter');
+const toggleEl = document.getElementById('colorToggle');
+
+const COLORS = {
+    green: '#bff5bf',
+    blue: '#c9e5ff',
+    orange: '#ffe5b0',
+    white: '#ffffff',
+    darkgrey: '#777777'
+};
+
+const CARD_COUNT = 12;
+const Z_GAP = 1;
+const SWIPE_THRESHOLD = 80;
+
+let topCard = null;
+let isDragging = false;
+let startX = 0, startY = 0, currentX = 0, currentY = 0;
+let currentToggleColor = null;
+let togglePair = null; // { left, right }
+
+function randomColorGroup(i) {
+    const groups = ['green','blue','orange','white','darkgrey'];
+    return groups[i % groups.length];
+}
+
+function initializeStack() {
+    stackEl.innerHTML = '';
+    for (let i = 0; i < CARD_COUNT; i++) {
+        const group = randomColorGroup(i);
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.dataset.group = group;
+        card.style.backgroundColor = COLORS[group];
+        card.innerHTML = `
+            <div class="card-icon">${group === 'orange' ? '🔥' : group === 'blue' ? '💧' : group === 'green' ? '🌿' : group === 'darkgrey' ? '⬛' : '⚪'}</div>
+            <div class="card-count">${group}</div>
+        `;
+        stackEl.appendChild(card);
+    }
+    updateTopCardReference();
+    updateCardIndices();
+    updateCounter();
+}
+
+function updateTopCardReference() {
+    if (topCard) {
+        topCard.removeEventListener('mousedown', startDrag);
+        topCard.removeEventListener('touchstart', startDrag);
+    }
+    topCard = stackEl.firstElementChild;
+    if (!topCard) return;
+
+    topCard.addEventListener('mousedown', startDrag);
+    topCard.addEventListener('touchstart', startDrag);
+
+    // toggle visible si carte blanche ou grise
+    if (topCard.dataset.group === 'white') {
+        togglePair = { left: 'green', right: 'blue' };
+        showToggle();
+    } else if (topCard.dataset.group === 'darkgrey') {
+        togglePair = { left: 'green', right: 'orange' };
+        showToggle();
+    } else {
+        toggleEl.style.display = 'none';
+        togglePair = null;
+    }
+}
+
+function showToggle() {
+    toggleEl.style.display = 'flex';
+    toggleEl.style.background = `linear-gradient(90deg, ${COLORS[togglePair.left]} 50%, ${COLORS[togglePair.right]} 50%)`;
+}
+
+function updateCounter() {
+    counterEl.textContent = stackEl.children.length;
+}
+
+function updateCardIndices() {
+    const cards = Array.from(stackEl.children);
+    cards.forEach((card, index) => {
+        const zPos = -index * Z_GAP;
+        card.style.transform = `translateZ(${zPos}px)`;
+        card.style.zIndex = `${cards.length - index}`;
+    });
+}
+
+function startDrag(e) {
+    if (!topCard || isDragging) return;
+    isDragging = true;
+    const client = e.touches ? e.touches[0] : e;
+    startX = client.clientX;
+    startY = client.clientY;
+    topCard.classList.add('is-dragging');
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', endDrag);
+    document.addEventListener('touchmove', drag, { passive: false });
+    document.addEventListener('touchend', endDrag);
+}
+
+function drag(e) {
+    if (!isDragging) return;
+    const client = e.touches ? e.touches[0] : e;
+    currentX = client.clientX - startX;
+    currentY = client.clientY - startY;
+    const rotation = currentX / 20;
+    topCard.style.transform = `translateX(${currentX}px) translateY(${currentY}px) rotateZ(${rotation}deg)`;
+    if (e.cancelable) e.preventDefault();
+}
+
+function endDrag() {
+    if (!isDragging) return;
+    isDragging = false;
+    topCard.classList.remove('is-dragging');
+    const absX = Math.abs(currentX);
+    const absY = Math.abs(currentY);
+    if (absX > SWIPE_THRESHOLD && absX > absY)
+        handleRemoval(currentX > 0 ? 'right' : 'left');
+    else if (absY > SWIPE_THRESHOLD && absY > absX)
+        handleCycle();
+    else handleReset();
+    document.removeEventListener('mousemove', drag);
+    document.removeEventListener('mouseup', endDrag);
+    document.removeEventListener('touchmove', drag);
+    document.removeEventListener('touchend', endDrag);
+}
+
+function handleReset() {
+    topCard.style.transform = `translateZ(0)`;
+    currentX = currentY = 0;
+    updateCardIndices();
+}
+
+function handleCycle() {
+    topCard.classList.add('cycle-out');
+    setTimeout(() => {
+        topCard.classList.remove('cycle-out');
+        stackEl.removeChild(topCard);
+        // remet la couleur d'origine si blanc/gris
+        if (topCard.dataset.group === 'white' || topCard.dataset.group === 'darkgrey') {
+            topCard.style.backgroundColor = COLORS[topCard.dataset.group];
+            topCard.innerHTML = `<div class="card-icon">${topCard.dataset.group === 'white' ? '⚪' : '⬛'}</div><div class="card-count">${topCard.dataset.group}</div>`;
+        }
+        stackEl.appendChild(topCard);
+        updateCardIndices();
+        updateTopCardReference();
+    }, 250);
+}
+
+function handleRemoval(direction) {
+    topCard.classList.add(`remove-${direction}`);
+    setTimeout(() => {
+        stackEl.removeChild(topCard);
+        updateCardIndices();
+        updateCounter();
+        updateTopCardReference();
+        if (stackEl.children.length === 0) setTimeout(initializeStack, 500);
+    }, 300);
+}
+
+// 🔹 Clique sur pastille => change la teinte
+toggleEl.addEventListener('click', () => {
+    if (!topCard || !togglePair) return;
+
+    // alterne entre les deux teintes
+    currentToggleColor = (currentToggleColor === togglePair.left) ? togglePair.right : togglePair.left;
+    const chosenColor = COLORS[currentToggleColor];
+    const chosenText = `teinte: ${currentToggleColor}`;
+    const icon = currentToggleColor === 'green' ? '🌿' :
+                 currentToggleColor === 'blue' ? '💧' : '🔥';
+    topCard.style.backgroundColor = chosenColor;
+    topCard.innerHTML = `
+        <div class="card-icon">${icon}</div>
+        <div class="card-count">${chosenText}</div>
+    `;
+});
+
+document.addEventListener('DOMContentLoaded', initializeStack);
+</script>
+
+</body>
+</html>
