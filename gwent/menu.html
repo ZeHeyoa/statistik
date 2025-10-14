@@ -39,8 +39,8 @@ body {
 /* 🔹 Compteur au-dessus de la pile */
 .card-counter {
     position: absolute;
-    bottom: calc(50% + var(--card-height) / 2 + 100px);
-    left: 50%;
+    bottom: calc(85% + var(--card-height) / 2 + 30px); 
+    left: 75%; 
     transform: translateX(-50%);
     width: 50px;
     height: 50px;
@@ -60,8 +60,8 @@ body {
 /* 🔹 Pastille toggle bicolore sous la pile */
 .toggle-indicator {
     position: absolute;
-    top: calc(50% + var(--card-height) / 2 + 40px); /* plus proche de la pile */
-    left: 50%;
+    top: calc(15% + var(--card-height) / 2 + 10px); 
+    left: 75%; 
     transform: translateX(-50%);
     width: 60px;
     height: 60px;
@@ -81,9 +81,27 @@ body {
     width: var(--card-width);
     height: var(--card-height);
     transform-style: preserve-3d;
-    top: 50%;
-    left: 50%;
+    top: 35%; 
+    left: 60%; 
+    /* Transformation de base. Ajoutez une transition pour les rebonds */
+    transition: transform 0.2s ease-out; 
     transform: translate(-50%, -50%) rotateX(10deg);
+}
+
+/* 🌟 NOUVELLES CLASSES POUR L'EFFET DE REBOND DE LA PILE 🌟 */
+.card-stack.bounce-x {
+    /* Mouvement léger sur l'axe X pour simuler un coup de côté */
+    transform: translate(calc(-50% + 5px), -50%) rotateX(10deg); 
+    transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+.card-stack.bounce-y {
+    /* Mouvement léger sur l'axe Y pour simuler un coup de haut en bas */
+    transform: translate(-50%, calc(-50% + 5px)) rotateX(10deg); 
+    transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+/* Réinitialisation de la transition après le rebond pour un retour propre */
+.card-stack:not(.bounce-x):not(.bounce-y) {
+    transition: transform 0.25s ease-out;
 }
 
 .card {
@@ -117,6 +135,20 @@ body {
 .card.is-dragging {
     box-shadow: 6px 6px 15px rgba(0,0,0,0.5);
 }
+
+/* 💥 STYLE MIS À JOUR POUR LE HALO FIN, FLUO ET ESPACÉ 💥 */
+.card.highlight-halo {
+    box-shadow: 
+        /* Crée l'espace : une ombre noire (ou de couleur de fond) sans flou, avec un petit spread */
+        0 0 0 5px rgba(0, 0, 0, 0), /* Simule une marge invisible */
+        /* Début du halo fluo */
+        0 0 5px 6px currentColor,  /* Lueur intérieure fine (Spread 6px) */
+        0 0 10px 8px currentColor, /* Lueur extérieure floue et intense (Spread 8px) */
+        0 4px 8px rgba(0,0,0,0.4); /* Conserve l'ombre de profondeur */
+    /* La couleur est définie par JS sur la couleur de fond de la carte (currentColor) */
+}
+
+
 .card.cycle-out {
     z-index: -1;
     transition: transform 0.25s cubic-bezier(0.68,-0.55,0.265,1.55);
@@ -193,18 +225,24 @@ function updateTopCardReference() {
     if (topCard) {
         topCard.removeEventListener('mousedown', startDrag);
         topCard.removeEventListener('touchstart', startDrag);
+        topCard.classList.remove('highlight-halo'); 
     }
     topCard = stackEl.firstElementChild;
     if (!topCard) return;
 
+    if (topCard.dataset.group !== 'white' && topCard.dataset.group !== 'darkgrey') {
+        topCard.removeAttribute('data-is-toggled');
+    }
+
     topCard.addEventListener('mousedown', startDrag);
     topCard.addEventListener('touchstart', startDrag);
 
-    // toggle visible si carte blanche ou grise
     if (topCard.dataset.group === 'white') {
+        currentToggleColor = null; 
         togglePair = { left: 'green', right: 'blue' };
         showToggle();
     } else if (topCard.dataset.group === 'darkgrey') {
+        currentToggleColor = null; 
         togglePair = { left: 'green', right: 'orange' };
         showToggle();
     } else {
@@ -227,8 +265,18 @@ function updateCardIndices() {
     cards.forEach((card, index) => {
         const zPos = -index * Z_GAP;
         card.style.transform = `translateZ(${zPos}px)`;
-        card.style.zIndex = `${cards.length - index}`;
+        card.style.color = 'var(--text-dark)'; 
     });
+}
+
+function bounceStack(axis = 'x') {
+    const className = `bounce-${axis}`;
+    stackEl.classList.add(className);
+    
+    setTimeout(() => {
+        stackEl.classList.remove(className);
+        stackEl.style.transform = 'translate(-50%, -50%) rotateX(10deg)'; 
+    }, 250); 
 }
 
 function startDrag(e) {
@@ -250,7 +298,36 @@ function drag(e) {
     currentX = client.clientX - startX;
     currentY = client.clientY - startY;
     const rotation = currentX / 20;
-    topCard.style.transform = `translateX(${currentX}px) translateY(${currentY}px) rotateZ(${rotation}deg)`;
+    
+    const cards = Array.from(stackEl.children);
+
+    cards.forEach((card, index) => {
+        const zPos = -index * Z_GAP;
+        const scaleFactor = Math.pow(0.5, index);
+        const translateX = currentX * scaleFactor;
+        const translateY = currentY * scaleFactor;
+        const rotateZ = rotation * scaleFactor * 0.3; 
+
+        card.style.transform = `translateX(${translateX}px) translateY(${translateY}px) rotateZ(${rotateZ}deg) translateZ(${zPos}px)`;
+    });
+
+    const absX = Math.abs(currentX);
+    const absY = Math.abs(currentY);
+    const cardGroup = topCard.dataset.group;
+    const isSpecialCard = cardGroup === 'white' || cardGroup === 'darkgrey';
+    const isToggledToNewColor = isSpecialCard && topCard.dataset.isToggled === 'true';
+
+    const isPotentialRemoval = absX > SWIPE_THRESHOLD && absX > absY && (!isSpecialCard || isToggledToNewColor);
+
+    if (isPotentialRemoval) {
+        // Définit currentColor = backgroundColor pour que le halo utilise la bonne teinte
+        topCard.style.color = topCard.style.backgroundColor;
+        topCard.classList.add('highlight-halo');
+    } else {
+        topCard.classList.remove('highlight-halo');
+        topCard.style.color = 'var(--text-dark)'; 
+    }
+
     if (e.cancelable) e.preventDefault();
 }
 
@@ -258,13 +335,40 @@ function endDrag() {
     if (!isDragging) return;
     isDragging = false;
     topCard.classList.remove('is-dragging');
+    topCard.classList.remove('highlight-halo'); 
+    topCard.style.color = 'var(--text-dark)'; 
+    
     const absX = Math.abs(currentX);
     const absY = Math.abs(currentY);
-    if (absX > SWIPE_THRESHOLD && absX > absY)
-        handleRemoval(currentX > 0 ? 'right' : 'left');
-    else if (absY > SWIPE_THRESHOLD && absY > absX)
-        handleCycle();
-    else handleReset();
+    const cardGroup = topCard.dataset.group;
+
+    const isSpecialCard = cardGroup === 'white' || cardGroup === 'darkgrey';
+    const isToggledToNewColor = isSpecialCard && topCard.dataset.isToggled === 'true'; 
+
+    let actionTaken = false;
+
+    if (absX > SWIPE_THRESHOLD && absX > absY) {
+        // Détection de glissement horizontal (gauche/droite)
+        if (isSpecialCard && !isToggledToNewColor) { 
+            handleCycle(true); // Rebond X
+            actionTaken = true;
+        } else {
+            handleRemoval(currentX > 0 ? 'right' : 'left');
+            actionTaken = true;
+        }
+    } else if (absY > SWIPE_THRESHOLD && absY > absX) {
+        // Détection de glissement vertical (haut/bas)
+        handleCycle(false, true); // Rebond Y
+        actionTaken = true;
+    }
+
+    if (!actionTaken) {
+        // Rebond si la carte est relâchée dans la zone morte
+        if (absX > absY) bounceStack('x');
+        else bounceStack('y');
+        handleReset();
+    }
+
     document.removeEventListener('mousemove', drag);
     document.removeEventListener('mouseup', endDrag);
     document.removeEventListener('touchmove', drag);
@@ -272,21 +376,29 @@ function endDrag() {
 }
 
 function handleReset() {
-    topCard.style.transform = `translateZ(0)`;
     currentX = currentY = 0;
-    updateCardIndices();
+    updateCardIndices(); 
 }
 
-function handleCycle() {
+function handleCycle(bounceX = false, bounceY = false) {
+    topCard.style.transform = `translateZ(0px)`;
+    topCard.classList.remove('highlight-halo'); 
+    topCard.style.color = 'var(--text-dark)'; 
     topCard.classList.add('cycle-out');
+
+    if (bounceX) bounceStack('x');
+    if (bounceY) bounceStack('y');
+    
     setTimeout(() => {
         topCard.classList.remove('cycle-out');
         stackEl.removeChild(topCard);
-        // remet la couleur d'origine si blanc/gris
+        
         if (topCard.dataset.group === 'white' || topCard.dataset.group === 'darkgrey') {
             topCard.style.backgroundColor = COLORS[topCard.dataset.group];
             topCard.innerHTML = `<div class="card-icon">${topCard.dataset.group === 'white' ? '⚪' : '⬛'}</div><div class="card-count">${topCard.dataset.group}</div>`;
+            topCard.removeAttribute('data-is-toggled'); 
         }
+        
         stackEl.appendChild(topCard);
         updateCardIndices();
         updateTopCardReference();
@@ -294,7 +406,15 @@ function handleCycle() {
 }
 
 function handleRemoval(direction) {
+    topCard.classList.remove('highlight-halo'); 
+    topCard.style.color = 'var(--text-dark)'; 
+
     topCard.classList.add(`remove-${direction}`);
+    
+    // Léger rebond opposé à la direction de la suppression
+    if (direction === 'left') bounceStack('x');
+    else bounceStack('x');
+
     setTimeout(() => {
         stackEl.removeChild(topCard);
         updateCardIndices();
@@ -308,17 +428,19 @@ function handleRemoval(direction) {
 toggleEl.addEventListener('click', () => {
     if (!topCard || !togglePair) return;
 
-    // alterne entre les deux teintes
     currentToggleColor = (currentToggleColor === togglePair.left) ? togglePair.right : togglePair.left;
     const chosenColor = COLORS[currentToggleColor];
     const chosenText = `teinte: ${currentToggleColor}`;
     const icon = currentToggleColor === 'green' ? '🌿' :
                  currentToggleColor === 'blue' ? '💧' : '🔥';
+    
     topCard.style.backgroundColor = chosenColor;
     topCard.innerHTML = `
         <div class="card-icon">${icon}</div>
         <div class="card-count">${chosenText}</div>
     `;
+    
+    topCard.dataset.isToggled = 'true'; 
 });
 
 document.addEventListener('DOMContentLoaded', initializeStack);
