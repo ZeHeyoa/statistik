@@ -9,12 +9,12 @@
         /* ======================================================= */
         /* === STYLES DU PLATEAU 3D (makete.html) === */
         /* ======================================================= */
-        
+
         /* CONSTANTES DE COULEURS POUR LES LIGNES */
         .C_MELEE_COLOR { background-color: #A8E61D; color: #333; } 
         .C_RANGE_COLOR { background-color: #FFD700; color: #333; } 
         .C_SIEGE_COLOR { background-color: #B0E0E6; color: #333; } 
-        
+
         /* BASE & BACKGROUND */
         body { 
             margin: 0; 
@@ -24,7 +24,7 @@
             perspective: 1000px;
             touch-action: none; 
         }
-        
+
         /* PROGRESS BAR HUD */
         .progress-bar-hud {
             position: fixed;
@@ -94,6 +94,19 @@
             display: flex;
             flex-direction: column; 
             align-items: center; 
+            /* Rétablissement des styles initiaux */
+            transition: transform 0.5s ease;
+        }
+
+        /* Rétablissement des styles initiaux */
+        .top-right .line-scores {
+            /* Pas de transformation (annule le -10vh) */ 
+        }
+
+        /* Rétablissement des styles initiaux */
+        .bottom-right .line-scores {
+            order: 1; 
+            /* Pas de transformation (annule le -10vh) */
         }
 
         .line-score {
@@ -113,13 +126,10 @@
         }
 
         /* Inversion de l'ordre pour le joueur A (Bas Droite) */
-        .bottom-right .line-scores {
-            order: 1; 
-        }
         .bottom-right .score-total {
             order: 2;
         }
-        
+
         /* CARTES PLATEAU (inchangé) */
         .card.A, .card.B { 
             width: 150px;
@@ -144,7 +154,7 @@
             box-sizing: border-box;
             text-align: center;
         }
-        
+
         .card.A:hover, .card.B:hover {
             transform: translateZ(15px);
             box-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 2px 2px 4px rgba(0,0,0,0.3);
@@ -179,7 +189,7 @@
             border-color: #333333;
             box-shadow: none;
         }
-        
+
         .board-area {
             background: #AEEA9C; 
             overflow: auto;
@@ -211,11 +221,11 @@
             height: 150px;    
             pointer-events: none; 
         }
-        
+
         .scene-menu > * {
             pointer-events: auto; 
         }
-        
+
         /* Pastille compteur (15px * 1.3 = 19.5px, 10px * 1.3 = 13px) */
         .card-counter {
             position: absolute;
@@ -338,9 +348,9 @@
             <div class="progress-fill" id="progressFill"></div>
         </div>
     </div>
-    
+
     <div class="score-hud-container">
-        
+
         <div class="top-right">
             <div class="score-total" id="scoreTotalB">0</div>
             <div class="line-scores">
@@ -349,7 +359,7 @@
                 <div class="line-score C_SIEGE_COLOR" id="scoreSiegeB">0</div>
             </div>
         </div>
-        
+
         <div class="bottom-right">
             <div class="line-scores">
                 <div class="line-score C_MELEE_COLOR" id="scoreMeleeA">0</div>
@@ -378,12 +388,26 @@
         const halfCardHeight = cardHeight / 2;
         const gap = 10; 
         const PLATEAU_Z = 0;
+
+        // NOUVELLES CONSTANTES POUR LE PLACEMENT EN MODE BRIQUE
+        const CARD_SPACING = 20; // Espacement horizontal entre les cartes
+        const ROW_SPACING = cardHeight + 40; // Espacement vertical entre les rangées (cardHeight + marge)
         
+        // 💡 NOUVELLE CONSTANTE : 10% de la hauteur de la carte
+        const VERTICAL_OFFSET_10_PERCENT = cardHeight * 0.1;
+        
+        // FACTEUR DE PLACEMENT SÛR (ex: 90% de la largeur visible)
+        const CARD_PLACEMENT_SAFE_FACTOR = 0.9;
+        
+        // 💡 VARIABLES GLOBALES FIXES POUR LE PLACEMENT
+        let fixedPlacementRange = 0; 
+        const initialPlacementCenter = 0; // Le centre du plateau (et la caméra au départ)
+
         let scene, camera, renderer;
         let boardGroup, progressBar3D, boardArea, scoreFillA, boardBorder;
         let a_cards = [];
         let b_cards = [];
-        
+
         // VARIABLES DE SCORE PAR LIGNE
         let scoreA = 0;
         let scoreB = 0;
@@ -397,87 +421,71 @@
         let a_card_positions = [];
         let b_card_positions = [];
         let menuObject; 
-        
+
         let currentBarY = 0; 
-        
+
         const cardTypes = ['melee', 'range', 'siege'];
-        
+
         const BOARD_TOTAL_HEIGHT = 4400; 
         let boardWidth = 7200; 
-        
+
         const bottomY = -BOARD_TOTAL_HEIGHT / 2; 
         const topY = BOARD_TOTAL_HEIGHT / 2;     
         const margin = 100; 
-        
+
         const defaultCameraDistance = 2000; 
         const minCameraDistance = 1000;
         const maxCameraDistance = 3000;
-        let cameraDistance = defaultCameraDistance;
-        
+        // RECUL DE LA CAMÉRA DE 20%
+        let cameraDistance = defaultCameraDistance * 1.2; // 2000 * 1.2 = 2400
+
         const FOUNDATION_COLOR_LIGHT = '#444444'; 
         const SCORE_FILL_COLOR_A = 'rgba(0, 0, 0, 0.2)'; 
 
         const ENTRY_OFFSET = 2000; 
-        const STACK_FACTOR = 0.5; 
-        
+        const STACK_FACTOR = 0.5;            
+
         // PARAMÈTRES DE LA PILE (RÉDUITS DE 50%)
         const MENU_CONTAINER_WIDTH = 100;  
         const MENU_CONTAINER_HEIGHT = 150; 
         const MENU_SCALE = 3.0;            
-        
-        const TOP_ALIGNMENT_PERCENTAGE = 0.5; 
 
-        // Variables de panning/zoom
-        let isDragging = false;
-        let previousMousePosition = { x: 0, y: 0 };
-        let panFactor = 1; 
-        let initialPinchDistance = null;
-        
         /**
-         * Calcule la position X dans l'espace 3D pour que le bord droit du menu 
-         * soit à 150px à gauche du bord gauche du plateau.
+         * Calcule la largeur de la scène visible en unités 3D.
+         */
+        function getVisibleSceneWidth() {
+            const distance = camera.position.z;
+            const vFOV = camera.fov * Math.PI / 180;
+            const viewHeight = 2 * Math.tan(vFOV / 2) * distance;
+            const aspectRatio = camera.aspect;
+            const viewWidth = viewHeight * aspectRatio;
+            return viewWidth;
+        }
+
+        /**
+         * Calcule la position X dans l'espace 3D pour centrer le menu au milieu de la vue.
          */
         function getMenuXPosition() {
-            // Calcule les unités 3D par pixel à la distance actuelle de la caméra
-            const vFOV = camera.fov * Math.PI / 180;
-            const viewHeight = 2 * Math.tan(vFOV / 2) * camera.position.z;
-            const unitsPerPixel = viewHeight / window.innerHeight; 
-
-            const menuWidth3D = MENU_CONTAINER_WIDTH * MENU_SCALE;
-            const boardHalfWidth = boardWidth / 2; 
-
-            // 1. Convertir la marge de 150px en unités 3D
-            const MARGIN_PIXELS = 150; // <--- MISE À JOUR : 150px
-            const margin3D = MARGIN_PIXELS * unitsPerPixel; 
-
-            // 2. Coordonnée X du bord gauche du plateau (Plateau centré à X=0)
-            const boardLeftEdgeX = -boardHalfWidth; 
-
-            // 3. Coordonnée X où le BORD DROIT du menu doit être placé : (Plateau Gauche) - (Marge 3D)
-            const menuRightEdgeTargetX = boardLeftEdgeX - margin3D;
-
-            // 4. Coordonnée X du CENTRE du menu 
-            const targetCenterX = menuRightEdgeTargetX + (menuWidth3D / 2);
-            
-            return targetCenterX;
+            return camera.position.x;
         }
 
         /**
          * Calcule la position Y dans l'espace 3D pour aligner verticalement le centre de la pile
-         * avec 50% du haut de la fenêtre.
+         * légèrement au-dessus du bas de l'écran (position fixe sur le viewport).
          */
         function getMenuYPosition() {
             const vFOV = camera.fov * Math.PI / 180;
             const viewHeight = 2 * Math.tan(vFOV / 2) * camera.position.z;
             const unitsPerPixel = viewHeight / window.innerHeight;
 
-            const targetTopOffset3D = (window.innerHeight * TOP_ALIGNMENT_PERCENTAGE) * unitsPerPixel;
-
             const menuHeight3D = MENU_CONTAINER_HEIGHT * MENU_SCALE;
-            
-            const viewTopEdge = camera.position.y + (viewHeight / 2);
-            
-            const targetCenterY = viewTopEdge - targetTopOffset3D;
+            const BOTTOM_MARGIN_PIXELS = 50; // Marge de 50px au-dessus du bord inférieur
+            const bottomMargin3D = BOTTOM_MARGIN_PIXELS * unitsPerPixel;
+
+            const viewBottomEdgeY = camera.position.y - (viewHeight / 2);
+
+            // Centre Y du menu = Bord Inférieur Vue + Marge + Moitié Hauteur Menu
+            const targetCenterY = viewBottomEdgeY + bottomMargin3D + (menuHeight3D / 2);
             
             return targetCenterY;
         }
@@ -487,26 +495,30 @@
          */
         function updateMenuPosition() {
             if (!menuObject) return;
-            
+
             const targetX = getMenuXPosition();
             const targetY = getMenuYPosition();
-            
+
             menuObject.position.set(targetX, targetY, 0); 
             menuObject.scale.set(MENU_SCALE, MENU_SCALE, MENU_SCALE);
         }
-        
+
         function init() {
             scene = new THREE.Scene();
             currentBarY = 0; 
 
             camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 1, 10000);
-            camera.position.set(0, 0, cameraDistance); 
+            camera.position.set(0, 0, cameraDistance); // Utilise la nouvelle cameraDistance (2400)
             camera.lookAt(0, 0, 0); 
-            
+
             renderer = new THREE.CSS3DRenderer();
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.domElement.style.position = 'absolute';
             renderer.domElement.style.top = 0;
+            
+            renderer.domElement.style.touchAction = 'none'; 
+            renderer.domElement.style.zIndex = '1';
+            
             document.body.appendChild(renderer.domElement);
 
             boardGroup = new THREE.Group();
@@ -530,7 +542,7 @@
             boardArea = new THREE.CSS3DObject(areaDiv);
             boardArea.position.set(0, 0, -45); 
             boardGroup.add(boardArea);
-            
+
             const scoreFillDivA = document.createElement('div');
             scoreFillDivA.className = 'score-fill-A';
             scoreFillDivA.style.width = `${boardWidth}px`;
@@ -553,15 +565,18 @@
             boardGroup.add(progressBar3D);
 
             scene.add(new THREE.AmbientLight(0xffffff, 0.6));
-            
+
             // === INTÉGRATION DE LA PILE (SCENE MENU) DANS CSS3DRenderer ===
             const menuEl = document.querySelector('.scene-menu');
             menuObject = new THREE.CSS3DObject(menuEl);
             scene.add(menuObject);
-            
+
             updateMenuPosition(); // Initialisation de la position
+
+            // 💡 Calculer la borne de placement FIXE (basée sur l'initialisation)
+            const initialViewWidth = getVisibleSceneWidth();
+            fixedPlacementRange = initialViewWidth * CARD_PLACEMENT_SAFE_FACTOR;
             
-            // ... (Événements de Panning/Zoom inchangés)
             renderer.domElement.addEventListener('mousedown', handleMouseDown, false);
             renderer.domElement.addEventListener('mousemove', handleMouseMove, false);
             window.addEventListener('mouseup', handleMouseUp, false); 
@@ -572,17 +587,17 @@
             window.addEventListener('touchstart', handleTouchStartPinch, { passive: false });
             window.addEventListener('touchmove', handleTouchMovePinch, { passive: false });
             window.addEventListener('touchend', handleTouchEndPinch, { passive: false });
-            
+
             updatePanFactor(); 
             updateBar(currentBarY, false);
-            
+
             initializeMenu(); 
-            
+
             animate();
             startGame();
         }
 
-        // ... (Fonctions de Panning/Zoom - MAJ de updateCameraDistance)
+        // ... (Fonctions de Panning/Zoom - conservées) ...
 
         function updatePanFactor() {
             const vFOV = camera.fov * Math.PI / 180;
@@ -594,7 +609,7 @@
             camera.position.x -= deltaX * panFactor;
             camera.position.y += deltaY * panFactor;
             camera.lookAt(camera.position.x, camera.position.y, 0);
-            
+
             updateMenuPosition(); 
         }
 
@@ -609,7 +624,7 @@
 
         function handleMouseMove(event) {
             if (!isDragging || isDraggingMenu) return;
-            
+
             const deltaX = event.clientX - previousMousePosition.x;
             const deltaY = event.clientY - previousMousePosition.y;
 
@@ -622,19 +637,21 @@
         function handleMouseUp() {
             isDragging = false;
         }
-        
+
         function handleTouchStartPan(event) {
             if (event.touches.length === 1 && !isDraggingMenu) {
                 isDragging = true;
                 previousMousePosition.x = event.touches[0].clientX;
                 previousMousePosition.y = event.touches[0].clientY;
+                event.stopPropagation();
             }
         }
 
         function handleTouchMovePan(event) {
             if (isDragging && event.touches.length === 1 && !isDraggingMenu) {
                 event.preventDefault();
-                
+                event.stopPropagation(); 
+
                 const deltaX = event.touches[0].clientX - previousMousePosition.x;
                 const deltaY = event.touches[0].clientY - previousMousePosition.y;
 
@@ -645,7 +662,7 @@
             }
         }
 
-        function handleTouchEndPan() {
+        function handleTouchEndPan(event) { 
             if (event.touches.length === 0) {
                  isDragging = false;
             }
@@ -663,7 +680,7 @@
             const dy = touches[0].clientY - touches[1].clientY;
             return Math.sqrt(dx * dx + dy * dy);
         }
-        
+
         function handleTouchStartPinch(event) {
             if (event.touches.length === 2 && !isDraggingMenu) {
                 initialPinchDistance = getPinchDistance(event.touches);
@@ -675,7 +692,7 @@
             if (event.touches.length === 2 && !isDraggingMenu) {
                 event.preventDefault(); 
                 const currentPinchDistance = getPinchDistance(event.touches);
-                
+
                 if (initialPinchDistance) {
                     const delta = currentPinchDistance - initialPinchDistance;
                     const zoomFactor = -delta * 5; 
@@ -684,7 +701,7 @@
                 }
             }
         }
-        
+
         function handleTouchEndPinch(event) {
             initialPinchDistance = null;
             if (event.touches.length === 1 && !isDraggingMenu) {
@@ -699,11 +716,9 @@
             camera.position.z = clampedZ;
             cameraDistance = clampedZ; 
             updatePanFactor();
-            
+
             updateMenuPosition(); 
         }
-        
-        // ... (createCard, getNextAvailableX, etc. inchangés)
 
         function animate() {
             requestAnimationFrame(animate);
@@ -713,10 +728,10 @@
         function createCard(player) {
             const power = Math.floor(Math.random() * 10) + 1;
             const type = cardTypes[Math.floor(Math.random() * cardTypes.length)];
-            
+
             const cardDiv = document.createElement('div');
             cardDiv.className = `card ${player} ${type}`; 
-            
+
             let typeLabel;
             switch(type) {
                 case 'melee': typeLabel = 'Mêlée'; break;
@@ -724,62 +739,81 @@
                 case 'siege': typeLabel = 'Siège'; break;
                 default: typeLabel = '';
             }
-            
+
             cardDiv.innerHTML = `
                 <div class="card-type-label">${typeLabel}</div>
                 <div class="card-power">${power}</div>
             `;
             cardDiv.style.transform = 'translateZ(10px)'; 
             cardDiv.style.opacity = '0';
-            
+
             const cardObj = new THREE.CSS3DObject(cardDiv);
             cardObj.position.set(0, 0, PLATEAU_Z);
             cardObj.scale.set(0.1, 0.1, 0.1);
-            
+
             return { obj: cardObj, power, type, element: cardDiv };
         }
 
+        /**
+         * LOGIQUE : Placement en Briques Symétriques (Horizontal).
+         * La 1ère carte est au centre, puis les suivantes s'accolent alternativement à droite et à gauche.
+         */
         function getNextAvailableX(teamPositions) {
-            let attempts = 0;
-            const maxAttempts = 300;
+            const CARD_FULL_WIDTH = cardWidth + CARD_SPACING;
+            const maxCardsPerRow = Math.floor(fixedPlacementRange / CARD_FULL_WIDTH);
+            if (maxCardsPerRow < 1) return initialPlacementCenter; 
+
+            const cardIndex = teamPositions.length; 
             
-            while (attempts < maxAttempts) {
-                const x = (Math.random() - 0.5) * boardWidth * 0.8;
+            // Détermine l'index de la carte au sein de sa rangée (0 à maxCardsPerRow - 1)
+            const rowCardIndex = cardIndex % maxCardsPerRow; 
+
+            let newX;
+            if (rowCardIndex === 0) {
+                // La première carte de la rangée: Centre
+                newX = initialPlacementCenter;
+            } else {
+                // Placement symétrique: 1 -> +1, 2 -> -1, 3 -> +2, 4 -> -2, ...
                 
-                const halfCardWidth = cardWidth / 2 + margin;
-                const occupied = teamPositions.some(posX => 
-                    Math.abs(x - posX) < halfCardWidth * 2
-                );
-                
-                if (!occupied) {
-                    return x;
-                }
-                attempts++;
+                const offsetMultiplier = Math.ceil(rowCardIndex / 2); 
+                const direction = (rowCardIndex % 2 !== 0) ? 1 : -1; 
+
+                // Calcule la position X
+                newX = initialPlacementCenter + (direction * offsetMultiplier * CARD_FULL_WIDTH);
             }
             
-            return (Math.random() - 0.5) * boardWidth * 0.8; 
+            return newX;
         }
 
+        /**
+         * LOGIQUE CLÉ MISE À JOUR : Placement en Briques Verticales (avec offset 10% progressif).
+         */
         function updateCardsVerticalPositions(barY) {
             const cardTargets = [];
-            
-            const verticalOffset = STACK_FACTOR * (cardHeight + gap);
+
+            const CARD_FULL_WIDTH = cardWidth + CARD_SPACING;
+            const maxCardsPerRow = Math.floor(fixedPlacementRange / CARD_FULL_WIDTH);
+            if (maxCardsPerRow < 1) return []; // Évite la division par zéro
+
             const halfCardHeightWithGap = halfCardHeight + gap;
-            
-            const jitterRange = 30; 
 
             // --- Joueur A (descend à partir de la barre) ---
             let base_Y_A = barY - halfCardHeightWithGap;
             a_cards.forEach((card, i) => {
-                const baseTargetY = base_Y_A - (i * verticalOffset);
+                const row = Math.floor(i / maxCardsPerRow); // Détermine le numéro de rangée
+                const rowCardIndex = i % maxCardsPerRow;    // Index dans la rangée (0, 1, 2...)
                 
-                const jitterY = Math.random() * jitterRange - (jitterRange / 2); 
-                const targetY = baseTargetY + jitterY; 
-                
+                // 1. Base Y de la rangée
+                const baseTargetY = base_Y_A - (row * ROW_SPACING); 
+
+                // 2. Décalage vertical progressif de 10% de la hauteur de la carte (vers le bas)
+                const offset = rowCardIndex * VERTICAL_OFFSET_10_PERCENT; 
+                const targetY = baseTargetY - offset; 
+
                 const isOnBoard = targetY - halfCardHeight > bottomY;
-                
+
                 cardTargets.push({ card: card.obj.position, y: targetY });
-                
+
                 card.obj.position.x = a_card_positions[i];
                 card.obj.position.z = PLATEAU_Z + i * 5; 
                 card.element.classList[isOnBoard ? 'remove' : 'add']('off-board');
@@ -788,11 +822,16 @@
             // --- Joueur B (monte à partir de la barre) ---
             let base_Y_B = barY + halfCardHeightWithGap;
             b_cards.forEach((card, i) => {
-                const baseTargetY = base_Y_B + (i * verticalOffset);
-                
-                const jitterY = Math.random() * jitterRange - (jitterRange / 2); 
-                const targetY = baseTargetY + jitterY;
-                
+                const row = Math.floor(i / maxCardsPerRow); // Détermine le numéro de rangée
+                const rowCardIndex = i % maxCardsPerRow;    // Index dans la rangée (0, 1, 2...)
+
+                // 1. Base Y de la rangée
+                const baseTargetY = base_Y_B + (row * ROW_SPACING);
+
+                // 2. Décalage vertical progressif de 10% de la hauteur de la carte (vers le haut)
+                const offset = rowCardIndex * VERTICAL_OFFSET_10_PERCENT; 
+                const targetY = baseTargetY + offset;
+
                 const isOnBoard = targetY + halfCardHeight < topY;
 
                 cardTargets.push({ card: card.obj.position, y: targetY });
@@ -801,61 +840,63 @@
                 card.obj.position.z = PLATEAU_Z + i * 5;
                 card.element.classList[isOnBoard ? 'remove' : 'add']('off-board');
             });
-            
+
             return cardTargets;
         }
 
         function updateBar(barY, animate = true) {
             currentBarY = barY;
-            
+
             const duration = animate ? 1 : 0;
-            
+
             gsap.to(progressBar3D.position, { y: barY, duration: duration, ease: "power2.out" });
-            
+
             gsap.to(boardBorder.element.style, { width: `${boardWidth}px`, height: `${BOARD_TOTAL_HEIGHT}px`, duration: duration, ease: "power2.out" });
             boardBorder.position.set(0, 0, -50); 
 
             gsap.to(boardArea.element.style, { width: `${boardWidth}px`, height: `${BOARD_TOTAL_HEIGHT}px`, duration: duration, ease: "power2.out" });
             boardArea.position.set(0, 0, -45); 
-            
+
             const heightA = barY - bottomY;
             const centerA = bottomY + (heightA / 2); 
-            
+
             gsap.to(scoreFillA.element.style, { height: `${heightA}px`, duration: duration, ease: "power2.out" });
             gsap.to(scoreFillA.position, { y: centerA, duration: duration, ease: "power2.out" });
-            
+
             if (animate || heightA > 0) {
                 gsap.to(scoreFillA.element.style, { opacity: 1, duration: 0.5 }, 0); 
             } else {
                 gsap.to(scoreFillA.element.style, { opacity: 0, duration: 0.5 });
             }
-            
+
             // MISE À JOUR DES NOUVEAUX SCORES HUD
             const total = scoreA + scoreB || 1;
             const progressPercent = (scoreA / total) * 100;
             gsap.to('#progressFill', { height: `${progressPercent}%`, duration: 1 });
-            
+
             // Scores Joueur A
             document.getElementById('scoreTotalA').textContent = scoreA;
             document.getElementById('scoreMeleeA').textContent = scoreA_melee;
             document.getElementById('scoreRangeA').textContent = scoreA_range;
             document.getElementById('scoreSiegeA').textContent = scoreA_siege;
-            
+
             // Scores Joueur B
             document.getElementById('scoreTotalB').textContent = scoreB;
             document.getElementById('scoreMeleeB').textContent = scoreB_melee;
             document.getElementById('scoreRangeB').textContent = scoreB_range;
             document.getElementById('scoreSiegeB').textContent = scoreB_siege;
         }
-        
+
         async function addTurn(turn) {
-            
+
             const isPlayerA = turn % 2 === 0;
             const player = isPlayerA ? 'A' : 'B';
             const newCard = createCard(player);
             const teamPositions = isPlayerA ? a_card_positions : b_card_positions;
-            const newX = getNextAvailableX(teamPositions);
             
+            // Utilise la logique de placement en briques symétriques (X)
+            const newX = getNextAvailableX(teamPositions);
+
             // LOGIQUE DE SCORE MISE À JOUR
             if (isPlayerA) {
                 a_card_positions.push(newX);
@@ -877,19 +918,19 @@
             const newBarY = bottomY + (scoreA / total) * BOARD_TOTAL_HEIGHT; 
 
             const entryY = isPlayerA ? newBarY - ENTRY_OFFSET : newBarY + ENTRY_OFFSET;
-            
+
             const newCardIndex = (isPlayerA ? a_cards.length : b_cards.length) - 1;
             newCard.obj.position.set(newX, entryY, PLATEAU_Z + newCardIndex * 5); 
 
             boardGroup.add(newCard.obj);
-            
+
             const cardTargets = updateCardsVerticalPositions(newBarY); 
 
             const mainTimeline = gsap.timeline();
             const cardDuration = 1.2; 
             const barDuration = 1;
             const oldCardsStartTime = 0.1; 
-            
+
             if (turn === 1) {
                 const overflowBarY = topY; 
                 updateBar(overflowBarY, false); 
@@ -910,7 +951,7 @@
             mainTimeline.to(newCard.element, { opacity: 1, duration: 0.8 }, 0.4);
 
             const oldCardTargets = cardTargets.filter(t => t.card !== newCard.obj.position);
-            
+
             oldCardTargets.forEach(target => {
                  mainTimeline.to(target.card, { y: target.y, duration: barDuration, ease: "power2.out"}, oldCardsStartTime);
             });
@@ -921,12 +962,13 @@
 
         async function startGame() {
             const firstCard = createCard('A');
-            const firstX = 0;
+            // Utilise la logique de placement en briques symétriques (X)
+            const firstX = getNextAvailableX([]); 
             a_card_positions.push(firstX);
             firstCard.obj.scale.set(0.1, 0.1, 0.1);
             firstCard.element.style.opacity = '0';
             a_cards.push(firstCard);
-            
+
             // LOGIQUE DE SCORE MISE À JOUR
             scoreA += firstCard.power;
             if (firstCard.type === 'melee') scoreA_melee += firstCard.power;
@@ -935,13 +977,13 @@
 
             const initialBarY = topY; 
             const entryY = initialBarY - ENTRY_OFFSET; 
-            
+
             firstCard.obj.position.set(firstX, entryY, PLATEAU_Z);
             boardGroup.add(firstCard.obj);
-            
+
             const cardTargets = updateCardsVerticalPositions(initialBarY);
             const firstCardTarget = cardTargets.find(t => t.card === firstCard.obj.position);
-            
+
             const initialTimeline = gsap.timeline();
             const initialDuration = 1.2;
 
@@ -956,7 +998,7 @@
                 { x: 1, y: 1, z: 1, duration: initialDuration, ease: "back.out(1.7)" }, 0
             );
             initialTimeline.to(firstCard.element, { opacity: 1, duration: 0.8 }, 0.4);
-            
+
             await new Promise(resolve => initialTimeline.eventCallback("onComplete", resolve));
             await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -969,21 +1011,25 @@
             camera.aspect = window.innerWidth / window.innerHeight;
             camera.updateProjectionMatrix();
             renderer.setSize(window.innerWidth, window.innerHeight);
-            
+
             boardArea.element.style.width = `${boardWidth}px`;
             boardBorder.element.style.width = `${boardWidth}px`;
             progressBar3D.element.style.width = `${boardWidth}px`;
             scoreFillA.element.style.width = `${boardWidth}px`; 
+
+            // IMPORTANT: Le redimensionnement de la fenêtre recalcule la borne FIXE.
+            const newViewWidth = getVisibleSceneWidth();
+            fixedPlacementRange = newViewWidth * CARD_PLACEMENT_SAFE_FACTOR;
             
             updateBar(currentBarY, false);
             updateCardsVerticalPositions(currentBarY);
-            
+
             updatePanFactor();
             updateMenuPosition(); 
         });
 
         /* ======================================================= */
-        /* === LOGIQUE DE PILE (menu.html - Modifiée) === */
+        /* === LOGIQUE DE PILE (menu.html - inchangée) === */
         /* ======================================================= */
         const stackEl = document.querySelector('.card-stack');
         const counterEl = document.querySelector('.card-counter');
@@ -1085,7 +1131,7 @@
         function bounceStack(axis = 'x') {
             const className = `bounce-${axis}`;
             stackEl.classList.add(className);
-            
+
             setTimeout(() => {
                 stackEl.classList.remove(className);
                 stackEl.style.transform = 'translate(-50%, -50%) rotateX(10deg)'; 
@@ -1111,7 +1157,7 @@
             currentX = client.clientX - startX;
             currentY = client.clientY - startY;
             const rotation = currentX / 20;
-            
+
             const cards = Array.from(stackEl.children);
 
             cards.forEach((card, index) => {
@@ -1149,7 +1195,7 @@
             topCard.classList.remove('is-dragging');
             topCard.classList.remove('highlight-halo'); 
             topCard.style.color = 'var(--text-dark)'; 
-            
+
             const absX = Math.abs(currentX);
             const absY = Math.abs(currentY);
             const cardGroup = topCard.dataset.group;
@@ -1197,17 +1243,17 @@
 
             if (bounceX) bounceStack('x');
             if (bounceY) bounceStack('y');
-            
+
             setTimeout(() => {
                 topCard.classList.remove('cycle-out');
                 stackEl.removeChild(topCard);
-                
+
                 if (topCard.dataset.group === 'white' || topCard.dataset.group === 'darkgrey') {
                     topCard.style.backgroundColor = COLORS[topCard.dataset.group];
                     topCard.innerHTML = `<div class="card-icon">${topCard.dataset.group === 'white' ? '⚪' : '⬛'}</div><div class="card-count">${topCard.dataset.group}</div>`;
                     topCard.removeAttribute('data-is-toggled'); 
                 }
-                
+
                 stackEl.appendChild(topCard);
                 updateCardIndices();
                 updateTopCardReference();
@@ -1219,7 +1265,7 @@
             topCard.style.color = 'var(--text-dark)'; 
 
             topCard.classList.add(`remove-${direction}`);
-            
+
             if (direction === 'left') bounceStack('x');
             else bounceStack('x');
 
@@ -1240,13 +1286,13 @@
             const chosenText = `teinte: ${currentToggleColor}`;
             const icon = currentToggleColor === 'green' ? '🌿' :
                          currentToggleColor === 'blue' ? '💧' : '🔥';
-            
+
             topCard.style.backgroundColor = chosenColor;
             topCard.innerHTML = `
                 <div class="card-icon">${icon}</div>
                 <div class="card-count">${chosenText}</div>
             `;
-            
+
             topCard.dataset.isToggled = 'true'; 
         });
 
