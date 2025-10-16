@@ -21,12 +21,13 @@
             overflow: hidden; 
             background: #AEEA9C; 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            perspective: 1000px;
+            /* FIX: Suppression de perspective: 1000px; */
             touch-action: none; 
         }
 
         /* PROGRESS BAR HUD */
         .progress-bar-hud {
+            display:none;
             position: fixed;
             top: 5px;
             left: 50%;
@@ -51,36 +52,66 @@
         /* ======================================================= */
         /* === CONTENEUR DE DÉFILEMENT (HUD Principal) === */
         /* ======================================================= */
+        /* Conteneur pour Joueur B (Top-Left) */
         #scroll-hud-container {
             position: fixed;
             top: 0;
-            left: 0; /* ALIGNÉ À GAUCHE */
-            width: 25%; /* MODIFICATION: Élargissement à 15% de la fenêtre */
-            height: 100vh;
+            left: 0; 
+            width: 25%; 
+            height: auto; /* Adapté au contenu de B */
             z-index: 1100;
-            overflow-y: auto; /* SCROLLING VERTICAL ACTIF */
+            overflow-y: auto; 
             overflow-x: hidden;
             pointer-events: all; 
-            padding-right: 10px; /* Ajouté pour donner de l'espace à droite des scores */
+            padding-right: 10px; 
             display: flex; 
             flex-direction: column;
         }
-
+        
+        /* NOUVEAU CONTENEUR POUR LE HUD DU JOUEUR A (Bottom-Right) */
+        #player-a-hud-container {
+            position: fixed;
+            top: unset; 
+            bottom: 0; 
+            right: 0; 
+            width: 25%; 
+            height: auto; 
+            z-index: 1100;
+            pointer-events: all; 
+            display: flex; 
+            flex-direction: column;
+            align-items: flex-end; /* Align the content to the right */
+        }
+        
         /* NOUVEAUX ÉLÉMENTS DE SCORE HUD (A et B) */
         .score-hud-container {
             display: flex;
             flex-direction: column; 
-            align-items: flex-start; /* ALIGNE LE CONTENU À GAUCHE */
+            align-items: flex-start; /* Alignment par défaut pour Player B (Left) */
             font-family: 'Fredoka One', cursive, Arial, sans-serif;
             min-height: auto; 
-            padding: 10px 0 10px 10px; /* Padding ajusté pour le côté gauche */
+            padding: 10px 0 10px 10px; 
             box-sizing: border-box;
-			  gap: 15px; 
+            gap: 15px; 
+            width: 100%; /* S'assurer qu'il prend toute la largeur du conteneur parent */
         }
         
+        /* Style pour le conteneur de score sur la droite (Player A) */
+        #player-a-hud-container .score-hud-container {
+            padding: 10px 10px 10px 0; /* Padding à droite */
+            align-items: flex-end; /* Alignement à droite des scores A */
+        }
+
         /* Conteneur pour Joueur A (Score + Menu) - Aligne horizontalement */
         #player-a-group {
             display: flex; 
+            align-items: flex-end; 
+            gap: 15px; 
+        }
+        
+        /* Inverser l'ordre des éléments pour l'affichage Player A (Total à droite, Lignes à gauche) */
+        #player-a-hud-container #player-a-group {
+            flex-direction: row-reverse; 
             align-items: flex-end; 
             gap: 15px; 
         }
@@ -107,6 +138,11 @@
             flex-direction: column; 
             align-items: center; 
             transition: transform 0.5s ease;
+        }
+        
+        /* Aligner les scores de ligne du joueur A à droite */
+        #player-a-hud-container .line-scores {
+            align-items: flex-end;
         }
 
         .line-score {
@@ -205,14 +241,22 @@
             --text-dark: #333;
         }
 
-        /* Le conteneur du menu est maintenant géré par le flex de #player-a-group */
+        /* FIX: Centrage parfait en bas de l'écran */
         .scene-menu { 
-            width: 100px;     
-            height: 200px;    
+            width: var(--card-width-menu);     
+            height: var(--card-height-menu);    
             pointer-events: all; 
-            position: relative; 
+            
+            position: fixed;            /* Doit être fixé au viewport */
+            left: 50%;                  /* Départ au centre horizontal */
+            bottom: 20px;               /* Position à 20px du bas */
+            transform: translateX(-50%); /* Décalage pour centrer la boîte */
+            
             perspective: 500px; 
+            z-index: 1200; 
+            margin-top: 0; /* Suppression de la règle inutile */
         }
+        /* ======================================================= */
 
         /* Pastille compteur */
         .card-counter {
@@ -260,12 +304,13 @@
             width: var(--card-width-menu);
             height: var(--card-height-menu);
             transform-style: preserve-3d;
-            top: 80%; 
+            /* FIX: Centré dans .scene-menu */
+            top: 50%; 
             left: 50%; 
             transition: transform 0.2s ease-out; 
             transform: translate(-50%, -50%); 
         }
-        
+
         .card-stack.bounce-x {
             transform: translate(calc(-50% + 5px), -50%); 
             transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
@@ -295,10 +340,11 @@
             cursor: grab;
             user-select: none;
             touch-action: none;
+            /* La transition est gérée par JS pendant le drag, puis réinitialisée ici après */
             transition: transform 0.25s ease-out, box-shadow 0.25s ease-out, background-color 0.3s ease;
             box-shadow: 0 3px 4px rgba(0,0,0,0.25);
             font-family: 'Fredoka One', cursive, Arial, sans-serif;
-            
+
             /* Styles pour la manipulation (drag) */
             will-change: transform, left, top; 
         }
@@ -315,7 +361,7 @@
             transition: none; /* Désactiver les transitions pendant le drag */
         }
         /* FIN NOUVEAU */
-        
+
         .card.menu-card .card-count {
             font-size: 16px;
             background: rgba(255,255,255,0.7);
@@ -347,15 +393,29 @@
             transition: transform 0.3s ease-in, opacity 0.3s ease-in;
         }
         
+        /* NOUVEAU: Style pour le retrait vers le haut */
+        .card.menu-card.remove-up {
+            transform: translateY(-300px) translateX(0) rotateZ(0deg) !important; 
+            opacity: 0;
+            transition: transform 0.3s ease-in, opacity 0.3s ease-in;
+        }
+        /* FIN NOUVEAU */
+
+        /* ------------------------------------------- */
+        /* === Suppression des effets de survol magnétiques === */
+        /* ------------------------------------------- */
+        
+        /* La logique de suivi des cartes est maintenant gérée par le JS `dragMenu` */
+        
         /* ======================================================= */
         /* === RESPONSIVE STYLES (Mobile < 768px) === */
         /* ======================================================= */
         @media (max-width: 768px) {
-            /* Score HUD Adjustments */
+            /* Score HUD Adjustments - General */
             .score-hud-container {
-                padding: 5px 0 5px 5px; /* Ajusté pour la gauche */
+                padding: 5px 0 5px 5px; 
                 gap: 10px; 
-				        width: 25%; /* MODIFICATION: Élargissement à 15% de la fenêtre */
+                width: 100%; 
             }
             #player-a-group {
                 gap: 5px; 
@@ -373,10 +433,19 @@
                 margin: 2px 0;
             }
 
+            /* Adjustments for Player A HUD (Right side) on mobile */
+            #player-a-hud-container {
+                width: 30%; 
+            }
+            #player-a-hud-container .score-hud-container {
+                padding: 5px 5px 5px 0; /* Align content to the right edge */
+            }
+
             /* Menu & Pile Adjustments (taille mobile) */
             .scene-menu {
                 width: 80px;     
                 height: 135px;
+                /* Centrage déjà géré par les règles principales */
             }
             .card-stack {
                 width: 80px; 
@@ -397,7 +466,7 @@
                 height: 30px; 
                 font-size: 10px;
                 bottom: 75%; 
-                left: 60%;
+                left: 20%;
             }
             .toggle-indicator {
                 width: 20px; 
@@ -410,42 +479,44 @@
     </style>
 </head>
 <body>
-    <div class="progress-bar-hud">
-        <div class="progress-bar">
-            <div class="progress-fill" id="progressFill"></div>
-        </div>
-    </div>
     
+
     <div id="scroll-hud-container"> 
         <div class="score-hud-container">
-
             <div class="top-left">
                 <div class="score-total" id="scoreTotalB">0</div>
-                <div class="line-scores">    
+                <div class="line-scores">  
+               <div class="line-score C_SIEGE_COLOR" id="scoreSiegeB">0</div>
+                      
+                     <div class="line-score C_RANGE_COLOR" id="scoreRangeB">0</div>
                     <div class="line-score C_MELEE_COLOR" id="scoreMeleeB">0</div> 
-                    <div class="line-score C_RANGE_COLOR" id="scoreRangeB">0</div>
-                    <div class="line-score C_SIEGE_COLOR" id="scoreSiegeB">0</div>
+                      
                 </div>
             </div>
-            
+            </div>
+    </div>
+
+    <div id="player-a-hud-container">
+        <div class="score-hud-container">
             <div id="player-a-group"> 
                 <div class="bottom-left">
-                    <div class="score-total" id="scoreTotalA">0</div>
-                    <div class="line-scores">
+                      <div class="line-scores">
                         <div class="line-score C_MELEE_COLOR" id="scoreMeleeA">0</div>
                         <div class="line-score C_RANGE_COLOR" id="scoreRangeA">0</div>
                         <div class="line-score C_SIEGE_COLOR" id="scoreSiegeA">0</div>
                     </div>
+                    <div class="score-total" id="scoreTotalA">0</div>
+                  
                 </div>
             </div>
-                <div class="scene-menu" id="menu-fixed">
-                    <div class="card-counter">0</div>
-                    <div class="card-stack"></div>
-                    <div class="toggle-indicator" id="colorToggle"></div>
-                </div>
         </div>
     </div>
-                   
+
+    <div class="scene-menu" id="menu-fixed">
+        <div class="card-counter">0</div>
+        <div class="card-stack"></div>
+        <div class="toggle-indicator" id="colorToggle"></div>
+    </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/renderers/CSS3DRenderer.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
@@ -461,11 +532,11 @@
 
         const CARD_SPACING = 20; 
         const ROW_SPACING = cardHeight + 40; 
-        
+
         const VERTICAL_OFFSET_10_PERCENT = cardHeight * 0.1;
-        
+
         const CARD_PLACEMENT_SAFE_FACTOR = 0.8;
-        
+
         let fixedPlacementRange = 0; 
         const initialPlacementCenter = 0; 
 
@@ -497,7 +568,7 @@
         const cardTypes = ['melee', 'range', 'siege'];
 
         const BOARD_TOTAL_HEIGHT = 12000; 
-        
+
         const bottomY = -BOARD_TOTAL_HEIGHT / 2; 
         const topY = BOARD_TOTAL_HEIGHT / 2;     
         const margin = 100; 
@@ -506,7 +577,7 @@
         const minCameraDistance = 1000;
         const maxCameraDistance = 3000;
         let cameraDistance = defaultCameraDistance * 1.2; 
-        
+
         const FOUNDATION_COLOR_LIGHT = '#444444'; 
         const SCORE_FILL_COLOR_A = 'rgba(0, 0, 0, 0.2)'; 
 
@@ -526,13 +597,13 @@
             const viewWidth = viewHeight * aspectRatio;
             return viewWidth;
         }
-        
+
         function updateBoardDimensions(newBoardWidth, newBoardCenterX, animate = true) {
             if (newBoardWidth < 1000) newBoardWidth = 1000; 
 
             boardWidth = newBoardWidth;
             const duration = animate ? 1 : 0;
-            
+
             // Déplace le groupe entier pour centrer le contenu du plateau (newBoardCenterX) à l'écran (X=0)
             gsap.to(boardGroup.position, { x: -newBoardCenterX, duration: duration, ease: "power2.out" });
 
@@ -557,18 +628,18 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             renderer.domElement.style.position = 'absolute';
             renderer.domElement.style.top = 0;
-            
+
             renderer.domElement.style.touchAction = 'none'; 
             renderer.domElement.style.zIndex = '1';
-            
+
             document.body.appendChild(renderer.domElement);
 
             boardGroup = new THREE.Group();
             scene.add(boardGroup);
-            
+
             // Initialisation de la largeur basée sur la vue
             boardWidth = getVisibleSceneWidth() * 1.5; 
-            
+
             // Construction du plateau 3D
             const borderDiv = document.createElement('div');
             borderDiv.className = 'border-area';
@@ -612,7 +683,7 @@
 
             const initialViewWidth = getVisibleSceneWidth();
             fixedPlacementRange = initialViewWidth * CARD_PLACEMENT_SAFE_FACTOR;
-            
+
             renderer.domElement.addEventListener('mousedown', handleMouseDown, false);
             renderer.domElement.addEventListener('mousemove', handleMouseMove, false);
             window.addEventListener('mouseup', handleMouseUp, false); 
@@ -686,10 +757,11 @@
                 event.preventDefault();
                 event.stopPropagation(); 
 
+                const deltaX = event.touches[0].clientX - previousMousePosition.x;
                 const deltaY = event.touches[0].clientY - previousMousePosition.y;
 
                 // Pan Y seulement (deltaX est ignoré pour la caméra)
-                panCamera(0, deltaY); 
+                panCamera(deltaX, deltaY); 
 
                 previousMousePosition.x = event.touches[0].clientX;
                 previousMousePosition.y = event.touches[0].clientY;
@@ -792,7 +864,7 @@
             if (maxCardsPerRow < 1) return initialPlacementCenter; 
 
             const cardIndex = teamPositions.length; 
-            
+
             const rowCardIndex = cardIndex % maxCardsPerRow; 
 
             let newX;
@@ -804,7 +876,7 @@
 
                 newX = initialPlacementCenter + (direction * offsetMultiplier * CARD_FULL_WIDTH);
             }
-            
+
             return newX;
         }
 
@@ -822,7 +894,7 @@
             a_cards.forEach((card, i) => {
                 const row = Math.floor(i / maxCardsPerRow); 
                 const rowCardIndex = i % maxCardsPerRow;    
-                
+
                 const baseTargetY = base_Y_A - (row * ROW_SPACING); 
 
                 const offset = rowCardIndex * VERTICAL_OFFSET_10_PERCENT; 
@@ -867,7 +939,7 @@
 
             gsap.to(progressBar3D.position, { y: barY, duration: duration, ease: "power2.out" });
 
-            
+
             const heightA = barY - bottomY;
             const centerA = bottomY + (heightA / 2); 
 
@@ -901,7 +973,7 @@
             const player = isPlayerA ? 'A' : 'B';
             const newCard = createCard(player);
             const teamPositions = isPlayerA ? a_card_positions : b_card_positions;
-            
+
             const newX = getNextAvailableX(teamPositions);
 
             if (isPlayerA) {
@@ -919,7 +991,7 @@
                 else if (newCard.type === 'range') scoreB_range += newCard.power;
                 else if (newCard.type === 'siege') scoreB_siege += newCard.power;
             }
-            
+
             // LOGIQUE DE DIMENSIONNEMENT ADAPTATIF
             const cardLeft = newX - cardWidth / 2;
             const cardRight = newX + cardWidth / 2;
@@ -929,9 +1001,9 @@
 
             minXBoundary = Math.min(currentMinX, cardLeft);
             maxXBoundary = Math.max(currentMaxX, cardRight);
-            
+
             const requiredWidth = maxXBoundary - minXBoundary + BOARD_X_MARGIN * 2;
-            
+
             if (requiredWidth > boardWidth + 10) { 
                 const newBoardCenterX = (minXBoundary + maxXBoundary) / 2;
                 updateBoardDimensions(requiredWidth, newBoardCenterX, true);
@@ -1004,7 +1076,7 @@
             maxXBoundary = cardRight;
             const initialWidth = maxXBoundary - minXBoundary + BOARD_X_MARGIN * 2;
             const initialCenter = (minXBoundary + maxXBoundary) / 2;
-            
+
             updateBoardDimensions(initialWidth, initialCenter, false);
 
             const initialBarY = topY; 
@@ -1047,12 +1119,12 @@
             // Redimensionnement de la zone de placement
             const newViewWidth = getVisibleSceneWidth();
             fixedPlacementRange = newViewWidth * CARD_PLACEMENT_SAFE_FACTOR;
-            
+
             // Mise à jour de la largeur et du centrage (sans animation sur resize)
             const requiredWidth = maxXBoundary - minXBoundary + BOARD_X_MARGIN * 2;
             const newBoardCenterX = (minXBoundary + maxXBoundary) / 2;
             updateBoardDimensions(requiredWidth, newBoardCenterX, false); 
-            
+
             updateBar(currentBarY, false);
             updateCardsVerticalPositions(currentBarY);
 
@@ -1081,7 +1153,9 @@
         let topCard = null;
         let isDraggingMenu = false; 
         let startX = 0, startY = 0; 
-        let initialCardRect = null; // Stocke la position initiale pour le drag
+        let initialCardRect = null; 
+        let currentToggleColor = null; 
+        let togglePair = null;
 
         function randomColorGroup(i) {
             const groups = ['green','blue','orange','white','darkgrey'];
@@ -1153,9 +1227,11 @@
             const cards = Array.from(stackEl.children);
             cards.forEach((card, index) => {
                 const zPos = -index * Z_GAP;
-                card.style.transform = `translateZ(${zPos}px)`;
+                // Réinitialise la transformation après un drag (enlève les X/Y/RotateZ de l'effet magnétique)
+                card.style.transform = `translateZ(${zPos}px)`; 
                 card.style.color = 'var(--text-dark)'; 
-                card.style.transition = 'transform 0.25s ease-out';
+                // Réinitialise la transition à la vitesse normale après un drag rapide
+                card.style.transition = 'transform 0.25s ease-out, box-shadow 0.25s ease-out, background-color 0.3s ease';
             });
         }
 
@@ -1175,17 +1251,16 @@
             const client = e.touches ? e.touches[0] : e;
             startX = client.clientX;
             startY = client.clientY;
-            
-            // NOUVEAU: Récupérer la position et détacher
+
+            // Récupérer la position et détacher
             initialCardRect = topCard.getBoundingClientRect();
             topCard.style.left = `${initialCardRect.left}px`;
             topCard.style.top = `${initialCardRect.top}px`;
-            
+
             stackEl.removeChild(topCard);
             document.body.appendChild(topCard);
             topCard.classList.add('is-dragging', 'detached');
-            // FIN NOUVEAU
-
+            
             document.addEventListener('mousemove', dragMenu);
             document.addEventListener('mouseup', endDragMenu);
             document.addEventListener('touchmove', dragMenu, { passive: false });
@@ -1199,11 +1274,10 @@
             const currentY = client.clientY - startY;
             const rotation = currentX / 20;
 
-            // NOUVEAU: Mettre à jour la position directe de la carte détachée
+            // 1. Mettre à jour la position de la carte détachée (Top Card)
             topCard.style.left = `${initialCardRect.left + currentX}px`;
             topCard.style.top = `${initialCardRect.top + currentY}px`;
             topCard.style.transform = `rotateZ(${rotation * 0.3}deg)`;
-            // FIN NOUVEAU
 
             const absX = Math.abs(currentX);
             const absY = Math.abs(currentY);
@@ -1211,7 +1285,8 @@
             const isSpecialCard = cardGroup === 'white' || cardGroup === 'darkgrey';
             const isToggledToNewColor = isSpecialCard && topCard.dataset.isToggled === 'true';
 
-            const isPotentialRemoval = absX > SWIPE_THRESHOLD && absX > absY && (!isSpecialCard || isToggledToNewColor);
+            // Mise en surbrillance si un retrait est possible (Glissement vers le haut)
+            const isPotentialRemoval = absY > SWIPE_THRESHOLD && currentY < 0 && absY >= absX && (!isSpecialCard || isToggledToNewColor);
 
             if (isPotentialRemoval) {
                 topCard.style.color = topCard.style.backgroundColor;
@@ -1220,6 +1295,38 @@
                 topCard.classList.remove('highlight-halo');
                 topCard.style.color = 'var(--text-dark)'; 
             }
+            
+            // 2. NOUVEAU: Effet Aimanté pour les cartes suivantes
+            const followerCards = Array.from(stackEl.children);
+            const baseDrag = { x: currentX, y: currentY };
+
+            followerCards.forEach((card, index) => {
+                // index 0 est la 2e carte de la pile d'origine
+                const maxFollowFactor = 0.4;
+                const decayRate = 0.1;
+                // Calcul du facteur de suivi : 0.4, 0.3, 0.2, 0.1, 0.05, 0.05...
+                let followFactor = maxFollowFactor - (index * decayRate); 
+                if (followFactor <= 0) {
+                    followFactor = 0.05; 
+                }
+
+                // Applique 30% du déplacement de la carte du dessus, multiplié par le facteur de décroissance
+                const offsetX = baseDrag.x * followFactor * 0.3; 
+                const offsetY = baseDrag.y * followFactor * 0.3; 
+                
+                // Petite rotation en fonction du décalage X
+                const offsetRotationZ = baseDrag.x * followFactor * 0.005; 
+
+                // Re-calcul de la position Z (elle est basée sur l'index actuel dans stackEl)
+                const baseZ = -index * Z_GAP;
+
+                // Application de la transformation combinée (X/Y/RotateZ de l'effet magnétique + Z de la pile)
+                card.style.transform = `translateX(${offsetX}px) translateY(${offsetY}px) translateZ(${baseZ}px) rotateZ(${offsetRotationZ}deg)`;
+                
+                // Transition très rapide pendant le drag pour un effet réactif mais non instantané
+                card.style.transition = 'transform 0.05s linear'; 
+            });
+            // ----------------------------------------------------
 
             if (e.cancelable) e.preventDefault();
         }
@@ -1227,7 +1334,7 @@
         function endDragMenu() {
             if (!isDraggingMenu) return;
             isDraggingMenu = false;
-            
+
             const currentX = topCard.getBoundingClientRect().left - initialCardRect.left;
             const currentY = topCard.getBoundingClientRect().top - initialCardRect.top;
 
@@ -1235,18 +1342,17 @@
             topCard.classList.remove('highlight-halo'); 
             topCard.style.color = 'var(--text-dark)'; 
 
-            // NOUVEAU: Réintégration de la carte dans la pile pour l'animation de fin
+            // Réintégration de la carte dans la pile pour l'animation de fin
             document.body.removeChild(topCard);
             stackEl.insertBefore(topCard, stackEl.firstChild);
-            
+
             // Appliquer la translation de fin de drag pour que l'animation de retour fonctionne
             const zPos = 0;
             topCard.style.left = '';
             topCard.style.top = '';
             topCard.style.transform = `translateX(${currentX}px) translateY(${currentY}px) translateZ(${zPos}px)`;
-            // Rétablir la transition
+            // Rétablir la transition pour l'animation de retour
             topCard.style.transition = 'transform 0.25s ease-out, box-shadow 0.25s ease-out, background-color 0.3s ease';
-            // FIN NOUVEAU
 
             const absX = Math.abs(currentX);
             const absY = Math.abs(currentY);
@@ -1257,23 +1363,32 @@
 
             let actionTaken = false;
 
-            if (absX > SWIPE_THRESHOLD && absX > absY) {
-                if (isSpecialCard && !isToggledToNewColor) { 
-                    handleCycle(true); 
+            // NOUVELLE LOGIQUE : Seul le glissement vers le haut (currentY négatif) retire la carte
+            // Condition : glissement vertical suffisant ET vers le haut ET principalement vertical
+            if (absY > SWIPE_THRESHOLD && currentY < 0 && absY >= absX) {
+                // Les cartes spéciales non "toggled" cyclent sur un glissement
+                if (isSpecialCard && !isToggledToNewColor) {
+                    handleCycle(false, true); // Cycle avec rebond Y
                     actionTaken = true;
                 } else {
-                    handleRemoval(currentX > 0 ? 'right' : 'left');
+                    // Les cartes normales ou toggled sont retirées
+                    handleRemoval('up');
                     actionTaken = true;
                 }
-            } else if (absY > SWIPE_THRESHOLD && absY > absX) {
-                handleCycle(false, true); 
-                actionTaken = true;
-            }
-
+            } 
+            
+            // Tous les autres cas (Down, Left, Right, ou pas assez loin) deviennent un cycle
             if (!actionTaken) {
-                if (absX > absY) bounceStack('x');
-                else bounceStack('y');
-                handleReset();
+                let bounceX = absX > SWIPE_THRESHOLD && absX > absY;
+                let bounceY = absY > SWIPE_THRESHOLD && absY >= absX;
+                
+                // Si aucun glissement majeur, on fait un bounce selon la plus grande translation pour un meilleur feedback
+                if (!bounceX && !bounceY && (absX > 0 || absY > 0)) {
+                    if (absX > absY) bounceX = true;
+                    else bounceY = true;
+                }
+                
+                handleCycle(bounceX, bounceY);
             }
 
             document.removeEventListener('mousemove', dragMenu);
@@ -1283,7 +1398,7 @@
         }
 
         function handleReset() {
-            updateCardIndices(); 
+            updateCardIndices(); // Réinitialise les transform et les transitions
         }
 
         function handleCycle(bounceX = false, bounceY = false) {
@@ -1319,10 +1434,13 @@
             topCard.classList.remove('highlight-halo'); 
             topCard.style.color = 'var(--text-dark)'; 
 
-            topCard.classList.add(`remove-${direction}`);
+            // Utilise 'remove-up' si la direction est 'up', sinon utilise l'ancienne logique pour 'left'/'right'
+            const removeClass = direction === 'up' ? 'remove-up' : `remove-${direction}`;
+            topCard.classList.add(removeClass);
 
-            if (direction === 'left') bounceStack('x');
-            else bounceStack('x');
+            // Rebondit sur l'axe Y pour un retrait vertical, X pour horizontal
+            const bounceAxis = direction === 'up' ? 'y' : 'x'; 
+            bounceStack(bounceAxis);
 
             setTimeout(() => {
                 stackEl.removeChild(topCard);
