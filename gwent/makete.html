@@ -475,6 +475,11 @@
             top: 80%; 
             left: 120%
             }
+            /* Adaptation du Zoom Mobile */
+            .card.zoomed {
+                width: 90vw; /* 90% de la largeur de la vue */
+                height: calc(90vw * 1.666); /* Ratio de carte (3:5) */
+            }
         }
     
 /* ======================================================= */
@@ -561,7 +566,127 @@
   }
 }
 
-</style>
+/* ======================================================= */
+/* === NOUVEAU: STYLES DES PASTILLES DE CONTRÔLE (ZOOM) === */
+/* ======================================================= */
+
+/* Styles communs aux pastilles */
+.control-pill {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    z-index: 1250; /* Au-dessus de la pile du menu */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    font-size: 20px;
+    font-family: 'Fredoka One', cursive;
+    transition: transform 0.2s ease, opacity 0.3s ease;
+	            border-radius: 50%;
+            background-color: var(--counter-bg);
+            border: 1px solid var(--border-dark); 
+            color: white;
+            font-size: 13px; 
+            font-weight: bold;
+}
+.control-pill:hover {
+   // transform: scale(1.1);
+}
+
+/* Pastille de Zoom (centre bas de la pile) */
+.zoom-in-pill {
+    background-color: rgba(255, 255, 255, 0.85); /* Blanche, légèrement moins transparente */
+    border: 1px solid var(--border-dark);
+    bottom: -10%; /* Positionnement sous la carte du menu */
+    left: 60%;
+    transform: translateX(-50%);
+    z-index: 1300;
+}
+
+/* ======================================================= */
+/* === NOUVEAU: STYLES DE LA MODALE DE ZOOM (avec Effet Gaussien) === */
+/* ======================================================= */
+
+/* Conteneur de la modale de zoom (masqué par défaut) */
+#card-zoom-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1500; /* Au-dessus de tout */
+    display: none; 
+    opacity: 0;
+    transition: opacity 0.3s ease-out;
+    justify-content: center;
+    align-items: center;
+}
+/* Affichage de la modale */
+#card-zoom-modal.active {
+    display: flex;
+    opacity: 1;
+}
+
+/* Le fond flou (l'effet Gaussien pour l'arrière-plan) */
+#card-zoom-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.4); /* Assombrir */
+    /* L'effet de flou gaussien pour mettre en évidence la carte */
+    backdrop-filter: blur(8px); 
+    -webkit-backdrop-filter: blur(8px); /* Support navigateur */
+    /* Attention : filter: blur(8px) floutera toute la modale. On utilise uniquement backdrop-filter. */
+}
+
+/* Contenu de la modale (pour positionner la carte et le bouton de fermeture) */
+#card-zoom-content {
+    position: relative;
+    z-index: 1501;
+}
+
+/* Style de la carte lorsqu'elle est dans la modale et zoomée */
+.card.zoomed {
+    /* Taille de la carte zoomée (plus grande que la version menu) */
+    width: 300px; 
+    height: 500px;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.8);
+    z-index: 1502;
+    transition: all 0.3s ease-out; /* Transition pour l'effet de zoom */
+    
+    /* Écrase les styles de pile/drag */
+    position: relative !important; 
+    transform: none !important;
+    font-size: 40px; 
+    padding: 20px;
+}
+.card.zoomed .card-count {
+    font-size: 20px;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 5px 10px;
+}
+
+/* Pastille de Fermeture (rouge, en haut à droite de la carte zoomée) */
+.close-zoom-pill {
+    background-color: #E74C3C; /* Rouge vif */
+    color: white;
+    font-size: 18px;
+    /* Positionné par rapport à l'élément parent #card-zoom-content */
+    position: absolute;
+    top: -20px; 
+    right: -20px;
+    width: 40px;
+    height: 40px;
+    border: 2px solid white;
+    z-index: 1503;
+}
+
+    </style>
 </head>
 <body>
     
@@ -601,20 +726,30 @@
         <div class="card-counter">0</div>
         <div class="card-stack"></div>
         <div class="toggle-indicator" id="colorToggle"></div>
+        <div class="control-pill zoom-in-pill" id="zoom-in-pill">🔍</div>
     </div>
+    
+    <div id="card-zoom-modal">
+        <div id="card-zoom-backdrop"></div>
+        <div id="card-zoom-content">
+            <div id="close-zoom-btn" class="control-pill close-zoom-pill">❌</div>
+        </div>
+    </div>
+    
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r134/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/examples/js/renderers/CSS3DRenderer.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script>
         /* ======================================================= */
-        /* === LOGIQUE THREE.JS (Plateau 3D) === */
+        /* === LOGIQUE THREE.JS (Plateau 3D) [EXISTANTE] === */
         /* ======================================================= */
         const cardWidth = 350; 
         const cardHeight = 400; 
         const halfCardHeight = cardHeight / 2;
         const gap = 1; 
         const PLATEAU_Z = 0;
-
+// ... (le reste du code Three.js est inchangé)
         const CARD_SPACING = 20; 
         const ROW_SPACING = cardHeight + 40; 
 
@@ -1039,7 +1174,9 @@
 
             const total = scoreA + scoreB || 1;
             const progressPercent = (scoreA / total) * 100;
-            gsap.to('#progressFill', { height: `${progressPercent}%`, duration: 1 });
+            // Note: L'élément #progressFill n'existe pas dans le HTML fourni. 
+            // La ligne ci-dessous est conservée pour la compatibilité avec un éventuel HUD masqué.
+            // gsap.to('#progressFill', { height: `${progressPercent}%`, duration: 1 });
 
             document.getElementById('scoreTotalA').textContent = scoreA;
             document.getElementById('scoreMeleeA').textContent = scoreA_melee;
@@ -1217,7 +1354,7 @@
         });
 
         /* ======================================================= */
-        /* === LOGIQUE DE PILE (Menu 100% CSS) === */
+        /* === LOGIQUE DE PILE (Menu 100% CSS) [EXISTANTE] === */
         /* ======================================================= */
         const stackEl = document.querySelector('.card-stack');
         const counterEl = document.querySelector('.card-counter');
@@ -1275,8 +1412,13 @@
             topCard = stackEl.firstElementChild;
             if (!topCard) {
                  toggleEl.style.display = 'none';
+                 // Affiche/Masque la pastille de zoom si la pile est vide
+                 zoomInPill.style.display = 'none';
                  return;
             }
+            // Affiche la pastille de zoom si la pile n'est pas vide
+            zoomInPill.style.display = 'flex';
+
 
             if (topCard.dataset.group !== 'white' && topCard.dataset.group !== 'darkgrey') {
                 topCard.removeAttribute('data-is-toggled');
@@ -1552,6 +1694,57 @@
             `;
 
             topCard.dataset.isToggled = 'true'; 
+        });
+
+
+        /* ======================================================= */
+        /* === NOUVEAU: LOGIQUE DE ZOOM === */
+        /* ======================================================= */
+        const zoomInPill = document.getElementById('zoom-in-pill');
+        const zoomModal = document.getElementById('card-zoom-modal');
+        const zoomContent = document.getElementById('card-zoom-content');
+        const closeZoomBtn = document.getElementById('close-zoom-btn');
+
+        // 🔍 Gère le clic sur la pastille de zoom (Agrandir la carte)
+        function handleZoomIn() {
+            // Utilise la référence topCard gérée par la logique de pile existante
+            if (!topCard) return;
+
+            // 1. Clonage de la carte supérieure
+            const zoomedCard = topCard.cloneNode(true);
+            
+            // 2. Préparation du clone pour la modale
+            zoomedCard.id = 'zoomed-card-instance';
+            // Supprimer les classes de menu/drag pour éviter tout conflit de style/positionnement
+            zoomedCard.classList.remove('menu-card', 'detached', 'is-dragging', 'highlight-halo');
+            zoomedCard.classList.add('zoomed');
+
+            // 3. Insertion dans le conteneur et affichage
+            zoomContent.appendChild(zoomedCard);
+            zoomModal.classList.add('active');
+        }
+
+        // ❌ Gère la fermeture du zoom
+        function handleZoomOut() {
+            const currentZoomedCard = document.getElementById('zoomed-card-instance');
+            if (currentZoomedCard) {
+                zoomContent.removeChild(currentZoomedCard);
+            }
+            zoomModal.classList.remove('active');
+        }
+
+        // Événements pour le zoom
+        document.addEventListener('DOMContentLoaded', () => {
+            if (zoomInPill) {
+                zoomInPill.addEventListener('click', handleZoomIn);
+            }
+            if (closeZoomBtn) {
+                closeZoomBtn.addEventListener('click', handleZoomOut);
+            }
+            const backdrop = document.getElementById('card-zoom-backdrop');
+            if (backdrop) {
+                backdrop.addEventListener('click', handleZoomOut);
+            }
         });
 
 
