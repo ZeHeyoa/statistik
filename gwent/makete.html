@@ -462,21 +462,106 @@
                 padding: 1px 4px;
             }
             .card-counter {
-                width: 30px; 
-                height: 30px; 
+                width: 40px; 
+                height: 40px; 
                 font-size: 10px;
-                bottom: 75%; 
-                left: 20%;
+                bottom: -10%; 
+                left: -0%;
             }
             .toggle-indicator {
-                width: 20px; 
-                height: 20px; 
+                width: 35px; 
+                height: 35px; 
                 border-width: 2px;
-            top: 25%; 
+            top: 80%; 
             left: 120%
             }
         }
-    </style>
+    
+/* ======================================================= */
+/* === MODE PAYSAGE : ADAPTATION MOBILE VS GRAND ÉCRAN === */
+/* ======================================================= */
+
+/* 1️⃣ Landscape sur petits écrans (mobiles/tablettes) */
+@media screen and (orientation: landscape) and (max-width: 900px) {
+  .scene-menu {
+    width: 60px;
+    height: 100px;
+    bottom: -5%;
+  }
+
+  .card.menu-card {
+    width: 60px;
+    height: 100px;
+    font-size: 16px;
+  }
+
+  .score-total {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  .line-score {
+    width: 30px;
+    height: 30px;
+    font-size: 12px;
+  }
+
+  #scroll-hud-container,
+  #player-a-hud-container {
+    width: 20%;
+  }
+    
+               .card-counter {
+                width: 35px; 
+                height: 35px; 
+                font-size: 10px;
+                bottom: 25%; 
+                left: -45%;
+            }
+            .toggle-indicator {
+                width: 30px; 
+                height: 30px; 
+                border-width: 2px;
+            top: 40%; 
+            left: 90%
+            }
+    
+}
+
+/* 2️⃣ Landscape sur grands écrans (PC, tablettes larges) */
+@media screen and (orientation: landscape) and (min-width: 901px) {
+  .scene-menu {
+    width: var(--card-width-menu);
+    height: var(--card-height-menu);
+    bottom: 20px;
+  }
+
+  .card.menu-card {
+    width: var(--card-width-menu);
+    height: var(--card-height-menu);
+    font-size: 30px;
+  }
+
+  .score-total {
+    width: 80px;
+    height: 80px;
+    font-size: 36px;
+  }
+
+  .line-score {
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+
+  #scroll-hud-container,
+  #player-a-hud-container {
+    width: 25%;
+  }
+}
+
+</style>
 </head>
 <body>
     
