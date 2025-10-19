@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Composants Liés - Pays, Villes, Quartiers (Maghreb)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&display=swap" rel="stylesheet">
+    <style>
+  /* BASE & BACKGROUND (du fichier fourni) */
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #AEEA9C;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            touch-action: none;
+        }
+  
+  
+        /* ======================================================= */
+        /* === STYLES SPÉCIFIQUES AU COMPOSANT DE PILE DE CARTES === */
+        /* ======================================================= */
+        :root {
+            /* 1. RÉACTIVITÉ: Utilisation de vmin pour une taille de base adaptative */
+            --card-base-size: 15vmin; 
+            --card-width-menu: calc(var(--card-base-size) * 0.8);
+            --card-height-menu: var(--card-base-size);
+            
+            --z-gap: 1px;
+            --bg-green: #bff5bf;
+            --bg-blue: #c9e5ff;
+            --bg-orange: #ffe5b0;
+            --bg-white: #ffffff;
+            --bg-darkgrey: #777777;
+            --border-dark: #333;
+            --counter-bg: #e67e22;
+            --text-dark: #333;
+        }
+
+        /* 2. RÉACTIVITÉ: Centrage des instances pour une meilleure visibilité sur tous les écrans */
+        .menu-instance-container {
+            position: fixed;
+            z-index: 1200;
+            /* Utilisation de translate pour centrer par rapport au point (left, top) */
+            transform: translate(-50%, -50%); 
+        }
+        /* Disposition en ligne (modifiée pour aligner les 3 composants) */
+        #menu-container-1 { left: 20%; top: 50%; } /* Pays */
+        #menu-container-2 { left: 50%; top: 50%; } /* Villes */
+        #menu-container-3 { left: 80%; top: 50%; } /* Quartiers */
+
+        .scene-menu {
+            width: var(--card-width-menu);
+            height: var(--card-height-menu);
+            pointer-events: all;
+            perspective: 500px;
+            margin-top: 0;
+            position: relative;
+        }
+
+        /* Pastille compteur */
+        .card-counter {
+            position: absolute; 
+            bottom: -20%; 
+            left: -10%;
+            transform: translateX(-50%);
+            width: 39.5px;
+            height: 39.5px;
+            border-radius: 50%;
+            background-color: var(--counter-bg);
+            border: 1px solid var(--border-dark);
+            color: white;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1201;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
+            pointer-events: none;
+            font-family: 'Fredoka One', cursive, Arial, sans-serif;
+        }
+
+        /* Pastille toggle (Position relative à .scene-menu) */
+        .toggle-indicator {
+            position: absolute;
+            top: 5%;
+            right: calc(-50%);
+            transform: translateY(-50%);
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            border: 2.6px solid #444;
+            display: none;
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.3s ease;
+            z-index: 500;
+        }
+        .toggle-indicator:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .card-stack {
+            position: absolute;
+            width: var(--card-width-menu);
+            height: var(--card-height-menu);
+            transform-style: preserve-3d;
+            top: 0; 
+            left: 0;
+            transition: transform 0.2s ease-out;
+            transform: translate(0, 0); 
+        }
+
+        /* Effets de Rebond (Élasticité Aimentée) */
+        .card-stack.bounce-x {
+            transform: translate(5px, 0);
+            transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .card-stack.bounce-y {
+            transform: translate(0, 5px);
+            transition: transform 0.2s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .card-stack:not(.bounce-x):not(.bounce-y) {
+            transition: transform 0.25s ease-out;
+        }
+
+        .card.menu-card {
+            position: absolute;
+            width: var(--card-width-menu);
+            height: var(--card-height-menu);
+            border: 2px solid var(--border-dark);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            font-size: 15px;
+            font-weight: bold;
+            color: var(--text-dark);
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+            transition: transform 0.25s ease-out, box-shadow 0.25s ease-out, background-color 0.3s ease;
+            box-shadow: 0 3px 4px rgba(0,0,0,0.25);
+            font-family: 'Fredoka One', cursive, Arial, sans-serif;
+            will-change: transform, left, top;
+        }
+
+        .card.menu-card.detached {
+            position: fixed;
+            top: 0;
+            left: 0;
+            transform-style: flat !important;
+            transform: none !important;
+            z-index: 99999;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            transition: none;
+        }
+        .card.menu-card.is-dragging {
+            cursor: grabbing;
+        }
+        .card.menu-card.highlight-halo {
+            box-shadow: 0 0 15px 5px rgba(255, 255, 255, 0.8), 0 3px 4px rgba(0,0,0,0.25);
+        }
+
+        /* Animations de cycle et retrait */
+        .card.menu-card.cycle-out {
+            transform: translateX(-150%) translateY(0) rotateZ(-30deg) !important;
+            opacity: 0;
+            transition: transform 0.3s ease-in, opacity 0.3s ease-in;
+        }
+        .card.menu-card.eject-forward {
+            opacity: 0;
+            transition: opacity 0.4s ease-in;
+        }
+
+        /* Styles des Pastilles de Contrôle */
+        .control-pill {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            z-index: 1250;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            font-size: 20px;
+            font-family: 'Fredoka One', cursive;
+            transition: transform 0.2s ease, opacity 0.3s ease;
+            background-color: var(--counter-bg);
+            border: 1px solid var(--border-dark);
+            color: white;
+            font-weight: bold;
+            user-select: none;
+        }
+        .control-pill:hover {
+           transform: scale(1.1);
+        }
+
+        .paginate-pill {
+            top: 30%;
+            width: 50%;
+            height: 40%;
+            font-size: 14px;
+            background-color: rgba(0, 0, 0, 0.6);
+            color: white;
+        }
+        /* Les flèches de pagination sont positionnées par rapport à .scene-menu */
+        .paginate-pill[data-action="paginate-left"] { left: -40%; }
+        .paginate-pill[data-action="paginate-right"] { right: -70%; }
+
+        #eject-card-pill {
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            /* Couleur plus visible pour l'éjection, surtout sur C3 */
+            background-color: rgba(200, 50, 50, 0.9); 
+            top: 90%; 
+            right: -30%;
+            transform: translateX(50%);
+        }
+        #eject-card-pill:hover {
+            transform: translateX(50%) scale(1.15);
+        }
+        
+        /* Pastille OK (NOUVEAU) */
+        .ok-pill {
+            position: absolute; 
+            top: 60%;
+            right: -150%;
+            transform: translateY(-50%);
+            background-color: #2ecc71; /* Vert pour OK */
+            border-color: #27ae60;
+            width: 50px;
+            height: 50px;
+            font-size: 22px;
+        }
+        .ok-pill:hover {
+            transform: translateY(-50%) scale(1.1);
+        }
+
+
+        /* 3. RÉACTIVITÉ: Media Queries pour le mobile */
+        @media (max-width: 768px) {
+            :root {
+                /* Taille de base plus petite mais limitée en pourcentage sur mobile */
+                --card-base-size: 25vmin; 
+            }
+            /* Repositionnement des instances pour mobile (en colonne) */
+            #menu-container-1 { left: 50%; top: 15%; }
+            #menu-container-2 { left: 50%; top: 50%; }
+            #menu-container-3 { left: 50%; top: 85%; }
+        }
+        
+        /* 4. RÉACTIVITÉ: Media Queries pour les très grands écrans (TV/grands moniteurs) */
+        @media (min-width: 1920px) {
+            :root {
+                /* Limiter la taille maximale des cartes pour éviter l'abus d'espace */
+                --card-base-size: 150px; 
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="menu-instance-container" id="menu-container-1"></div> <div class="menu-instance-container" id="menu-container-2"></div> <div class="menu-instance-container" id="menu-container-3"></div> <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script>
+        const COLORS = {
+            green: '#bff5bf', blue: '#c9e5ff', orange: '#ffe5b0',
+            white: '#ffffff', darkgrey: '#777777'
+        };
+        // CARD_COUNT_MENU n'est plus utilisé car les données sont dynamiques
+        const Z_GAP = 1;
+        const SWIPE_THRESHOLD = 80;
+        const dragDistanceThreshold = 10;
+        const dragTimeThreshold = 250;
+
+        // Structure de données Maghreb
+        const MAGHREB_DATA = {
+            "Algérie": {
+                cities: ["Alger", "Oran", "Constantine", "Annaba", "Blida", "Setif"],
+                districts: {
+                    "Alger": ["Bab Ezzouar", "Hussein Dey", "Hydra", "Kouba", "Bir Mourad Raïs"],
+                    "Oran": ["El M'naouar", "Hai Sabah", "Akid Lotfi", "Canastel", "Sidi El Houari"],
+                    "Constantine": ["El Khroub", "Zouaghi", "Didouche Mourad", "Ali Mendjeli", "Cité Daksi"],
+                    "Annaba": ["Sidi Achour", "La Colonne", "El Bouni", "Pont Blanc", "Guerma"],
+                    "Blida": ["Ouled Yaïch", "Beni Mered", "Boufarik", "Moussa", "Chebli"],
+                    "Setif": ["El Eulma", "Ain Azel", "Amoucha", "Bazer Sakhra", "Salah Bey"],
+                }
+            },
+            "Maroc": {
+                cities: ["Casablanca", "Rabat", "Marrakech", "Fès", "Tanger", "Agadir"],
+                districts: {
+                    "Casablanca": ["Anfa", "Maârif", "Sidi Belyout", "Hay Mohammadi", "Ain Diab"],
+                    "Rabat": ["Hassan", "Agdal", "Souissi", "Médina", "Yacoub El Mansour"],
+                    "Marrakech": ["Hivernage", "Guéliz", "Médina", "Palmerai", "Sidi Youssef Ben Ali"],
+                    "Fès": ["Fès Jdid", "Ville Nouvelle", "Médina", "Ain Kadous", "Batha"],
+                    "Tanger": ["Malabata", "Centre-Ville", "California", "Achakar", "Marshan"],
+                    "Agadir": ["Tikiouine", "Founty", "Hay Mohammadi", "Adrar", "Talborjt"],
+                }
+            },
+            "Tunisie": {
+                cities: ["Tunis", "Sfax", "Sousse", "Kairouan", "Bizerte", "Gabès"],
+                districts: {
+                    "Tunis": ["La Goulette", "Carthage", "Sidi Bou Said", "El Menzah", "Bab Souika"],
+                    "Sfax": ["Sfax El Jadida", "Sfax Sud", "Sakiet Ezzit", "Taniour", "Sidi Mansour"],
+                    "Sousse": ["Kantaoui", "Sahloul", "Hammam Sousse", "Kalaa Kebira", "Bou Ficha"],
+                    "Kairouan": ["Cité El Wafa", "Ain El Bey", "Haffouz", "Nasr", "Jalled"],
+                    "Bizerte": ["Zarzouna", "Menzel Bourguiba", "Tinja", "Utique", "Sidi Salem"],
+                    "Gabès": ["Gabès Ville", "Mareth", "Metouia", "El Hamma", "Ghannouch"],
+                }
+            },
+            "Libye": {
+                cities: ["Tripoli", "Benghazi", "Misrata", "Zintan", "Zawia", "Ajdabiya"],
+                districts: {
+                    "Tripoli": ["Gargaresh", "Sidi Khalīfah", "Al-Shatt", "Airport Road", "Tajura"],
+                    "Benghazi": ["Al-Hawari", "Al-Fuwaihat", "Al-Laithi", "Al-Majouri", "Al-Kish"],
+                    "Misrata": ["Qasr Ahmed", "Abu Ruwayda", "Al-Sawwa", "Al-Ghiran", "Al-Jazeera"],
+                    "Zintan": ["Cité El Jdida", "Cité Nord", "Cité Sud", "Cité Est", "Cité Ouest"],
+                    "Zawia": ["Al-Jadida", "Al-Qadiriya", "Al-Sha'biya", "Al-Hurriya", "Al-Wefaq"],
+                    "Ajdabiya": ["Al-Jalaa", "Al-Wafa", "Al-Andalus", "Al-Nasser", "Al-Quds"],
+                }
+            },
+            "Mauritanie": {
+                cities: ["Nouakchott", "Nouadhibou", "Kiffa", "Zouérat", "Rosso", "Atar"],
+                districts: {
+                    "Nouakchott": ["Tevragh Zeina", "Sebkha", "Dar Naim", "El Mina", "Arafat"],
+                    "Nouadhibou": ["Cité du Port", "Quartier Administratif", "Cité Nord", "Cité Sud", "Cité Ouest"],
+                    "Kiffa": ["Cité Centrale", "Cité Est", "Cité Ouest", "Cité Nord", "Cité Sud"],
+                    "Zouérat": ["Centre-Ville", "Quartier des Mines", "Cité des Employés", "Cité Nouvelle", "Cité Ancienne"],
+                    "Rosso": ["Médina", "Cité Nouvelle", "Quartier Administratif", "El Wafa", "El Qods"],
+                    "Atar": ["Ksar", "Tindouf", "Cité Militaire", "Aïn Ehel Taya", "El Qods"],
+                }
+            }
+        };
+        const MAGHREB_COUNTRIES = Object.keys(MAGHREB_DATA);
+
+        function getCardColorGroup(dataType) {
+            return dataType === 'country' ? 'blue' : dataType === 'city' ? 'green' : 'orange';
+        }
+
+        class CardStackMenu {
+            constructor(containerElement, options = {}) {
+                this.container = containerElement;
+                this.topCard = null;
+                this.isDraggingMenu = false;
+                this.startX = 0;
+                this.startY = 0;
+                this.initialCardRect = null;
+                this.currentToggleColor = null;
+                this.togglePair = null;
+                this.dragStartTime = 0;
+                this.cardData = []; 
+                this.dataType = null;
+                this.currentCountry = null;
+                
+                // Options par défaut fusionnées avec les options fournies
+                this.config = {
+                    enableDrag: true, 
+                    showPaginatePills: true, 
+                    showEjectPill: true, 
+                    showToggleIndicator: true, 
+                    ejectToggledOnly: true,
+                    showOkPill: false, // NOUVEAU: Pastille OK
+                    onCitySelected: () => {}, // NOUVEAU: Callback pour C2
+                    ...options
+                };
+
+                this.render();
+                // initializeMenu sera appelé par la logique de liaison
+            }
+
+            render() {
+                let paginatePills = '';
+                if (this.config.showPaginatePills) {
+                    paginatePills = `
+                        <div class="control-pill paginate-pill" data-action="paginate-left">❮</div>
+                        <div class="control-pill paginate-pill" data-action="paginate-right">❯</div>
+                    `;
+                }
+
+                let ejectPill = '';
+                if (this.config.showEjectPill) {
+                    ejectPill = `<div class="control-pill" id="eject-card-pill" data-action="eject-card">↑</div>`;
+                }
+                
+                const toggleHtml = `<div class="toggle-indicator" data-action="colorToggle"></div>`;
+
+                let okPill = '';
+                if (this.config.showOkPill) {
+                    okPill = `<div class="control-pill ok-pill" id="ok-card-pill" data-action="ok-card">OK</div>`;
+                }
+
+
+                this.container.innerHTML = `
+                    <div class="card-counter">0</div>
+                    <div class="scene-menu">
+                        ${paginatePills}
+                        <div class="card-stack"></div>
+                        ${toggleHtml}
+                        ${ejectPill}
+                        ${okPill}
+                    </div>
+                `;
+                this.stackEl = this.container.querySelector('.card-stack');
+                this.counterEl = this.container.querySelector('.card-counter');
+                this.toggleEl = this.container.querySelector('[data-action="colorToggle"]');
+                this.paginateLeftBtn = this.container.querySelector('[data-action="paginate-left"]');
+                this.paginateRightBtn = this.container.querySelector('[data-action="paginate-right"]');
+                this.ejectCardPill = this.container.querySelector('[data-action="eject-card"]');
+                this.okCardPill = this.container.querySelector('[data-action="ok-card"]');
+
+                // Lier les événements de contrôle
+                if (this.paginateLeftBtn) this.paginateLeftBtn.addEventListener('click', () => this.handleCycleReverse(true));
+                if (this.paginateRightBtn) this.paginateRightBtn.addEventListener('click', () => this.handleCycle(true, false));
+                if (this.ejectCardPill) this.ejectCardPill.addEventListener('click', () => this.handleEject());
+                if (this.toggleEl) this.toggleEl.addEventListener('click', () => this.handleToggle());
+                if (this.okCardPill) this.okCardPill.addEventListener('click', () => this.handleOk()); // NOUVEAU
+            }
+
+            // Remplace l'ancien initializeMenu (cartes aléatoires)
+            initializeMenu(data, dataType, currentCountry = null) {
+                this.stackEl.innerHTML = '';
+                this.cardData = data || []; 
+                this.dataType = dataType;
+                this.currentCountry = currentCountry;
+
+                this.cardData.forEach((item, i) => {
+                    const group = getCardColorGroup(dataType);
+                    const card = document.createElement('div');
+                    card.className = 'card menu-card';
+                    card.dataset.group = group;
+                    card.style.backgroundColor = COLORS[group];
+                    
+                    const icon = dataType === 'country' ? '🌐' : dataType === 'city' ? '🏙️' : '🏘️';
+                    card.innerHTML = `<div class="card-icon" style="font-size: 1.5em;">${icon}</div><div class="card-count">${item}</div>`;
+                    this.stackEl.appendChild(card);
+                });
+                
+                this.updateCardIndices();
+                this.updateTopCardReference();
+                this.updateCounter();
+            }
+
+            updateTopCardReference() {
+                // ... (Logique pour détacher les listeners existants) ...
+                if (this.topCard) {
+                    this.topCard.removeEventListener('mousedown', this.startDragMenu);
+                    this.topCard.removeEventListener('touchstart', this.startDragMenu);
+                }
+                
+                this.topCard = this.stackEl.firstElementChild;
+                const hasCards = !!this.topCard;
+
+                // Contrôle de l'affichage des pastilles basé sur la configuration
+                if (this.toggleEl) this.toggleEl.style.display = 'none';
+                if (this.paginateLeftBtn) this.paginateLeftBtn.style.display = this.config.showPaginatePills && hasCards ? 'flex' : 'none';
+                if (this.paginateRightBtn) this.paginateRightBtn.style.display = this.config.showPaginatePills && hasCards ? 'flex' : 'none';
+                if (this.ejectCardPill) this.ejectCardPill.style.display = this.config.showEjectPill && hasCards ? 'flex' : 'none';
+                if (this.okCardPill) this.okCardPill.style.display = this.config.showOkPill && hasCards ? 'flex' : 'none';
+
+                if (!hasCards) return;
+
+                this.topCard.removeAttribute('data-is-toggled');
+                this.topCard.removeEventListener('mousedown', this.startDragMenu);
+                this.topCard.removeEventListener('touchstart', this.startDragMenu);
+                
+                if (this.config.enableDrag) {
+                    this.topCard.addEventListener('mousedown', this.startDragMenu.bind(this));
+                    this.topCard.addEventListener('touchstart', this.startDragMenu.bind(this));
+                }
+
+                if (this.config.showToggleIndicator) {
+                    if (this.topCard.dataset.group === 'white') {
+                        this.togglePair = { left: 'green', right: 'blue' };
+                        this.showToggle();
+                    } else if (this.topCard.dataset.group === 'darkgrey') {
+                        this.togglePair = { left: 'green', right: 'orange' };
+                        this.showToggle();
+                    }
+                }
+            }
+            
+            updateCounter() {
+                this.counterEl.textContent = this.stackEl.children.length;
+            }
+
+            updateCardIndices() {
+                Array.from(this.stackEl.children).forEach((card, index) => {
+                    card.style.transform = `translateZ(${-index * Z_GAP}px)`;
+                    card.style.color = 'var(--text-dark)';
+                    card.style.transition = 'transform 0.25s ease-out, box-shadow 0.25s ease-out, background-color 0.3s ease';
+                });
+            }
+
+            bounceStack(axis = 'x') {
+                const className = `bounce-${axis}`;
+                this.stackEl.classList.add(className);
+                setTimeout(() => {
+                    this.stackEl.classList.remove(className);
+                    this.stackEl.style.transform = 'translate(0, 0)';
+                }, 250);
+            }
+
+            startDragMenu(e) {
+                 if (!this.topCard || this.isDraggingMenu || !this.config.enableDrag) return; 
+                 // ... (Logique du drag start)
+            }
+
+            dragMenu(e) {
+                 if (!this.isDraggingMenu) return;
+                 // ... (Logique du drag move)
+            }
+
+            endDragMenu() {
+                if (!this.isDraggingMenu) return;
+                this.isDraggingMenu = false;
+
+                const dragEndTime = Date.now();
+                const dragDuration = dragEndTime - this.dragStartTime;
+                const currentX = this.topCard.getBoundingClientRect().left - this.initialCardRect.left;
+                const currentY = this.topCard.getBoundingClientRect().top - this.initialCardRect.top;
+                const dragDistance = Math.sqrt(currentX * currentX + currentY * currentY);
+
+                this.topCard.classList.remove('is-dragging', 'detached', 'highlight-halo');
+                this.topCard.style.color = 'var(--text-dark)';
+
+                document.body.removeChild(this.topCard);
+                this.stackEl.insertBefore(this.topCard, this.stackEl.firstChild);
+
+                this.topCard.style.left = '';
+                this.topCard.style.top = '';
+                this.topCard.style.transition = 'transform 0.25s ease-out, box-shadow 0.25s ease-out, background-color 0.3s ease';
+                
+                if (dragDuration < dragTimeThreshold && dragDistance < dragDistanceThreshold) {
+                    this.topCard.style.transform = `translateZ(0px)`;
+                    this.handleCycle(false, false); 
+                } else {
+                    this.topCard.style.transform = `translateX(${currentX}px) translateY(${currentY}px) translateZ(0px)`;
+                    
+                    const absX = Math.abs(currentX), absY = Math.abs(currentY);
+                    const cardGroup = this.topCard.dataset.group;
+                    const isSpecialCard = cardGroup === 'white' || cardGroup === 'darkgrey';
+                    const isToggledToNewColor = isSpecialCard && this.topCard.dataset.isToggled === 'true';
+
+                    // LOGIQUE D'ÉJECTION PAR DRAG (AVEC CONDITION DU TOGGLE)
+                    let canEjectBicolor = !this.config.ejectToggledOnly || 
+                                     !isSpecialCard || 
+                                     isToggledToNewColor || 
+                                     !this.config.showToggleIndicator; 
+
+                    let actionTaken = false;
+                    if (absY > SWIPE_THRESHOLD && currentY < 0 && absY >= absX) {
+                        if (isSpecialCard && !canEjectBicolor) {
+                            this.handleCycle(false, true); 
+                        } else {
+                            this.handleRemoval('up');
+                        }
+                        actionTaken = true;
+                    }
+
+                    if (!actionTaken) {
+                        let bounceX = absX > dragDistanceThreshold && absX > absY;
+                        let bounceY = absY > dragDistanceThreshold && absY >= absX;
+                        if (!bounceX && !bounceY && (absX > 0 || absY > 0)) {
+                            if (absX > absY) bounceX = true; else bounceY = true;
+                        }
+                        this.handleCycle(bounceX, bounceY);
+                    }
+                }
+                
+                document.removeEventListener('mousemove', this.dragMenuBound);
+                document.removeEventListener('mouseup', this.endDragMenuBound);
+                document.removeEventListener('touchmove', this.dragMenuBound);
+                document.removeEventListener('touchend', this.endDragMenuBound);
+            }
+
+            handleCycle(bounceX = false, bounceY = false) {
+                if (!this.topCard) return;
+                
+                // Si c'est C1 (Pays), on enregistre le nom de la carte courante avant de la faire tourner
+                const topCardText = this.topCard.querySelector('.card-count').textContent; 
+
+                this.topCard.style.transform = `translateZ(0px)`;
+                this.topCard.classList.add('cycle-out');
+                if (bounceX) this.bounceStack('x');
+                if (bounceY) this.bounceStack('y');
+
+                setTimeout(() => {
+                    this.topCard.classList.remove('cycle-out');
+                    this.stackEl.removeChild(this.topCard);
+                    this.resetSpecialCard(this.topCard);
+                    this.stackEl.appendChild(this.topCard);
+                    this.updateCardIndices();
+                    this.updateTopCardReference();
+                    
+                    // NOUVEAU: Si on cycle la pile des pays (C1), on recharge la pile des villes (C2)
+                    if (this.dataType === 'country' && this.onCountryChange) {
+                        const newTopCardText = this.topCard.querySelector('.card-count').textContent;
+                        this.onCountryChange(newTopCardText);
+                    }
+                }, 250);
+            }
+
+            handleCycleReverse(bounceX = false) {
+                if (this.stackEl.children.length < 2) return;
+                const lastCard = this.stackEl.lastElementChild;
+                lastCard.classList.add('cycle-out');
+                if (bounceX) this.bounceStack('x');
+
+                setTimeout(() => {
+                    this.stackEl.removeChild(lastCard);
+                    this.resetSpecialCard(lastCard);
+                    this.stackEl.insertBefore(lastCard, this.stackEl.firstChild);
+                    lastCard.classList.remove('cycle-out');
+                    this.updateCardIndices();
+                    this.updateTopCardReference();
+                    
+                     // NOUVEAU: Si on cycle la pile des pays (C1) en arrière, on recharge C2
+                    if (this.dataType === 'country' && this.onCountryChange) {
+                        const newTopCardText = this.topCard.querySelector('.card-count').textContent;
+                        this.onCountryChange(newTopCardText);
+                    }
+                }, 250);
+            }
+
+            handleEject() {
+                if (!this.topCard) return;
+
+                const cardGroup = this.topCard.dataset.group;
+                const isSpecialCard = cardGroup === 'white' || cardGroup === 'darkgrey';
+                const isToggled = this.topCard.dataset.isToggled === 'true';
+
+                // LOGIQUE D'ÉJECTION PAR PASTILLE (AVEC CONDITION DU TOGGLE)
+                if (isSpecialCard && this.config.ejectToggledOnly && !isToggled && this.config.showToggleIndicator) {
+                    this.bounceStack('y');
+                    return; 
+                }
+
+                const cardToEject = this.topCard;
+
+                gsap.to(cardToEject, {
+                    translateZ: 150,
+                    duration: 0.2,
+                    ease: 'power2.out',
+                    onComplete: () => {
+                        gsap.to(cardToEject, {
+                            y: -400,
+                            duration: 0.3,
+                            ease: 'power2.in'
+                        });
+                    }
+                });
+                
+                cardToEject.classList.add('eject-forward');
+                this.bounceStack('y');
+
+                setTimeout(() => {
+                    if (this.stackEl.contains(cardToEject)) {
+                        this.stackEl.removeChild(cardToEject);
+                    }
+                    this.updateCardIndices();
+                    this.updateCounter();
+                    this.updateTopCardReference();
+                    // Pas de réinitialisation automatique pour C1/C2/C3
+                }, 400);
+            }
+
+            // NOUVEAU: Logique de la pastille OK (pour C2 - Villes)
+            handleOk() {
+                if (!this.topCard || this.dataType !== 'city') return;
+                const selectedCity = this.topCard.querySelector('.card-count').textContent;
+
+                // Appel du callback défini lors de l'instanciation
+                if (typeof this.config.onCitySelected === 'function') {
+                    this.config.onCitySelected(this.currentCountry, selectedCity);
+                }
+            }
+            
+            // ... (handleRemoval, resetSpecialCard, handleToggle restent les mêmes si non bicolore, mais je les inclus pour la complétude)
+            handleRemoval(direction) {
+                const removeClass = `remove-${direction}`;
+                this.topCard.classList.add(removeClass);
+                this.bounceStack(direction === 'up' ? 'y' : 'x');
+                setTimeout(() => {
+                    if (this.stackEl.contains(this.topCard)) this.stackEl.removeChild(this.topCard);
+                    this.updateCardIndices();
+                    this.updateCounter();
+                    this.updateTopCardReference();
+                }, 300);
+            }
+
+            resetSpecialCard(card) {
+                if (card.dataset.group === 'white' || card.dataset.group === 'darkgrey') {
+                    card.style.backgroundColor = COLORS[card.dataset.group];
+                    const icon = card.dataset.group === 'white' ? '⚪' : '⬛';
+                    card.innerHTML = `<div class="card-icon">${icon}</div><div class="card-count">${card.dataset.group}</div>`;
+                    card.removeAttribute('data-is-toggled');
+                }
+                 card.style.transform = '';
+            }
+
+            showToggle() { /* ... (Logique showToggle) ... */ }
+            handleToggle() { /* ... (Logique handleToggle) ... */ }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const container1 = document.getElementById('menu-container-1');
+            const container2 = document.getElementById('menu-container-2');
+            const container3 = document.getElementById('menu-container-3');
+
+            let comp1, comp2, comp3;
+            let currentCountry = MAGHREB_COUNTRIES[0]; // Pays initial
+
+            // ----------------------------------------------------
+            // LOGIQUE DE MISE À JOUR ENTRE LES COMPOSANTS
+            // ----------------------------------------------------
+
+            // 1. Mise à jour de C2 (Villes) basée sur C1 (Pays)
+            const updateCities = (countryName) => {
+                currentCountry = countryName;
+                const cities = MAGHREB_DATA[countryName].cities || [];
+                comp2.initializeMenu(cities, 'city', countryName);
+                comp3.initializeMenu([], 'district', null); // Vider C3
+            };
+
+            // 2. Mise à jour de C3 (Quartiers) basée sur C2 (Ville)
+            const updateDistricts = (countryName, cityName) => {
+                const districts = MAGHREB_DATA[countryName].districts[cityName] || [];
+                comp3.initializeMenu(districts, 'district', cityName);
+            };
+
+
+            // ----------------------------------------------------
+            // INSTANCIATION DES COMPOSANTS AVEC LES OPTIONS SPÉCIFIQUES
+            // ----------------------------------------------------
+
+            // Comp 1 (Pays) : Pagination active UNIQUEMENT.
+            comp1 = new CardStackMenu(container1, {
+                enableDrag: false,
+                showEjectPill: false,
+                showToggleIndicator: false,
+                showPaginatePills: true,
+                showOkPill: false,
+            });
+            comp1.onCountryChange = updateCities; // Liaison : Cycle C1 -> Recharge C2
+
+
+            // Comp 2 (Villes) : Pagination et pastille OK actives UNIQUEMENT.
+            comp2 = new CardStackMenu(container2, {
+                enableDrag: false,
+                showEjectPill: false,
+                showToggleIndicator: false,
+                showPaginatePills: true,
+                showOkPill: true, // Pastille OK active
+                onCitySelected: updateDistricts, // Liaison : OK C2 -> Recharge C3
+            });
+
+
+            // Comp 3 (Quartiers) : Pagination et Eject active UNIQUEMENT.
+            comp3 = new CardStackMenu(container3, {
+                enableDrag: false,
+                showEjectPill: true,
+                showToggleIndicator: false,
+                showPaginatePills: true,
+                showOkPill: false,
+            });
+
+            // ----------------------------------------------------
+            // INITIALISATION DE LA CHAÎNE DE DONNÉES
+            // ----------------------------------------------------
+            
+            // 1. Charger C1 avec les pays
+            comp1.initializeMenu(MAGHREB_COUNTRIES, 'country');
+            
+            // 2. Charger C2 avec les villes du pays de la première carte de C1 (Algérie)
+            updateCities(currentCountry);
+            
+            // 3. C3 est vide.
+        });
+    </script>
+
+</body>
+</html>
