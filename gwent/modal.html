@@ -21,8 +21,8 @@
         /* ======================================================= */
         :root {
             /* 1. RÉACTIVITÉ: Utilisation de vmin pour une taille de base adaptative */
-            --card-base-size: 15vmin; 
-            --card-width-menu: calc(var(--card-base-size) * 0.8);
+            --card-base-size: 75vmin; 
+            --card-width-menu: calc(var(--card-base-size) * 0.6);
             --card-height-menu: var(--card-base-size);
             
             --z-gap: 1px;
@@ -43,7 +43,7 @@
             /* Utilisation de translate pour centrer par rapport au point (left, top) */
             transform: translate(-50%, -50%); 
         }
-        /* Disposition en ligne (modifiée pour aligner les 3 composants) */
+        /* Disposition en ligne (MODIFIÉE PLUS BAS PAR LE CSS DU CARROUSEL) */
         #menu-container-1 { left: 20%; top: 50%; } /* Pays */
         #menu-container-2 { left: 50%; top: 50%; } /* Villes */
         #menu-container-3 { left: 80%; top: 50%; } /* Quartiers */
@@ -60,11 +60,11 @@
         /* Pastille compteur */
         .card-counter {
             position: absolute; 
-            bottom: -20%; 
-            left: -10%;
+            bottom: 90%; 
+            left: -8.5%;
             transform: translateX(-50%);
-            width: 39.5px;
-            height: 39.5px;
+            width: 49.5px;
+            height: 49.5px;
             border-radius: 50%;
             background-color: var(--counter-bg);
             border: 1px solid var(--border-dark);
@@ -201,72 +201,256 @@
 
         .paginate-pill {
             top: 30%;
-            width: 50%;
-            height: 40%;
+            width: 15%;
+            height: 9%;
             font-size: 14px;
-            background-color: rgba(0, 0, 0, 0.6);
+            background-color: rgba(0, 0, 0, 0.8);
             color: white;
         }
         /* Les flèches de pagination sont positionnées par rapport à .scene-menu */
-        .paginate-pill[data-action="paginate-left"] { left: -40%; }
-        .paginate-pill[data-action="paginate-right"] { right: -70%; }
+        .paginate-pill[data-action="paginate-left"] { top: 82%; left: -16%; }
+        .paginate-pill[data-action="paginate-right"] { top: 95%; right: 100.4%; }
 
         #eject-card-pill {
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             font-size: 20px;
             /* Couleur plus visible pour l'éjection, surtout sur C3 */
             background-color: rgba(200, 50, 50, 0.9); 
-            top: 90%; 
-            right: -30%;
+            top: 12%; 
+            right: 108%;
             transform: translateX(50%);
         }
         #eject-card-pill:hover {
             transform: translateX(50%) scale(1.15);
         }
         
-        /* Pastille OK (NOUVEAU) */
-        .ok-pill {
-            position: absolute; 
-            top: 60%;
-            right: -150%;
-            transform: translateY(-50%);
-            background-color: #2ecc71; /* Vert pour OK */
-            border-color: #27ae60;
-            width: 50px;
-            height: 50px;
-            font-size: 22px;
-        }
-        .ok-pill:hover {
-            transform: translateY(-50%) scale(1.1);
-        }
+        /* Pastille OK (SUPPRIMÉE) */
+        /* .ok-pill { ... } */
 
 
         /* 3. RÉACTIVITÉ: Media Queries pour le mobile */
         @media (max-width: 768px) {
             :root {
                 /* Taille de base plus petite mais limitée en pourcentage sur mobile */
-                --card-base-size: 25vmin; 
+                --card-base-size: 125vmin; 
             }
-            /* Repositionnement des instances pour mobile (en colonne) */
+            /* Repositionnement des instances (MODIFIÉ PLUS BAS PAR LE CSS DU CARROUSEL) */
             #menu-container-1 { left: 50%; top: 15%; }
             #menu-container-2 { left: 50%; top: 50%; }
             #menu-container-3 { left: 50%; top: 85%; }
+			
+					.carousel-nav.prev {
+            left: 30px;
+        }
+        .carousel-nav.next {
+            right: 30px;
+        }
+			
         }
         
         /* 4. RÉACTIVITÉ: Media Queries pour les très grands écrans (TV/grands moniteurs) */
         @media (min-width: 1920px) {
             :root {
                 /* Limiter la taille maximale des cartes pour éviter l'abus d'espace */
-                --card-base-size: 150px; 
+            --card-base-size: 225vmin; 
+            }
+			
+		.carousel-nav.prev {
+            left: 10px;
+        }
+        .carousel-nav.next {
+            right: 10px;
+        }
+			
+        }
+
+        /* ======================================================= */
+        /* === NOUVEAU: STYLES DU CARROUSEL (FADE + ROTATEZ) ==== */
+        /* ======================================================= */
+        
+        /* 1. Forcer tous les composants à être au centre et superposés */
+        #menu-container-1,
+        #menu-container-2,
+        #menu-container-3 {
+            left: 50% !important;
+            top: 50% !important;
+        }
+
+        /* 2. Annuler le repositionnement en colonne sur mobile */
+        @media (max-width: 768px) {
+            #menu-container-1,
+            #menu-container-2,
+            #menu-container-3 {
+                left: 50% !important;
+                top: 50% !important;
             }
         }
+
+        /* 3. Définir les états d'animation pour les slides */
+        .menu-instance-container {
+            /* Ajouter les transitions */
+            transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), 
+                        transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            
+            /* État par défaut (caché) : Opacité 0, réduit, et tourné */
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8) rotateZ(15deg);
+            pointer-events: none; /* Non cliquable si non actif */
+        }
+
+        .menu-instance-container.active {
+            /* État actif : Visible, taille normale, droit */
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1) rotateZ(0deg);
+            pointer-events: all; /* Cliquable */
+        }
+        
+        /* État de sortie (rotation inverse) */
+        .menu-instance-container.exiting {
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0.8) rotateZ(-15deg);
+            pointer-events: none;
+        }
+
+        /* 4. Styles pour les flèches de navigation */
+        .carousel-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(50,155,10,0.4);
+            color: white;
+            border: 2px solid rgba(125,125,125,0.5);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 9999; /* Au-dessus de tout */
+            font-family: 'Fredoka One', cursive;
+            font-size: 20px;
+            display: flex; /* Modifié pour le show/hide */
+            justify-content: center;
+            align-items: center;
+            transition: background 0.2s ease, transform 0.2s ease, opacity 0.3s ease;
+            user-select: none;
+        }
+        .carousel-nav:hover {
+            background: rgba(0,0,0,0.7);
+      
+        }
+        .carousel-nav.prev {
+            left: 0px;
+        }
+        .carousel-nav.next {
+            right: 0px;
+        }
+        
+        /* Position des flèches sur mobile */
+        @media (max-width: 768px) {
+            .carousel-nav {
+                top: auto;
+                bottom: 20px;
+                transform: none;
+            }
+             .carousel-nav.prev { left: 20px; }
+             .carousel-nav.next { right: 20px; }
+        }
+
+        /* ======================================================= */
+        /* === NOUVEAU: STYLES POUR LE MODAL DE RÉSUMÉ         ==== */
+        /* ======================================================= */
+        #summary-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none; /* Caché par défaut */
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+            backdrop-filter: blur(5px);
+        }
+        
+        #summary-modal {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            border: 2px solid #333;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+            width: 90%;
+            max-width: 400px;
+            position: relative;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            animation: modal-appear 0.3s ease-out;
+        }
+
+        @keyframes modal-appear {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        #summary-modal .close-button {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            color: #777;
+            cursor: pointer;
+            line-height: 1;
+        }
+        #summary-modal .close-button:hover {
+            color: #333;
+        }
+        
+        #summary-modal h2 {
+            font-family: 'Fredoka One', cursive;
+            color: #333;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        
+        .modal-summary-item {
+            font-size: 18px;
+            padding: 10px;
+            background: #f4f4f4;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 1px solid #ddd;
+        }
+         .modal-summary-item strong {
+            color: #e67e22; /* Rappel de la couleur du compteur */
+         }
+
 
     </style>
 </head>
 <body>
 
-    <div class="menu-instance-container" id="menu-container-1"></div> <div class="menu-instance-container" id="menu-container-2"></div> <div class="menu-instance-container" id="menu-container-3"></div> <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <div class="menu-instance-container" id="menu-container-1"></div>
+    <div class="menu-instance-container" id="menu-container-2"></div>
+    <div class="menu-instance-container" id="menu-container-3"></div>
+
+    <button class="carousel-nav prev" data-dir="-1">❮</button>
+    <button class="carousel-nav next" data-dir="1">❯</button>
+
+    <div id="summary-modal-overlay">
+        <div id="summary-modal">
+            <span class="close-button">&times;</span>
+            <h2>Votre Sélection</h2>
+            <div class="modal-content">
+                <div id="summary-country" class="modal-summary-item"></div>
+                <div id="summary-city" class="modal-summary-item"></div>
+                <div id="summary-district" class="modal-summary-item"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
     <script>
         const COLORS = {
             green: '#bff5bf', blue: '#c9e5ff', orange: '#ffe5b0',
@@ -364,8 +548,8 @@
                     showEjectPill: true, 
                     showToggleIndicator: true, 
                     ejectToggledOnly: true,
-                    showOkPill: false, // NOUVEAU: Pastille OK
-                    onCitySelected: () => {}, // NOUVEAU: Callback pour C2
+                    showOkPill: false, // MODIFIÉ: Pastille OK
+                    onCitySelected: () => {}, // Callback pour C2
                     ...options
                 };
 
@@ -389,11 +573,8 @@
                 
                 const toggleHtml = `<div class="toggle-indicator" data-action="colorToggle"></div>`;
 
-                let okPill = '';
-                if (this.config.showOkPill) {
-                    okPill = `<div class="control-pill ok-pill" id="ok-card-pill" data-action="ok-card">OK</div>`;
-                }
-
+                // SUPPRIMÉ: Logique 'okPill'
+                // let okPill = ''; ...
 
                 this.container.innerHTML = `
                     <div class="card-counter">0</div>
@@ -402,8 +583,7 @@
                         <div class="card-stack"></div>
                         ${toggleHtml}
                         ${ejectPill}
-                        ${okPill}
-                    </div>
+                        </div>
                 `;
                 this.stackEl = this.container.querySelector('.card-stack');
                 this.counterEl = this.container.querySelector('.card-counter');
@@ -411,14 +591,14 @@
                 this.paginateLeftBtn = this.container.querySelector('[data-action="paginate-left"]');
                 this.paginateRightBtn = this.container.querySelector('[data-action="paginate-right"]');
                 this.ejectCardPill = this.container.querySelector('[data-action="eject-card"]');
-                this.okCardPill = this.container.querySelector('[data-action="ok-card"]');
+                // SUPPRIMÉ: this.okCardPill = ...
 
                 // Lier les événements de contrôle
                 if (this.paginateLeftBtn) this.paginateLeftBtn.addEventListener('click', () => this.handleCycleReverse(true));
                 if (this.paginateRightBtn) this.paginateRightBtn.addEventListener('click', () => this.handleCycle(true, false));
                 if (this.ejectCardPill) this.ejectCardPill.addEventListener('click', () => this.handleEject());
                 if (this.toggleEl) this.toggleEl.addEventListener('click', () => this.handleToggle());
-                if (this.okCardPill) this.okCardPill.addEventListener('click', () => this.handleOk()); // NOUVEAU
+                // SUPPRIMÉ: if (this.okCardPill) ...
             }
 
             // Remplace l'ancien initializeMenu (cartes aléatoires)
@@ -460,7 +640,7 @@
                 if (this.paginateLeftBtn) this.paginateLeftBtn.style.display = this.config.showPaginatePills && hasCards ? 'flex' : 'none';
                 if (this.paginateRightBtn) this.paginateRightBtn.style.display = this.config.showPaginatePills && hasCards ? 'flex' : 'none';
                 if (this.ejectCardPill) this.ejectCardPill.style.display = this.config.showEjectPill && hasCards ? 'flex' : 'none';
-                if (this.okCardPill) this.okCardPill.style.display = this.config.showOkPill && hasCards ? 'flex' : 'none';
+                // SUPPRIMÉ: if (this.okCardPill) ...
 
                 if (!hasCards) return;
 
@@ -669,16 +849,7 @@
                 }, 400);
             }
 
-            // NOUVEAU: Logique de la pastille OK (pour C2 - Villes)
-            handleOk() {
-                if (!this.topCard || this.dataType !== 'city') return;
-                const selectedCity = this.topCard.querySelector('.card-count').textContent;
-
-                // Appel du callback défini lors de l'instanciation
-                if (typeof this.config.onCitySelected === 'function') {
-                    this.config.onCitySelected(this.currentCountry, selectedCity);
-                }
-            }
+            // SUPPRIMÉ: handleOk() { ... }
             
             // ... (handleRemoval, resetSpecialCard, handleToggle restent les mêmes si non bicolore, mais je les inclus pour la complétude)
             handleRemoval(direction) {
@@ -749,14 +920,14 @@
             comp1.onCountryChange = updateCities; // Liaison : Cycle C1 -> Recharge C2
 
 
-            // Comp 2 (Villes) : Pagination et pastille OK actives UNIQUEMENT.
+            // Comp 2 (Villes) : Pagination active UNIQUEMENT.
             comp2 = new CardStackMenu(container2, {
                 enableDrag: false,
                 showEjectPill: false,
                 showToggleIndicator: false,
                 showPaginatePills: true,
-                showOkPill: true, // Pastille OK active
-                onCitySelected: updateDistricts, // Liaison : OK C2 -> Recharge C3
+                showOkPill: false, // MODIFIÉ: Pastille OK désactivée
+                onCitySelected: updateDistricts, // La liaison reste, mais sera appelée par le bouton "Suivant"
             });
 
 
@@ -779,7 +950,121 @@
             // 2. Charger C2 avec les villes du pays de la première carte de C1 (Algérie)
             updateCities(currentCountry);
             
-            // 3. C3 est vide.
+            // 3. C3 est vide. (géré par updateCities)
+
+
+            // ----------------------------------------------------
+            // NOUVEAU: LOGIQUE DU CARROUSEL ET MODAL
+            // ----------------------------------------------------
+            const carouselSlides = [container1, container2, container3];
+            let currentSlideIndex = 0;
+
+            // Références aux éléments de navigation et du modal
+            const navPrev = document.querySelector('.carousel-nav.prev');
+            const navNext = document.querySelector('.carousel-nav.next');
+            const modalOverlay = document.getElementById('summary-modal-overlay');
+            const modalCloseBtn = modalOverlay.querySelector('.close-button');
+            const summaryCountry = document.getElementById('summary-country');
+            const summaryCity = document.getElementById('summary-city');
+            const summaryDistrict = document.getElementById('summary-district');
+
+
+            function updateCarousel(newIndex, oldIndex = -1) {
+                // Gérer l'ancienne slide (celle qui sort)
+                if (oldIndex !== -1) {
+                    const oldSlide = carouselSlides[oldIndex];
+                    if (oldSlide) {
+                        oldSlide.classList.remove('active');
+                        oldSlide.classList.add('exiting');
+                        // Nettoyer la classe 'exiting' après l'animation
+                        setTimeout(() => oldSlide.classList.remove('exiting'), 600);
+                    }
+                }
+
+                // Gérer la nouvelle slide (celle qui entre)
+                const newSlide = carouselSlides[newIndex];
+                if (newSlide) {
+                    newSlide.classList.remove('exiting'); // Au cas où
+                    newSlide.classList.add('active');
+                }
+                
+                currentSlideIndex = newIndex;
+
+                // NOUVEAU: Gérer la visibilité des boutons
+                navPrev.style.display = (newIndex === 0) ? 'none' : 'flex';
+                
+                // NOUVEAU: Mettre à jour le texte du bouton Suivant
+                if (newIndex === 2) { // Dernière slide (Quartiers)
+                    navNext.textContent = 'OK'; 
+                } else {
+                    navNext.textContent = '❯';
+                }
+            }
+
+            // NOUVEAU: Fonctions du Modal
+            function showSummaryModal() {
+                const countryCard = comp1.topCard;
+                const cityCard = comp2.topCard;
+                const districtCard = comp3.topCard;
+                
+                // Récupérer le texte, ou mettre "Non sélectionné" si la pile est vide
+                const countryText = countryCard ? countryCard.querySelector('.card-count').textContent : "Non sélectionné";
+                const cityText = cityCard ? cityCard.querySelector('.card-count').textContent : "Non sélectionné";
+                const districtText = districtCard ? districtCard.querySelector('.card-count').textContent : "Non sélectionné";
+
+                summaryCountry.innerHTML = `🌐 <strong>Pays:</strong> ${countryText}`;
+                summaryCity.innerHTML = `🏙️ <strong>Ville:</strong> ${cityText}`;
+                summaryDistrict.innerHTML = `🏘️ <strong>Quartier:</strong> ${districtText}`;
+                
+                modalOverlay.style.display = 'flex';
+            }
+
+            function hideSummaryModal() {
+                modalOverlay.style.display = 'none';
+            }
+
+            // NOUVEAU: Écouteurs d'événements (Modal)
+            modalCloseBtn.addEventListener('click', hideSummaryModal);
+            modalOverlay.addEventListener('click', (e) => {
+                // Fermer si on clique sur l'overlay (le fond)
+                if (e.target === modalOverlay) {
+                    hideSummaryModal();
+                }
+            });
+
+
+            // NOUVEAU: Écouteurs d'événements (Navigation)
+            navPrev.addEventListener('click', () => {
+                const oldIndex = currentSlideIndex;
+                let newIndex = (oldIndex - 1 + carouselSlides.length) % carouselSlides.length;
+                updateCarousel(newIndex, oldIndex);
+            });
+
+            navNext.addEventListener('click', () => {
+                const oldIndex = currentSlideIndex;
+
+                if (oldIndex === 1) { // On est sur C2 (Villes)
+                    // Déclencher la logique "OK" manuellement
+                    if (comp2.topCard) {
+                        const selectedCity = comp2.topCard.querySelector('.card-count').textContent;
+                        // Appeler la fonction de mise à jour de C3
+                        updateDistricts(comp2.currentCountry, selectedCity);
+                    }
+                } else if (oldIndex === 2) { // On est sur C3 (Quartiers)
+                    // Ouvrir le modal au lieu de cycler
+                    showSummaryModal();
+                    return; // Important: Ne pas avancer le slide
+                }
+                
+                // Avancer le slide (pour 0 et 1)
+                let newIndex = (oldIndex + 1 + carouselSlides.length) % carouselSlides.length;
+                updateCarousel(newIndex, oldIndex);
+            });
+
+
+            // Initialiser le carrousel en affichant la première slide
+            updateCarousel(0, -1);
+
         });
     </script>
 
