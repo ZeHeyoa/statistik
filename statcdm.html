@@ -1,0 +1,1334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classement FIFA Homme & Femme 🏆</title>
+    
+    <style>
+        /* --- General Style --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5; 
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 3px 20px 10px 20px; 
+            box-sizing: border-box;
+            overflow-x: hidden;
+            font-size: 0.8em; 
+        }
+
+        .main-content-wrapper {
+            display: flex;
+            gap: 15px; 
+            width: 100%;
+            align-items: flex-start;
+            min-height: calc(100vh - 13px); 
+        }
+        
+        /* --- Left Column: Competitions and Year --- */
+        .competitions-column {
+            width: 110px; 
+            flex-shrink: 0;
+            padding-top: 3px; 
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 13px - 3px); 
+        }
+        
+        #year-display-in-column {
+            font-size: 1.725em; 
+            color: #1e3a5f;
+            margin: 0 0 5px 0; 
+            font-weight: 800;
+            text-align: center;
+            line-height: 1; 
+        }
+
+        .competitions-display {
+            display: flex;
+            flex-direction: column; 
+            gap: 6px; 
+            max-height: 100vh; 
+            flex-grow: 1; 
+            overflow: hidden; 
+            align-items: flex-start;
+            position: relative; 
+        }
+
+        #all-competitions-scroll-container {
+            position: relative;
+            top: 0; 
+            left: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Container for competitions of a year */
+        .year-group-container {
+            position: relative; 
+            width: 100%;
+            margin-bottom: 6px; 
+            flex-shrink: 0; 
+        }
+        
+        /* --- Style : Year Separator --- */
+        .year-separator {
+            width: 100%;
+            height: 20px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 3px 0; 
+            position: relative;
+            flex-shrink: 0; 
+        }
+        
+        .year-separator::before,
+        .year-separator::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background-color: #ccc;
+            margin: 0 5px;
+        }
+
+        .year-separator-text {
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #666;
+            padding: 0 5px;
+        }
+
+        /* --- COMPETITION BOX STRUCTURE --- */
+        .competition-box {
+            position: relative; 
+            width: 100%;
+            height: 38px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            border-radius: 3px; 
+            overflow: hidden; 
+            transition: transform 0.2s ease;
+            display: flex; 
+            margin-bottom: 6px; 
+            flex-shrink: 0; 
+        }
+        
+        .year-group-container .competition-box:last-child {
+            margin-bottom: 0;
+        }
+
+        .competition-box:hover {
+            transform: scale(1.03); 
+            z-index: 5;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        /* --- Internal Columns (unchanged) --- */
+        #flag-column {
+            width: 35%; 
+            flex-shrink: 0;
+            background-color: #000; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        #flag-column img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            padding: 0; 
+        }
+
+        #right-column {
+            width: 65%; 
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column; 
+            height: 100%;
+        }
+
+        #comp-info-case {
+            height: 50%; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6em; 
+            font-weight: bold;
+            color: #fff;
+            padding: 0 1px; 
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        #winner-name-case {
+            height: 50%; 
+            background-color: #000; 
+            color: #ccc; 
+            font-size: 0.6em; 
+            font-weight: 600; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 1px; 
+            text-align: center;
+            line-height: 1.1; 
+        }
+
+        /* --- RANKING --- */
+        .no-competitions { font-size: 0.7em; margin-top: 5px; }
+        .chart-container { flex-grow: 1; max-width: 600px; flex-shrink: 0; padding-top: 0; }
+        #ranking-chart { position: relative; width: 100%; }
+
+        .country-row {
+            position: absolute;
+            width: 100%;
+            height: 35px; 
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px; 
+            opacity: 0; 
+            visibility: hidden; 
+            background-color: transparent; 
+            border-radius: 0; 
+            box-shadow: none; 
+            padding-right: 8px; 
+        }
+        
+        .country-info { position: relative; width: 100%; display: flex; align-items: center; }
+        
+        .country-name { 
+            position: absolute; top: 0px; left: 40px; font-size: 0.7em; font-weight: bold; color: #444; white-space: nowrap; 
+        }
+        
+        /* NOUVEAU STYLE : Liste des compétitions distinctes */
+        .distinct-wins-list {
+            position: absolute; 
+            top: 15px; /* Juste en dessous du nom */
+            left: 40px; 
+            font-size: 0.55em; /* Très petite police */
+            color: #666;
+            white-space: nowrap;
+            overflow: hidden;
+            max-width: calc(100% - 140px); /* Limite la largeur */
+            opacity: 0; 
+        }
+        
+        .flag { 
+            width: 35px; height: 35px; border-radius: 50%; border: 2px solid #fff; box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            margin-right: 1px; flex-shrink: 0; 
+        }
+        
+        /* Ajustement de la marge pour faire de la place pour la liste des compétitions */
+        .progress-container { 
+            flex-grow: 1; height: 6px; background-color: transparent; border-radius: 3px; overflow: hidden; margin-top: 25px; /* Adjusted to 25px */
+        }
+        
+        .progress-bar { 
+            width: 0%; height: 100%; border-radius: 3px; 
+        }
+        
+        .trophy-count { 
+            font-size: 1.1em; font-weight: bold; color: #1e3a5f; margin-left: 10px; width: 40px; text-align: center; flex-shrink: 0; 
+        }
+
+        /* Style pour la case à cocher */
+        #checkbox-container {
+            margin-top: 20px;
+            font-size: 1em;
+            color: #555;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #distinct-checkbox {
+            margin-right: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id="start-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #f0f2f5; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 100; cursor: pointer;">
+        <h1 style="color: #1e3a5f; text-align: center; font-size: 2em; margin-bottom: 50px;">Cliquez pour démarrer le classement FIFA 🏆</h1>
+        
+        <div id="checkbox-container">
+            <input type="checkbox" id="distinct-checkbox" checked>
+            <label for="distinct-checkbox" style="cursor: pointer;">Comptage : **1 point max par pays et par type de compétition (Historique)**</label>
+        </div>
+
+        <p style="margin-top: 50px; font-size: 1.2em; color: #888;">Cliquez n'importe où pour lancer.</p>
+    </div>
+    
+    <div class="main-content-wrapper"> 
+        
+        <div class="competitions-column">
+            <h2 id="year-display-in-column">1908</h2> 
+            <div id="competitions-display" class="competitions-display">
+                <p class="no-competitions">Chargement des données FIFA...</p>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div id="ranking-chart">
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- CONFIGURATION ---
+            const BASE_SECONDS_PER_YEAR = 1; 
+            const SLOWDOWN_PER_COMPETITION = 0.5; 
+            const COMPETITION_THRESHOLD = 2; 
+            const ROW_HEIGHT = 38; 
+            const COMP_BOX_HEIGHT = 38;
+            const COMP_BOX_GAP = 6;
+            const SEPARATOR_HEIGHT = 26; 
+            const PROGRESS_BAR_MARGIN_TOP_DISTINCT = 25;
+            const PROGRESS_BAR_MARGIN_TOP_NORMAL = 15;
+            
+            let VISIBLE_HEIGHT = 176; 
+            let useDistinctByCompetition = true; 
+
+            // COMPETITION COLORS
+            const COMPETITION_COLORS = [
+                '#1e3a5f', '#991b1b', '#15803d', '#92400e', '#4c1d95', '#F59E0B'
+            ];
+            let competitionColorMap = {}; 
+            let colorIndex = 0;
+
+            // --- DOM ELEMENTS ---
+            const chart = document.getElementById('ranking-chart');
+            const yearDisplay = document.getElementById('year-display-in-column'); 
+            const competitionsDisplayContainer = document.getElementById('competitions-display'); 
+            const distinctCheckbox = document.getElementById('distinct-checkbox');
+            const startScreen = document.getElementById('start-screen');
+            
+            let allCompetitionsContainer = null;
+            
+            let allCountries = {};
+            let yearlyWins = {};
+            let rawYearlyData = {}; 
+            let sortedYears = [];
+            let timer = null; 
+            
+            // --- CONSTANTES POUR LE MODE DISTINCT (H1720AJ | F1720AJ) ---
+            const SUB_CODES = ['17', '20', 'A', 'J'];
+            const compToSubCodeMap = {
+                'U17 H': '17', 'U17 F': '17',
+                'U20 H': '20', 'U20 F': '20', 'U19 F': '20', 
+                'CDM H': 'A', 'CDM F': 'A',
+                'JO H': 'J', 'JO F': 'J'
+            };
+
+            // --- TRANSLATED CONSTANTS (Max 10 Chars) ---
+            const competitionNameMap = {
+                'CDM H': 'World Cup M',
+                'CDM F': 'World Cup W',
+                'JO H': 'Olympic M',
+                'JO F': 'Olympic W',
+                'U20 H': 'U20 World M',
+                'U20 F': 'U20 World W',
+                'U17 H': 'U17 World M',
+                'U17 F': 'U17 World W',
+                'U19 F': 'U19 World W'
+            };
+            
+            // --- MAPPING DES SUCCESSEURS (LOGIQUE FIFA/UEFA) ---
+            const COUNTRY_SUCCESSORS = {
+                'RDA': 'ALLEMAGNE',           
+                'RFA': 'ALLEMAGNE',           
+                'URSS': 'RUSSIE',             
+                'TCHÉCOSLOVAQUIE': 'RÉPUBLIQUE TCHÈQUE', 
+                'YOUGOSLAVIE': 'SERBIE',      
+                'GRANDE-BRETAGNE': 'ANGLETERRE', 
+                'SUEDE': 'SUÈDE', 
+            };
+            
+            // --- TRANSLATED COUNTRIES (Max 10 Chars) ---
+            const countryNameMap = {
+                // Pays actuels (Clés de classement)
+                'URUGUAY': { name: 'URUGUAY', code: 'UY' },
+                'ITALIE': { name: 'ITALY', code: 'IT' },
+                'ALLEMAGNE': { name: 'GERMANY', code: 'DE' }, 
+                'BRÉSIL': { name: 'BRAZIL', code: 'BR' },
+                'ANGLETERRE': { name: 'ENGLAND', code: 'GB' }, 
+                'POLOGNE': { name: 'POLAND', code: 'PL' },
+                'ARGENTINE': { name: 'ARGENTINA', code: 'AR' },
+                'FRANCE': { name: 'FRANCE', code: 'FR' },
+                'ESPAGNE': { name: 'SPAIN', code: 'ES' },
+                'NIGERIA': { name: 'NIGERIA', code: 'NG' },
+                'ÉTATS-UNIS': { name: 'USA', code: 'US' },
+                'CAMEROUN': { name: 'CAMEROON', code: 'CM' },
+                'NORVÈGE': { name: 'NORWAY', code: 'NO' },
+                'GHANA': { name: 'GHANA', code: 'GH' },
+                'SUISSE': { name: 'SWITZERL', code: 'CH' },
+                'JAPON': { name: 'JAPAN', code: 'JP' },
+                'MEXIQUE': { name: 'MEXICO', code: 'MX' },
+                'SERBIE': { name: 'SERBIA', code: 'RS' }, 
+                'UKRAINE': { name: 'UKRAINE', code: 'UA' },
+                'CANADA': { name: 'CANADA', code: 'CA' },
+                'BELGIQUE': { name: 'BELGIUM', code: 'BE' },
+                'SUÈDE': { name: 'SWEDEN', code: 'SE' }, 
+                'HONGRIE': { name: 'HUNGARY', code: 'HU' },
+                'ARABIE SAOUDITE': { name: 'S. ARABIA', code: 'SA' },
+                'CORÉE DU NORD': { name: 'N. KOREA', code: 'KP' },
+                'CORÉE DU SUD': { name: 'S. KOREA', code: 'KR' },
+                'MAROC': { name: 'MOROCCO', code: 'MA' },
+                'RUSSIE': { name: 'RUSSIA', code: 'RU' }, 
+                'RÉPUBLIQUE TCHÈQUE': { name: 'CZECH REP.', code: 'CZ' },
+                
+                // Pays historiques (Clés d'origine - pour l'affichage de la boîte uniquement)
+                'RDA': { name: 'E. GERMANY', code: 'DD' }, 
+                'RFA': { name: 'W. GERMANY', code: 'DE' }, 
+                'URSS': { name: 'USSR', code: 'SU' }, 
+                'TCHÉCOSLOVAQUIE': { name: 'CZECHOSLO', code: 'CS' },
+                'YOUGOSLAVIE': { name: 'YUGOSLAVIA', code: 'YU' },
+                'GRANDE-BRETAGNE': { name: 'G. BRITAIN', code: 'GB' },
+            };
+
+            // --- INLINED JSON DATA (Non modifié) ---
+            const rawJSON = {
+              
+              "Annees": [
+                {
+                  "Annee": "1908",
+                  "competition": {
+                    "JO H": "Grande-Bretagne"
+                  }
+                },
+                {
+                  "Annee": "1912",
+                  "competition": {
+                    "JO H": "Grande-Bretagne"
+                  }
+                },
+                {
+                  "Annee": "1920",
+                  "competition": {
+                    "JO H": "Belgique"
+                  }
+                },
+                {
+                  "Annee": "1924",
+                  "competition": {
+                    "JO H": "Uruguay"
+                  }
+                },  
+                {
+                  "Annee": "1928",
+                  "competition": {
+                    "JO H": "Uruguay"
+                  }
+                },
+                {
+                  "Annee": "1930",
+                  "competition": {
+                    "CDM H": "Uruguay"
+                  }
+                },
+                {
+                  "Annee": "1934",
+                  "competition": {
+                    "CDM H": "Italie"
+                  }
+                },
+                {
+                  "Annee": "1936",
+                  "competition": {
+                    "JO H": "Italie"
+                  }
+                },
+                {
+                  "Annee": "1938",
+                  "competition": {
+                    "CDM H": "Italie"
+                  }
+                },
+                {
+                  "Annee": "1948",
+                  "competition": {
+                    "JO H": "Suede"
+                  }
+                },
+                {
+                  "Annee": "1950",
+                  "competition": {
+                    "CDM H": "Uruguay"
+                  }
+                },
+                {
+                  "Annee": "1954",
+                  "competition": {
+                    "JO H": "Hongrie"
+                  }
+                },
+                {
+                  "Annee": "1958",
+                  "competition": {
+                    "JO H": "URSS"
+                  }
+                },
+                {
+                  "Annee": "1954",
+                  "competition": {
+                    "CDM H": "Allemagne"
+                  }
+                },
+                {
+                  "Annee": "1960",
+                  "competition": {
+                    "JO H": "Yougoslavie"
+                  }
+                },
+                {
+                  "Annee": "1958",
+                  "competition": {
+                    "CDM H": "Brésil"
+                  }
+                },
+                {
+                  "Annee": "1962",
+                  "competition": {
+                    "CDM H": "Brésil"
+                  }
+                },
+                {
+                  "Annee": "1964",
+                  "competition": {
+                    "JO H": "Hongrie"
+                  }
+                },
+                {
+                  "Annee": "1966",
+                  "competition": {
+                    "CDM H": "Angleterre"
+                  }
+                },
+                {
+                  "Annee": "1968",
+                  "competition": {
+                    "JO H": "Hongrie"
+                  }
+                },
+                {
+                  "Annee": "1970",
+                  "competition": {
+                    "CDM H": "Brésil"
+                  }
+                },
+                {
+                  "Annee": "1972",
+                  "competition": {
+                    "JO H": "Pologne"
+                  }
+                },
+                {
+                  "Annee": "1974",
+                  "competition": {
+                    "CDM H": "Allemagne"
+                  }
+                },
+                {
+                  "Annee": "1976",
+                  "competition": {
+                    "JO H": "RDA"
+                  }
+                },
+                {
+                  "Annee": "1977",
+                  "competition": {
+                    "U20 H": "URSS"
+                  }
+                },
+                {
+                  "Annee": "1978",
+                  "competition": {
+                    "CDM H": "Argentine"
+                  }
+                },
+                {
+                  "Annee": "1979",
+                  "competition": {
+                    "U20 H": "Argentine"
+                  }
+                },
+                {
+                  "Annee": "1980",
+                  "competition": {
+                    "JO H": "Tchécoslovaquie"
+                  }
+                },
+                {
+                  "Annee": "1981",
+                  "competition": {
+                    "U20 H": "RFA"
+                  }
+                },
+                {
+                  "Annee": "1982",
+                  "competition": {
+                    "CDM H": "Italie"
+                  }
+                },
+                {
+                  "Annee": "1983",
+                  "competition": {
+                    "U20 H": "Brésil"
+                  }
+                },
+                {
+                  "Annee": "1984",
+                  "competition": {
+                    "JO H": "France"
+                  }
+                },
+                {
+                  "Annee": "1985",
+                  "competition": {
+                    "U20 H": "Brésil",
+                    "U17 H": "Nigeria"
+                  }
+                },
+                {
+                  "Annee": "1986",
+                  "competition": {
+                    "CDM H": "Argentine"
+                  }
+                },
+                {
+                  "Annee": "1987",
+                  "competition": {
+                    "U20 H": "Yougoslavie",
+                    "U17 H": "URSS"
+                  }
+                },
+                {
+                  "Annee": "1988",
+                  "competition": {
+                    "JO H": "URSS"
+                  }
+                },
+                {
+                  "Annee": "1989",
+                  "competition": {
+                    "U17 H": "Arabie saoudite",
+                    "U20 H": "Portugal"
+                  }
+                },
+                {
+                  "Annee": "1990",
+                  "competition": {
+                    "CDM H": "Allemagne"
+                  }
+                },
+                {
+                  "Annee": "1991",
+                  "competition": {
+                    "CDM F": "États-Unis",
+                    "U17 H": "Ghana",
+                    "U20 H": "Portugal"
+                  }
+                },
+                {
+                  "Annee": "1992",
+                  "competition": {
+                    "JO H": "Espagne"
+                  }
+                },
+                {
+                  "Annee": "1993",
+                  "competition": {
+                    "U17 H": "Nigeria",
+                    "U20 H": "Brésil",
+                  }
+                },
+                {
+                  "Annee": "1994",
+                  "competition": {
+                    "CDM H": "Brésil"
+                  }
+                },
+                {
+                  "Annee": "1995",
+                  "competition": {
+                    "CDM F": "Norvège",
+                    "U20 H": "Argentine",
+                    "U17 H": "Ghana"
+                  }
+                },
+                {
+                  "Annee": "1996",
+                  "competition": {
+                    "JO H": "Nigeria",
+                    "JO F": "États-Unis"
+                  }
+                },
+                {
+                  "Annee": "1997",
+                  "competition": {
+                    "U20 H": "Argentine",
+                    "U17 H": "Brésil"
+                  }
+                },
+                {
+                  "Annee": "1998",
+                  "competition": {
+                    "CDM H": "France"
+                  }
+                },
+                {
+                  "Annee": "1999",
+                  "competition": {
+                    "CDM F": "États-Unis",
+                    "U20 H": "Espagne",
+                    "U17 H": "Brésil"
+                  }
+                },
+                {
+                  "Annee": "2000",
+                  "competition": {
+                    "JO H": "Cameroun",
+                    "JO F": "Norvège"
+                  }
+                },
+                {
+                  "Annee": "2001",
+                  "competition": {
+                    "U17 H": "France",
+                    "U20 H": "Brésil"
+                  }
+                },
+                {
+                  "Annee": "2002",
+                  "competition": {
+                    "CDM H": "Brésil",
+                    "U19 F": "États-Unis",
+                    "U20 F": "États-Unis"
+                  }
+                },
+                {
+                  "Annee": "2003",
+                  "competition": {
+                    "CDM F": "Allemagne",
+                    "U17 H": "Brésil",
+                    "U20 H": "Brésil"
+                  }
+                },
+                {
+                  "Annee": "2004",
+                  "competition": {
+                    "JO H": "Argentine",
+                    "JO F": "États-Unis",
+                    "U20 F": "Allemagne"
+                  }
+                },
+                {
+                  "Annee": "2005",
+                  "competition": {
+                    "U20 H": "Argentine",
+                    "U17 H": "Mexique"
+                  }
+                },
+                {
+                  "Annee": "2006",
+                  "competition": {
+                    "CDM H": "Italie",
+                    "U20 F": "Corée du Nord"
+                  }
+                },
+                {
+                  "Annee": "2007",
+                  "competition": {
+                    "CDM F": "Allemagne",
+                    "U20 H": "Argentine",
+                    "U17 H": "Nigeria"
+                  }
+                },
+                {
+                  "Annee": "2008",
+                  "competition": {
+                    "JO H": "Argentine",
+                    "JO F": "États-Unis",
+                    "U17 F": "Corée du Nord",
+                    "U20 F": "États-Unis"
+                  }
+                },
+                {
+                  "Annee": "2009",
+                  "competition": {
+                    "U20 H": "Ghana",
+                    "U17 H": "Suisse"
+                  }
+                },
+                {
+                  "Annee": "2010",
+                  "competition": {
+                    "CDM H": "Espagne",
+                    "U20 F": "Allemagne",
+                    "U17 F": "Corée du Sud"
+                  }
+                },
+                {
+                  "Annee": "2011",
+                  "competition": {
+                    "CDM F": "Japon",
+                    "U20 H": "Brésil",
+                    "U17 H": "Mexique"
+                  }
+                },
+                {
+                  "Annee": "2012",
+                  "competition": {
+                    "JO H": "Mexique",
+                    "JO F": "États-Unis",
+                    "U20 F": "États-Unis",
+                    "U17 F": "France"
+                  }
+                },
+                {
+                  "Annee": "2013",
+                  "competition": {
+                    "U20 H": "France",
+                    "U17 H": "Nigeria"
+                  }
+                },
+                {
+                  "Annee": "2014",
+                  "competition": {
+                    "CDM H": "Allemagne",
+                    "U20 F": "Allemagne",
+                    "U17 F": "Japon"
+                  }
+                },
+                {
+                  "Annee": "2015",
+                  "competition": {
+                    "CDM F": "États-Unis",
+                    "U20 H": "Serbie",
+                    "U17 H": "Nigeria"
+                  }
+                },
+                {
+                  "Annee": "2016",
+                  "competition": {
+                    "JO H": "Brésil",
+                    "JO F": "Allemagne",
+                    "U20 F": "Corée du Nord",
+                    "U17 F": "Corée du Nord"
+                  }
+                },
+                {
+                  "Annee": "2017",
+                  "competition": {
+                    "U20 H": "Angleterre",
+                    "U17 H": "Angleterre"
+                  }
+                },
+                {
+                  "Annee": "2018",
+                  "competition": {
+                    "CDM H": "France",
+                    "U20 F": "Japon",
+                    "U17 F": "Espagne"
+                  }
+                },
+                {
+                  "Annee": "2019",
+                  "competition": {
+                    "CDM F": "États-Unis",
+                    "U20 H": "Ukraine",
+                    "U17 H": "Brésil"
+                  }
+                },
+                {
+                  "Annee": "2020",
+                  "competition": {}
+                },
+                {
+                  "Annee": "2021",
+                  "competition": {
+                    "JO H": "Brésil",
+                    "JO F": "Canada"
+                  }
+                },
+                {
+                  "Annee": "2022",
+                  "competition": {
+                    "CDM H": "Argentine",
+                    "U17 F": "Espagne",
+                    "U20 F": "Espagne"
+                  }
+                },
+                {
+                  "Annee": "2023",
+                  "competition": {
+                    "CDM F": "Espagne",
+                    "U20 H": "Uruguay",
+                    "U17 H": "Allemagne"
+                  }
+                },
+                {
+                  "Annee": "2024",
+                  "competition": {
+                    "JO H": "Espagne",
+                    "JO F": "États-Unis",
+                    "U17 F": "Corée du Nord",
+                    "U20 F": "Corée du Nord"
+                  }
+                },
+                {
+                  "Annee": "2025",
+                  "competition": {
+                    "U20 H": "Maroc"
+                  }
+                }
+              ]
+
+            };
+
+            // --- FONCTION MODIFIÉE : Gère la succession des pays ---
+            function getWinnerInfo(winnerString) {
+                if (!winnerString) return { countryKey: null, clubName: null, code: null, count: 0, displayCount: '' };
+
+                let count = 1; 
+                const displayCount = '';
+                
+                const cleanString = winnerString.toUpperCase().trim();
+                let originalKey = cleanString; 
+                
+                // 1. Déterminer la clé du pays de classement (Successor)
+                let rankingKey = originalKey;
+                
+                if (COUNTRY_SUCCESSORS[originalKey]) {
+                    rankingKey = COUNTRY_SUCCESSORS[originalKey];
+                }
+
+                // 2. Récupérer les informations d'affichage et le code drapeau
+                const info = countryNameMap[rankingKey] || { name: rankingKey, code: 'xx' }; 
+                const originalInfo = countryNameMap[originalKey] || { name: originalKey, code: 'xx' };
+                const clubName = originalInfo.name; 
+                
+                return { 
+                    countryKey: rankingKey, 
+                    clubName: clubName.trim(), 
+                    code: info.code, 
+                    count: count, 
+                    displayCount: displayCount 
+                };
+            }
+            
+            function cleanCompetitionName(name) { return name.replace(/\n/g, ' ').trim(); }
+            function getCompetitionColor(compName) {
+                if (!competitionColorMap[compName]) {
+                    competitionColorMap[compName] = COMPETITION_COLORS[colorIndex % COMPETITION_COLORS.length];
+                    colorIndex++;
+                }
+                return competitionColorMap[compName];
+            }
+            
+            function calculateVisibleHeight() {
+                const rect = competitionsDisplayContainer.getBoundingClientRect();
+                VISIBLE_HEIGHT = rect.height;
+            }
+
+            let animationStarted = false;
+            
+            function startOnInteraction(event) {
+                if (event.target.id === 'distinct-checkbox' || event.target.tagName === 'LABEL') {
+                    return; 
+                }
+
+                if (animationStarted) return;
+                
+                useDistinctByCompetition = distinctCheckbox.checked;
+
+                startAll(); 
+                animationStarted = true;
+                
+                startScreen.removeEventListener('pointerdown', startOnInteraction);
+            }
+            
+            async function init() {
+                try {
+                    const filterKeys = Object.keys(competitionNameMap);
+                    
+                    await parseData(rawJSON, filterKeys, distinctCheckbox.checked); 
+                    
+                    createDOMElements();
+                    calculateVisibleHeight(); 
+                    
+                    startScreen.addEventListener('pointerdown', startOnInteraction);
+                    distinctCheckbox.addEventListener('pointerdown', (e) => e.stopPropagation()); 
+                    document.querySelector('label[for="distinct-checkbox"]').addEventListener('pointerdown', (e) => e.stopPropagation()); 
+
+
+                } catch (error) {
+                    yearDisplay.textContent = "Loading Error.";
+                    console.error("Initialization Error:", error);
+                    competitionsDisplayContainer.innerHTML = `<p class="no-competitions" style="color: red;">Erreur: données JSON invalides ou structure incorrecte.</p>`;
+                }
+            }
+            
+            function parseData(data, competitionFilter = null, distinctMode = false) {
+                allCountries = {};
+                yearlyWins = {};
+                rawYearlyData = {};
+                sortedYears = [];
+
+                const competitionsAlreadyCredited = new Set(); 
+                
+                // Pré-initialisation pour s'assurer que distinctWins est toujours présent et structuré
+                data.Annees.forEach(yearData => {
+                    for (const comp in yearData.competition) {
+                        const winnerInfo = getWinnerInfo(yearData.competition[comp]);
+                        const countryKey = winnerInfo.countryKey;
+                        
+                        if (countryKey && !allCountries[countryKey]) {
+                            const info = countryNameMap[countryKey] || { name: countryKey, code: 'xx' };
+                            allCountries[countryKey] = { 
+                                key: countryKey, 
+                                name: info.name, 
+                                code: info.code, 
+                                totalTrophies: 0, 
+                                element: null, 
+                                hasAppeared: false, 
+                                distinctWins: { H: new Set(), F: new Set() } // Changement ici : Set des sub-codes par genre
+                            };
+                        }
+                    }
+                });
+
+
+                data.Annees.forEach(yearData => {
+                    const year = yearData.Annee;
+                    rawYearlyData[year] = {}; 
+                    const winsThisYear = {};
+                    let competitionsCount = 0;
+
+                    for (const comp in yearData.competition) {
+                        
+                        if (competitionFilter && !competitionFilter.includes(comp)) {
+                            continue;
+                        }
+
+                        rawYearlyData[year][comp] = yearData.competition[comp];
+                        competitionsCount++;
+
+                        const winnerInfo = getWinnerInfo(yearData.competition[comp]);
+                        
+                        const countryKey = winnerInfo.countryKey;
+                        const count = winnerInfo.count;
+                        
+                        const distinctKey = `${countryKey}|${comp}`;
+
+                        if (countryKey) {
+                            
+                            if (distinctMode) {
+                                if (!competitionsAlreadyCredited.has(distinctKey)) {
+                                    winsThisYear[countryKey] = (winsThisYear[countryKey] || 0) + 1; 
+                                    competitionsAlreadyCredited.add(distinctKey); 
+                                    
+                                    // LOGIQUE SUB-CODE
+                                    const subCode = compToSubCodeMap[comp];
+                                    if (subCode) {
+                                        // Déterminer le genre (H ou F)
+                                        const gender = (comp.endsWith(' H') || comp === 'CDM H' || comp === 'JO H' || comp === 'U20 H' || comp === 'U17 H') ? 'H' : 'F';
+                                        
+                                        // Le set a été initialisé plus haut
+                                        allCountries[countryKey].distinctWins[gender].add(subCode);
+                                    }
+                                }
+                            } else {
+                                winsThisYear[countryKey] = (winsThisYear[countryKey] || 0) + count;
+                            }
+                        }
+                    }
+                    if (Object.keys(winsThisYear).length > 0) { yearlyWins[year] = winsThisYear; }
+                    
+                    if (competitionsCount === 0) {
+                        delete rawYearlyData[year];
+                    }
+                });
+                sortedYears = Object.keys(rawYearlyData).sort((a, b) => parseInt(a) - parseInt(b));
+            }
+
+            function createDOMElements() {
+                const countriesArray = Object.values(allCountries)
+                    .filter(country => country.name !== 'SUEDE') 
+                    .sort((a, b) => a.name.localeCompare(b.name));
+                chart.innerHTML = ''; 
+                
+                countriesArray.forEach((country, index) => {
+                    const row = document.createElement('div');
+                    row.className = 'country-row';
+                    gsap.set(row, { opacity: 0, visibility: 'hidden' }); 
+                    
+                    const flagCode = country.code ? country.code.toLowerCase() : 'xx';
+                    row.innerHTML = `<div class="country-info">
+                            <img src="https://flagcdn.com/${flagCode}.svg" alt="Flag ${country.name}" class="flag">
+                            <span class="country-name">${country.name}</span>
+                            <span class="distinct-wins-list"></span> <div class="progress-container"><div class="progress-bar"></div></div>
+                            <span class="trophy-count">0</span>
+                        </div>`;
+                    chart.appendChild(row);
+                    allCountries[country.key].element = row;
+                });
+
+                allCompetitionsContainer = document.createElement('div');
+                allCompetitionsContainer.id = 'all-competitions-scroll-container';
+                gsap.set(allCompetitionsContainer, { position: 'relative', y: 0 }); 
+                
+                competitionsDisplayContainer.innerHTML = '';
+                competitionsDisplayContainer.appendChild(allCompetitionsContainer);
+            }
+            
+            function startAll() {
+                // 1. Lire la sélection de l'utilisateur
+                useDistinctByCompetition = distinctCheckbox.checked;
+
+                // 2. Re-parcourir TOUTES les données en appliquant la nouvelle règle de comptage (DISTINCT ou non)
+                const filterKeys = Object.keys(competitionNameMap);
+                parseData(rawJSON, filterKeys, useDistinctByCompetition); 
+                
+                // 3. Réinitialiser les éléments du graphique pour les nouveaux totaux (0)
+                createDOMElements(); 
+
+                startScreen.style.display = 'none';
+                startAnimation();
+            }
+
+            function startAnimation() {
+                let yearIndex = 0; 
+                
+                function runNextYear() {
+                    if (yearIndex >= sortedYears.length) { 
+                        yearDisplay.textContent = `FINAL`;
+                        return;
+                    }
+
+                    const currentYear = sortedYears[yearIndex];
+                    const numCompetitions = Object.keys(rawYearlyData[currentYear] || {}).length;
+                    
+                    let delay = BASE_SECONDS_PER_YEAR;
+                    if (numCompetitions > COMPETITION_THRESHOLD) {
+                        delay += (numCompetitions - COMPETITION_THRESHOLD) * SLOWDOWN_PER_COMPETITION;
+                    }
+                    
+                    updateRankingForYear(currentYear);
+                    updateCompetitionsDisplay(currentYear, true);
+                    
+                    yearIndex++; 
+
+                    timer = setTimeout(runNextYear, delay * 1000);
+                }
+
+                if (sortedYears.length > 0) { 
+                    updateRankingForYear(sortedYears[0]);
+                    updateCompetitionsDisplay(sortedYears[0], false);
+                    
+                    yearIndex++; 
+                    const firstYearDelay = BASE_SECONDS_PER_YEAR * 1000;
+                    timer = setTimeout(runNextYear, firstYearDelay);
+                }
+            }
+
+            function updateRankingForYear(year) {
+                yearDisplay.textContent = `${year}`; 
+                
+                if (yearlyWins[year]) {
+                    for (const countryKey in yearlyWins[year]) { 
+                        allCountries[countryKey].totalTrophies += yearlyWins[year][countryKey]; 
+                    }
+                }
+
+                const rankedCountries = Object.values(allCountries)
+                    .filter(country => country.totalTrophies > 0) 
+                    .sort((a, b) => b.totalTrophies - a.totalTrophies);
+                
+                const maxTrophies = Math.max(1, rankedCountries[0] ? rankedCountries[0].totalTrophies : 0);
+                
+                chart.style.height = `${rankedCountries.length * ROW_HEIGHT}px`;
+
+                rankedCountries.forEach((country, index) => {
+                    const countryRow = country.element;
+                    if (!countryRow) return;
+
+                    const progressBarContainer = countryRow.querySelector('.progress-container');
+                    const progressBar = countryRow.querySelector('.progress-bar');
+                    const trophyCount = countryRow.querySelector('.trophy-count');
+                    const distinctWinsListEl = countryRow.querySelector('.distinct-wins-list'); 
+
+                    const newY = index * ROW_HEIGHT;
+                    const rank = index + 1; 
+
+                    let progressBarBackground = 'linear-gradient(90deg, #FFD700, #DAA520)'; 
+                    if (rank === 2) {
+                        progressBarBackground = 'linear-gradient(90deg, #C0C0C0, #A9A9A9)'; 
+                    } else if (rank === 3) {
+                        progressBarBackground = 'linear-gradient(90deg, #CD7F32, #B87333)'; 
+                    } else if (rank > 3) {
+                        progressBarBackground = 'linear-gradient(90deg, #4e73df, #224abe)'; 
+                    }
+
+                    if (country.totalTrophies > 0 && !country.hasAppeared) {
+                        country.hasAppeared = true;
+                        gsap.fromTo(countryRow, { y: newY, opacity: 0, visibility: 'visible' }, { y: newY, opacity: 1, duration: 0.8, ease: 'power3.out' });
+                    } 
+                    else if (country.hasAppeared) {
+                        gsap.to(countryRow, { y: newY, duration: .5, ease: 'power3.inOut' });
+                        gsap.set(countryRow, { visibility: 'visible', opacity: 1 });
+                    }
+
+                    if (country.hasAppeared) {
+                        // LOGIQUE DISTINCT WINS (MISE À JOUR)
+                        if (useDistinctByCompetition) {
+                            
+                            const SUB_CODES = ['17', '20', 'A', 'J'];
+                            let htmlContent = '';
+                            const grayColor = '#aaa'; 
+                            const blackColor = 'black';
+                            const genderColor = '#666'; 
+
+                            // Fonction pour construire le segment de code (H ou F)
+                            const buildGenderSegment = (gender) => {
+                                let codes = '';
+                                SUB_CODES.forEach(code => {
+                                    const color = country.distinctWins[gender].has(code) ? blackColor : grayColor;
+                                    codes += `<span style="color: ${color}; font-weight: bold;">${code}</span>`;
+                                });
+                                return `<span style="color: ${genderColor}; font-weight: bold;">${gender}</span>${codes}`;
+                            };
+
+                            // Assemblage final : H[codes] | F[codes]
+                            htmlContent += buildGenderSegment('H');
+                            htmlContent += ' <span style="color: #ccc; font-weight: bold;">|</span> ';
+                            htmlContent += buildGenderSegment('F');
+
+                            distinctWinsListEl.innerHTML = htmlContent;
+                            gsap.to(distinctWinsListEl, { opacity: 1, duration: 0.5 });
+                            gsap.set(progressBarContainer, { marginTop: PROGRESS_BAR_MARGIN_TOP_DISTINCT }); 
+                        } else {
+                            gsap.to(distinctWinsListEl, { opacity: 0, duration: 0.5 });
+                            gsap.set(progressBarContainer, { marginTop: PROGRESS_BAR_MARGIN_TOP_NORMAL });
+                        }
+                        
+                        gsap.to(progressBar, { 
+                            width: `${(country.totalTrophies / maxTrophies) * 100}%`, 
+                            background: progressBarBackground, 
+                            duration: 0.5, 
+                            ease: 'power3.inOut' 
+                        });
+                        gsap.to(trophyCount, { 
+                            innerText: country.totalTrophies, 
+                            duration: 0.8, 
+                            snap: { innerText: 1 }, 
+                            ease: 'power1.inOut' 
+                        });
+                    }
+                });
+
+                Object.values(allCountries).forEach(country => {
+                    if (country.totalTrophies === 0 && country.element) {
+                        gsap.set(country.element, { opacity: 0, visibility: 'hidden' });
+                    }
+                });
+            }
+
+            function getTranslatedCompName(key) {
+                return competitionNameMap[key] || cleanCompetitionName(key);
+            }
+            
+            function updateCompetitionsDisplay(year, animate = true) {
+                const competitions = rawYearlyData[year] || {};
+                const compKeys = Object.keys(competitions);
+                
+                const yearContainer = document.createElement('div');
+                yearContainer.className = 'year-group-container';
+                
+                let totalYearHeight = 0; 
+                
+                const separator = document.createElement('div');
+                separator.className = 'year-separator';
+                separator.innerHTML = `<span class="year-separator-text">${year}</span>`;
+                yearContainer.appendChild(separator);
+                totalYearHeight += SEPARATOR_HEIGHT; 
+
+                if (compKeys.length === 0) {
+                    yearContainer.innerHTML += `<p class="no-competitions" style="margin: 5px 0 0 0;">Pas de compétition.</p>`;
+                    totalYearHeight += 35; 
+                } else {
+                    compKeys.forEach((compNameKey) => {
+                        const winnerRaw = competitions[compNameKey];
+                        const winnerInfo = getWinnerInfo(winnerRaw);
+                        const translatedCompName = getTranslatedCompName(compNameKey); 
+                        const competitionColor = getCompetitionColor(translatedCompName); 
+                        const winnerClubName = `${winnerInfo.clubName}${winnerInfo.displayCount}`; 
+                        
+                        // Le code drapeau est celui du successeur (ex: DE pour RFA)
+                        const flagCode = winnerInfo.code ? winnerInfo.code.toLowerCase() : 'xx';
+                        const flagSrc = `https://flagcdn.com/${flagCode}.svg`;
+
+                        const box = document.createElement('div');
+                        box.className = 'competition-box';
+                        box.innerHTML = `
+                            <div id="flag-column">
+                                <img src="${flagSrc}" alt="Flag ${winnerInfo.countryKey || 'N/A'}">
+                            </div>
+                            <div id="right-column">
+                                <div id="comp-info-case" style="background-color: ${competitionColor};">
+                                    ${translatedCompName}
+                                </div>
+                                <div id="winner-name-case">
+                                    <span>${winnerClubName}</span>
+                                </div>
+                            </div>
+                        `;
+                        
+                        yearContainer.appendChild(box);
+                        totalYearHeight += COMP_BOX_HEIGHT + COMP_BOX_GAP;
+                    });
+                    
+                    totalYearHeight -= COMP_BOX_GAP; 
+                }
+
+                yearContainer.style.marginBottom = `${COMP_BOX_GAP}px`;
+                totalYearHeight += COMP_BOX_GAP; 
+
+                const scrollDistance = totalYearHeight; 
+                
+                gsap.set(yearContainer, { height: totalYearHeight - COMP_BOX_GAP }); 
+
+                allCompetitionsContainer.prepend(yearContainer);
+
+                if (animate) {
+                    gsap.set(allCompetitionsContainer, { y: -scrollDistance });
+                    
+                    gsap.to(allCompetitionsContainer, {
+                        y: 0, 
+                        duration: BASE_SECONDS_PER_YEAR * 0.9, 
+                        ease: 'power3.out',
+                        onComplete: () => {
+                            /* ... */
+                        }
+                    });
+                }
+            }
+
+            init();
+        });
+    </script>
+</body>
+</html>
