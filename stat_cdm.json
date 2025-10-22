@@ -1,0 +1,313 @@
+{
+  "Annees": [
+    {
+      "Annee": "1930",
+      "competition": {
+        "CDM H": "Uruguay"
+      }
+    },
+    {
+      "Annee": "1934",
+      "competition": {
+        "CDM H": "Italie"
+      }
+    },
+    {
+      "Annee": "1938",
+      "competition": {
+        "CDM H": "Italie"
+      }
+    },
+    {
+      "Annee": "1950",
+      "competition": {
+        "CDM H": "Uruguay"
+      }
+    },
+    {
+      "Annee": "1954",
+      "competition": {
+        "CDM H": "Allemagne"
+      }
+    },
+    {
+      "Annee": "1958",
+      "competition": {
+        "CDM H": "Brésil"
+      }
+    },
+    {
+      "Annee": "1962",
+      "competition": {
+        "CDM H": "Brésil"
+      }
+    },
+    {
+      "Annee": "1966",
+      "competition": {
+        "CDM H": "Angleterre"
+      }
+    },
+    {
+      "Annee": "1970",
+      "competition": {
+        "CDM H": "Brésil"
+      }
+    },
+    {
+      "Annee": "1972",
+      "competition": {
+        "JO H": "Pologne"
+      }
+    },
+    {
+      "Annee": "1974",
+      "competition": {
+        "CDM H": "Allemagne"
+      }
+    },
+    {
+      "Annee": "1976",
+      "competition": {
+        "JO H": "RDA"
+      }
+    },
+    {
+      "Annee": "1978",
+      "competition": {
+        "CDM H": "Argentine"
+      }
+    },
+    {
+      "Annee": "1980",
+      "competition": {
+        "JO H": "Tchécoslovaquie"
+      }
+    },
+    {
+      "Annee": "1982",
+      "competition": {
+        "CDM H": "Italie"
+      }
+    },
+    {
+      "Annee": "1984",
+      "competition": {
+        "JO H": "France"
+      }
+    },
+    {
+      "Annee": "1986",
+      "competition": {
+        "CDM H": "Argentine"
+      }
+    },
+    {
+      "Annee": "1988",
+      "competition": {
+        "JO H": "URSS"
+      }
+    },
+    {
+      "Annee": "1990",
+      "competition": {
+        "CDM H": "Allemagne"
+      }
+    },
+    {
+      "Annee": "1992",
+      "competition": {
+        "JO H": "Espagne"
+      }
+    },
+    {
+      "Annee": "1994",
+      "competition": {
+        "CDM H": "Brésil"
+      }
+    },
+    {
+      "Annee": "1995",
+      "competition": {
+        "CDM F": "Norvège"
+      }
+    },
+    {
+      "Annee": "1996",
+      "competition": {
+        "JO H": "Nigeria",
+        "JO F": "États-Unis"
+      }
+    },
+    {
+      "Annee": "1998",
+      "competition": {
+        "CDM H": "France"
+      }
+    },
+    {
+      "Annee": "1999",
+      "competition": {
+        "CDM F": "États-Unis"
+      }
+    },
+    {
+      "Annee": "2000",
+      "competition": {
+        "JO H": "Cameroun"
+      }
+    },
+    {
+      "Annee": "2002",
+      "competition": {
+        "CDM H": "Brésil",
+        "U19 F": "États-Unis"
+      }
+    },
+    {
+      "Annee": "2003",
+      "competition": {
+        "CDM F": "Allemagne"
+      }
+    },
+    {
+      "Annee": "2004",
+      "competition": {
+        "JO H": "Argentine",
+        "JO F": "États-Unis"
+      }
+    },
+    {
+      "Annee": "2005",
+      "competition": {
+        "U20 H": "Argentine"
+      }
+    },
+    {
+      "Annee": "2006",
+      "competition": {
+        "CDM H": "Italie"
+      }
+    },
+    {
+      "Annee": "2007",
+      "competition": {
+        "CDM F": "Allemagne"
+      }
+    },
+    {
+      "Annee": "2008",
+      "competition": {
+        "JO H": "Argentine",
+        "JO F": "États-Unis"
+      }
+    },
+    {
+      "Annee": "2009",
+      "competition": {
+        "U20 H": "Ghana",
+        "U17 H": "Suisse"
+      }
+    },
+    {
+      "Annee": "2010",
+      "competition": {
+        "CDM H": "Espagne",
+        "U20 F": "Allemagne"
+      }
+    },
+    {
+      "Annee": "2011",
+      "competition": {
+        "CDM F": "Japon",
+        "U20 H": "Brésil"
+      }
+    },
+    {
+      "Annee": "2012",
+      "competition": {
+        "JO H": "Mexique",
+        "JO F": "États-Unis"
+      }
+    },
+    {
+      "Annee": "2013",
+      "competition": {
+        "U20 H": "France",
+        "U17 H": "Nigeria"
+      }
+    },
+    {
+      "Annee": "2014",
+      "competition": {
+        "CDM H": "Allemagne",
+        "U20 F": "Allemagne"
+      }
+    },
+    {
+      "Annee": "2015",
+      "competition": {
+        "CDM F": "États-Unis",
+        "U20 H": "Serbie",
+        "U17 H": "Nigeria"
+      }
+    },
+    {
+      "Annee": "2016",
+      "competition": {
+        "JO H": "Brésil",
+        "JO F": "Allemagne"
+      }
+    },
+    {
+      "Annee": "2017",
+      "competition": {
+        "U20 H": "Angleterre",
+        "U17 H": "Angleterre"
+      }
+    },
+    {
+      "Annee": "2018",
+      "competition": {
+        "CDM H": "France",
+        "U20 F": "Japon",
+        "U17 F": "Espagne"
+      }
+    },
+    {
+      "Annee": "2019",
+      "competition": {
+        "CDM F": "États-Unis",
+        "U20 H": "Ukraine",
+        "U17 H": "Brésil"
+      }
+    },
+    {
+      "Annee": "2020",
+      "competition": {}
+    },
+    {
+      "Annee": "2021",
+      "competition": {
+        "JO H": "Brésil",
+        "JO F": "Canada"
+      }
+    },
+    {
+      "Annee": "2022",
+      "competition": {
+        "CDM H": "Argentine",
+        "U17 F": "Espagne",
+        "U20 F": "Espagne"
+      }
+    },
+    {
+      "Annee": "2023",
+      "competition": {
+        "CDM F": "Espagne",
+        "U20 H": "Uruguay",
+        "U17 H": "Allemagne"
+      }
+    }
+  ]
+}
