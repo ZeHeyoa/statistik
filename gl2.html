@@ -432,15 +432,27 @@ function addNodeToDOM(node) {
     }
 }
 
+
+
+
+
+
+
+
+
 function createNodeDiv(containerEl) {
     const node = nodeMap[containerEl.id];
     const div = document.createElement('div');
     div.className = 'node-div';
     
-    // Centrage Dynamique de la DIV sur l'origine (0,0,0) du conteneur
+    // Centrage de la DIV sur l'origine immuable (0,0,0) du conteneur
+    // La div est positionnée de manière absolue et centrée via transform
     div.style.width = `${node.divWidth}px`;
     div.style.height = `${node.divHeight}px`;
-    div.style.margin = `-${node.divHeight / 2}px 0 0 -${node.divWidth / 2}px`;
+    div.style.position = 'absolute';
+    div.style.left = '0';
+    div.style.top = '0';
+    div.style.transform = `translate(-50%, -50%)`;
     
     // Style spécifique pour l'enfant par défaut
     if (node.id === 'node-2') {
