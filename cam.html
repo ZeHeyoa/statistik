@@ -10,68 +10,216 @@ html,body { margin:0; height:100%; overflow:hidden; background:#0b0f15; font-fam
 .viewport { width:100%; height:100%; perspective:1000px; overflow:hidden; position:relative; }
 .camera { width:100%; height:100%; transform-style:preserve-3d; transform: translateZ(0px) rotateX(10deg) rotateY(0deg); }
 .world { position:relative; width:100%;height:100%; transform-style:preserve-3d; }
-.box { position:absolute; width:140px;height:140px; left:50%;top:50%; margin-left:-70px; margin-top:-70px; transform-style:preserve-3d; background:linear-gradient(180deg,#08f,#004); box-shadow:0 20px 40px rgba(0,0,0,0.4); }
-.box:nth-child(2){transform:translateX(-300px) translateZ(200px) rotateY(30deg);background:linear-gradient(#8f8,#060);} 
-.box:nth-child(3){transform:translateX(250px) translateZ(-100px) rotateY(-40deg);background:linear-gradient(#f8f,#606);} 
-.ground { position:absolute; width:3000px;height:3000px; left:50%;top:100%; transform:translate(-50%,-50%) rotateX(90deg) translateZ(-400px); background:repeating-linear-gradient(0deg,#111 0 40px,#141414 40px 80px); }/* Joysticks */ #leftJoy { position:fixed; bottom:40px; left:40px; width:160px; height:160px; z-index:100; touch-action:none; } #rightJoyGroup { position: fixed; bottom: 40px; right: 40px; width: 220px; height: 220px; z-index: 100; touch-action: none; } .rotation-zone { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); border-radius: 50%; transition: box-shadow 0.2s ease; } #zoneZ { width: 200px; height: 200px; z-index: 101; } #zoneY { width: 140px; height: 140px; z-index: 102; } #zoneX { width: 80px; height: 80px; z-index: 103; } .rotation-zone::before { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 100%; border: 2px dashed rgba(255,255,255,0.05); border-radius: 50%; pointer-events: none; } .rotation-zone.active { box-shadow: 0 0 25px 5px rgba(255,255,255,0.2) inset; } #angle-info { position: absolute; bottom: -30px; left: 50%; transform: translateX(-50%); color: #00ffff; font-size: 11px; background: rgba(0, 0, 0, 0.5); padding: 2px 6px; border-radius: 3px; white-space: nowrap; z-index: 120; } .info { position:fixed; top:10px;left:10px; color:#ccc; font-size:13px; } </style>
+
+/* Styles pour les 12 boîtes numérotées */
+.box { 
+  position:absolute; width:200px;height:200px; left:50%;top:50%; margin-left:-100px; margin-top:-100px; 
+  transform-style:preserve-3d; background:rgba(0,128,255,0.7); box-shadow:0 0 40px rgba(0,0,0,0.8); 
+  transition: visibility 0.1s; 
+  /* Centrage du numéro */
+  display: flex; justify-content: center; align-items: center; 
+  font-size: 80px; font-weight: bold; color: white; text-shadow: 0 0 10px black;
+} 
+
+.ground { 
+  position:absolute; width:3000px;height:3000px; left:50%;top:100%; 
+  transform:translate(-50%,-50%) rotateX(90deg) translateZ(-1000px); 
+  background:repeating-linear-gradient(0deg,#111 0 40px,#141414 40px 80px); 
+  transition: visibility 0.1s; 
+} 
+
+/* --- Joysticks --- */ 
+
+/* Conteneur du joystick gauche (Translation) */
+#leftJoyGroup { 
+  position: fixed; 
+  bottom: 40px; 
+  left: 40px; 
+  width: 400px; 
+  height: 400px; 
+  z-index: 100; 
+  touch-action: none; 
+} 
+/* Zones de translation (Gauche) */
+#zoneTransZ { width: 400px; height: 400px; z-index: 101; } /* Z le plus bas (Grand) */
+#zoneTransY { width: 240px; height: 240px; z-index: 102; } /* Y (Moyen) */
+#zoneTransX { width: 80px; height: 80px; z-index: 103; } /* X le plus haut (Petit) */
+
+/* Zones de rotation (Droite) */
+#rightJoyGroup { 
+  position: fixed; 
+  bottom: 40px; 
+  right: 40px; 
+  width: 400px; 
+  height: 400px; 
+  z-index: 100; 
+  touch-action: none; 
+} 
+.rotation-zone { 
+  position: absolute; 
+  left: 50%; 
+  top: 50%; 
+  transform: translate(-50%, -50%); 
+  border-radius: 50%; 
+  transition: box-shadow 0.2s ease; 
+} 
+#zoneZ { width: 400px; height: 400px; z-index: 101; } 
+#zoneY { width: 240px; height: 240px; z-index: 102; } 
+#zoneX { width: 80px; height: 80px; z-index: 103; } 
+
+.rotation-zone::before { content: ''; position: absolute; left: 0; top: 0; width: 100%; height: 100%; border: 2px dashed rgba(255,255,255,0.05); border-radius: 50%; pointer-events: none; } 
+.rotation-zone.active { box-shadow: 0 0 25px 5px rgba(255,255,255,0.2) inset; } 
+
+/* Position de l'information ajustée pour le centrage */
+#angle-info { 
+  position: absolute; 
+  bottom: -30px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  color: #00ffff; 
+  font-size: 11px; 
+  background: rgba(0, 0, 0, 0.5); 
+  padding: 2px 6px; 
+  border-radius: 3px; 
+  white-space: nowrap; 
+  z-index: 120; 
+} 
+.info { position:fixed; top:10px;left:10px; color:#ccc; font-size:13px; } </style>
 
 </head>
 <body>
 <div class="viewport">
   <div class="camera" id="camera">
     <div class="world">
-      <div class="box"></div>
-      <div class="box"></div>
-      <div class="box"></div>
+      <div class="box">1</div>
+      <div class="box">2</div>
+      <div class="box">3</div>
+      <div class="box">4</div>
+      <div class="box">5</div>
+      <div class="box">6</div>
+      <div class="box">7</div>
+      <div class="box">8</div>
+      <div class="box">9</div>
+      <div class="box">10</div>
+      <div class="box">11</div>
+      <div class="box">12</div>
       <div class="ground"></div>
     </div>
   </div>
-</div><div id="leftJoy"></div><div id="rightJoyGroup">
+</div>
+
+<div id="leftJoyGroup">
+  <div id="zoneTransZ" class="rotation-zone"></div>
+  <div id="zoneTransY" class="rotation-zone"></div>
+  <div id="zoneTransX" class="rotation-zone"></div>
+</div>
+
+<div id="rightJoyGroup">
   <div id="zoneZ" class="rotation-zone"></div>
   <div id="zoneY" class="rotation-zone"></div>
   <div id="zoneX" class="rotation-zone"></div>
   <div id="angle-info"></div>
 </div>
-<div class="info">Joystick gauche = déplacement • X (rouge) = Pitch • Y (vert) = Yaw • Z (bleu) = Roll — rotations infinies cumulatives</div><script src="nipple.js"></script><script>
+<div class="info">Joystick gauche: X (Petit, Rouge) Y (Moyen, Vert) Z (Grand, Bleu). | Joystick droit: Rotations.</div>
+<script src="gl344.js"></script>
+
+<script src="nipple.js"></script>
+
+<script>
 document.addEventListener('DOMContentLoaded', () => {
   const cam = document.getElementById('camera');
   const angleInfo = document.getElementById('angle-info');
-  const leftJoyContainer = document.getElementById('leftJoy');
 
-  const zoneX = document.getElementById('zoneX');
-  const zoneY = document.getElementById('zoneY');
-  const zoneZ = document.getElementById('zoneZ');
+  const zoneRotX = document.getElementById('zoneX');
+  const zoneRotY = document.getElementById('zoneY');
+  const zoneRotZ = document.getElementById('zoneZ');
+  
+  const zoneTransX = document.getElementById('zoneTransX');
+  const zoneTransY = document.getElementById('zoneTransY');
+  const zoneTransZ = document.getElementById('zoneTransZ');
 
-  let rotX = 10, rotY = 0, rotZ = 0;
-  let targetX = rotX, targetY = rotY, targetZ = rotZ;
-  let camX = 0, camY = 10, camZ = -600;
-  let velX = 0, velZ = 0;
-  const moveSpeed = 2.0;
-  const lerp = (a,b,t)=>a+(b-a)*t;
+  const { mat4, quat, vec3 } = glMatrix;
+
+  let camPos = vec3.fromValues(0, 0, 0); 
+  // NOUVEAU: Vitesse de déplacement réduite
+  const moveSpeed = 2.0; 
+  // NOUVEAU: Limite de borne +/- 1000
+  const maxBound = 1000; 
+
+  let totalPitchAngle = 0; 
+
+  let camQuat = quat.create();
+  quat.rotateX(camQuat, camQuat, 10 * Math.PI / 180);
+  let targetQuat = quat.clone(camQuat);
+  
+  let velX = 0, velY = 0, velZ = 0;
 
   const sensitivity = {
     pitch: 0.5,
     yaw: 1.0,
-    roll: 0.8
+    roll: 0.8,
+    trans: 15.0 
   };
 
-  if (typeof nipplejs !== 'undefined' && nipplejs.create) {
-    // --- Joystick gauche ---
-    const left = nipplejs.create({ zone: leftJoyContainer, mode:'static', position:{left:'50%',top:'50%'}, color:'white', size:120 });
-    left.on('move', (evt,data)=>{
-      if(!data.angle) return;
-      const rad=data.angle.radian; const force=data.force||0;
-      const camRad=rotY*Math.PI/180;
-      const inputVelZ=-Math.sin(rad)*moveSpeed*force;
-      const inputVelX=Math.cos(rad)*moveSpeed*force;
-      velX=Math.sin(camRad)*inputVelZ+Math.cos(camRad)*inputVelX;
-      velZ=Math.cos(camRad)*inputVelZ-Math.sin(camRad)*inputVelX;
-    });
-    left.on('end',()=>{velX=0;velZ=0;});
+  // Définition des 12 positions circulaires (Espace Monde)
+  const numBoxes = 12;
+  const radius = 1500; 
+  const boxY = 0; 
 
-    // --- Rotation infinie cumulative ---
-    function setupRotJoy(zone, color, onRotate) {
-      const joy = nipplejs.create({ zone, mode:'static', position:{left:'50%',top:'50%'}, color, size: parseInt(zone.style.width)||100 });
+  const worldPositions = [];
+  for (let i = 0; i < numBoxes; i++) {
+      const angle = (i / numBoxes) * Math.PI * 2; 
+      const x = Math.sin(angle) * radius;
+      const z = -Math.cos(angle) * radius; 
+      worldPositions.push(vec3.fromValues(x, boxY, z));
+  }
+  
+  const boxes = document.querySelectorAll('.box');
+  const ground = document.querySelector('.ground');
+
+  if (typeof nipplejs !== 'undefined' && nipplejs.create) {
+    
+    // --- Joystick de Translation (Gauche) ---
+    function setupTransJoy(zone, color, axisIndex, directionFactor) {
+      const zoneSize = parseFloat(window.getComputedStyle(zone).width) || 100;
+      const joy = nipplejs.create({ 
+        zone, 
+        mode:'static', 
+        position:{left:'50%',top:'50%'}, 
+        color, 
+        size: zoneSize * 0.4 
+      });
+      
+      joy.on('move', (e, d) => {
+        if(!d.angle) return;
+        const rad = d.angle.radian; 
+        const force = d.force || 0;
+        
+        let delta = -Math.sin(rad) * moveSpeed * force * directionFactor; // Utilise moveSpeed doux
+        
+        if (axisIndex === 0) velX = -delta; 
+        if (axisIndex === 1) velY = delta;  
+        if (axisIndex === 2) velZ = delta;  
+      });
+      
+      joy.on('end', ()=> {
+        if (axisIndex === 0) velX = 0;
+        if (axisIndex === 1) velY = 0;
+        if (axisIndex === 2) velZ = 0;
+      });
+    }
+    
+    setupTransJoy(zoneTransX, 'rgba(255,0,0,.5)', 0, 1.0); // X (Rouge)
+    setupTransJoy(zoneTransY, 'rgba(0,255,0,.5)', 1, 1.0); // Y (Vert)
+    setupTransJoy(zoneTransZ, 'rgba(0,0,255,.5)', 2, 1.0); // Z (Bleu)
+
+
+    // --- Joystick de Rotation (Droite) ---
+    function setupRotJoy(zone, color, axis) {
+      const zoneSize = parseFloat(window.getComputedStyle(zone).width) || 100;
+      const joy = nipplejs.create({ 
+        zone, mode:'static', position:{left:'50%',top:'50%'}, color, size: zoneSize * 0.4
+      });
       let prevAngle = null;
       joy.on('start', ()=> zone.classList.add('active'));
       joy.on('move', (e, d) => {
@@ -81,29 +229,125 @@ document.addEventListener('DOMContentLoaded', () => {
         let delta = a - prevAngle;
         if (delta > 180) delta -= 360;
         if (delta < -180) delta += 360;
-        onRotate(delta);
+        
+        if (axis[0] === 1) { 
+            totalPitchAngle += delta * axis[3];
+        }
+
+        const rotQuat = quat.create();
+        const axisVec = vec3.fromValues(axis[0], axis[1], axis[2]);
+        vec3.transformQuat(axisVec, axisVec, targetQuat);
+        quat.setAxisAngle(rotQuat, axisVec, delta * Math.PI / 180 * axis[3]);
+        quat.multiply(targetQuat, rotQuat, targetQuat);
+        quat.normalize(targetQuat, targetQuat);
+        
         prevAngle = a;
       });
       joy.on('end', ()=> { prevAngle = null; zone.classList.remove('active'); });
     }
 
-    setupRotJoy(zoneX, 'red', delta => { targetX += delta * sensitivity.pitch; });
-    setupRotJoy(zoneY, 'lime', delta => { targetY += delta * sensitivity.yaw; });
-    setupRotJoy(zoneZ, 'blue', delta => { targetZ += delta * sensitivity.roll; });
+    setupRotJoy(zoneRotX, 'rgba(120,90,90,.5)', [1, 0, 0, sensitivity.pitch]);   // Pitch (X)
+    setupRotJoy(zoneRotY, 'rgba(90,120,90,.5)', [0, 1, 0, sensitivity.yaw]);     // Yaw (Y)
+    setupRotJoy(zoneRotZ, 'rgba(90,90,120,.5)', [0, 0, 1, sensitivity.roll]);    // Roll (Z)
+  }
+
+  function quatToEuler(q) {
+    const sinr_cosp = 2 * (q[3] * q[0] + q[1] * q[2]);
+    const cosr_cosp = 1 - 2 * (q[0] * q[0] + q[1] * q[1]);
+    const roll = Math.atan2(sinr_cosp, cosr_cosp);
+
+    const sinp = 2 * (q[3] * q[1] - q[2] * q[0]);
+    const pitch = Math.abs(sinp) >= 1 ? Math.sign(sinp) * Math.PI / 2 : Math.asin(sinp);
+
+    const siny_cosp = 2 * (q[3] * q[2] + q[0] * q[1]);
+    const cosy_cosp = 1 - 2 * (q[1] * q[1] + q[2] * q[2]);
+    const yaw = Math.atan2(siny_cosp, cosy_cosp);
+
+    return { pitch: pitch * 180 / Math.PI, yaw: yaw * 180 / Math.PI, roll: roll * 180 / Math.PI };
   }
 
   const norm=a=>((Math.round(a)%360)+360)%360;
+  
+  const clamp = (num, min, max) => Math.max(min, Math.min(num, max));
 
   function update(){
-    rotX=lerp(rotX,targetX,0.15);
-    rotY=lerp(rotY,targetY,0.15);
-    rotZ=lerp(rotZ,targetZ,0.15);
-    camX+=velX; camZ+=velZ;
-    cam.style.transform=`rotateZ(${-rotZ}deg) rotateY(${-rotY}deg) rotateX(${-rotX}deg)`+` translateX(${-camX}px) translateY(${-camY}px) translateZ(${-camZ}px)`;
-    angleInfo.textContent=`Pitch: ${norm(rotX)}° | Yaw: ${norm(rotY)}° | Roll: ${norm(rotZ)}°`;
+    // Lerp du quaternion
+    quat.slerp(camQuat, camQuat, targetQuat, 0.15);
+    
+    // --- Mettre à jour la position (Translation) ---
+    
+    // Conversion de la vélocité locale (joystick) en vélocité mondiale 
+    const forward = vec3.fromValues(0, 0, -velZ); 
+    const right = vec3.fromValues(velX, 0, 0);
+    const up = vec3.fromValues(0, velY, 0);
+
+    vec3.transformQuat(forward, forward, camQuat);
+    vec3.transformQuat(right, right, camQuat);
+    
+    // Application de la vélocité
+    camPos[0] += forward[0] + right[0] + up[0];
+    camPos[1] += forward[1] + right[1] + up[1];
+    camPos[2] += forward[2] + right[2] + up[2];
+    
+    // BORNE: Application de la contrainte +/- 1000
+    camPos[0] = clamp(camPos[0], -maxBound, maxBound);
+    camPos[1] = clamp(camPos[1], -maxBound, maxBound);
+    camPos[2] = clamp(camPos[2], -maxBound, maxBound);
+
+    // --- LOGIQUE DE VISIBILITÉ OBJET PAR OBJET (CULLING) ---
+    const invCamQuat = quat.create();
+    quat.conjugate(invCamQuat, camQuat); 
+    
+    boxes.forEach((el, index) => {
+        const P_world = worldPositions[index]; 
+        const P_view = vec3.create();
+        
+        // 1. CULLING (Masquage)
+        const P_translated = vec3.create();
+        vec3.subtract(P_translated, P_world, camPos); 
+        
+        vec3.transformQuat(P_view, P_translated, invCamQuat); 
+
+        const isBehindCamera = P_view[2] > 0;
+        
+        el.style.visibility = isBehindCamera ? 'hidden' : 'visible';
+
+        // 2. PLACEMENT (Transformation CSS)
+        const rotAngle = (index / numBoxes) * 360; 
+        el.style.transform = `translateX(${P_world[0]}px) translateY(${P_world[1]}px) translateZ(${P_world[2]}px) rotateY(${rotAngle}deg)`;
+    });
+
+    // Masquage du sol (ground) basé uniquement sur le Pitch
+    let normalizedPitch = totalPitchAngle % 360;
+    if (normalizedPitch < 0) {
+        normalizedPitch += 360; 
+    }
+    const isGroundHidden = (normalizedPitch > 90 && normalizedPitch < 270);
+    ground.style.visibility = isGroundHidden ? 'hidden' : 'visible';
+    
+    // --- Application de la Matrice de Vue au 'camera' div ---
+    const viewMat = mat4.create();
+    mat4.fromQuat(viewMat, camQuat); 
+    mat4.translate(viewMat, viewMat, vec3.negate(vec3.create(), camPos));
+    
+    const worldMat = mat4.create();
+    mat4.invert(worldMat, viewMat);
+    
+    // Appliquer la transformation CSS
+    const elements = [];
+    for(let i=0; i<16; i++) elements.push(worldMat[i]);
+    const matrix3d = `matrix3d(${elements.join(',')})`;
+    
+    cam.style.transform = matrix3d;
+    
+    // Affichage des angles et de la position
+    const euler = quatToEuler(camQuat);
+    angleInfo.textContent=`Pos (X,Y,Z): ${Math.round(camPos[0])}, ${Math.round(camPos[1])}, ${Math.round(camPos[2])} | Rot (P,Y,R): ${norm(euler.pitch)}°, ${norm(euler.yaw)}°, ${norm(euler.roll)}°`;
     requestAnimationFrame(update);
   }
   requestAnimationFrame(update);
 });
-</script></body>
+</script>
+
+</body>
 </html>
