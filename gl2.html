@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<title>Système de Nœuds et Pivots 3D - V5</title>
+<title>Système de Nœuds et Pivots 3D - V7 (DOM Aplati)</title>
 <script src="gl.js"></script>
 <style>
 /* Style Avant-Gardiste et Responsive */
@@ -25,7 +25,7 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  perspective: 1500px; /* Perspective modérée pour l'effet 3D */
+  perspective: 700px; /* Perspective modérée pour l'effet 3D */
   background: radial-gradient(circle at 50% 50%, #1a001a, #000000); /* Effet d'aura sombre */
   position: relative; 
 }
@@ -223,6 +223,9 @@ class Pivot {
         this.ry = 0;
         this.rz = 0;
         this.matrix = mat4.create();
+        
+        // Propriété pour la case à cocher
+        this.rotateSelf = true; 
     }
 }
 
@@ -334,6 +337,34 @@ function createControls(obj, type) {
     group.appendChild(content);
 
     if (isPivot) {
+        
+        // Ajout de la case à cocher
+        const checkField = document.createElement("div");
+        checkField.className = "field";
+        checkField.style.padding = "5px 0";
+
+        const checkLabel = document.createElement("label");
+        checkLabel.textContent = "Tourner le nœud parent (Self)";
+        checkLabel.setAttribute('for', `${obj.id}-rotateSelf`);
+        
+        const checkInput = document.createElement("input");
+        checkInput.type = "checkbox";
+        checkInput.id = `${obj.id}-rotateSelf`;
+        checkInput.checked = obj.rotateSelf;
+        checkInput.style.width = '20px';
+        checkInput.style.height = '20px';
+        checkInput.style.flex = '0';
+        
+        checkInput.onchange = (e) => {
+            obj.rotateSelf = e.target.checked;
+            update(); 
+        };
+        
+        checkField.appendChild(checkLabel);
+        checkField.appendChild(checkInput);
+        content.appendChild(checkField);
+
+
         const deleteBtn = document.createElement("button");
         deleteBtn.className = "action-button";
         deleteBtn.textContent = `Retirer Pivot ${title}`;
@@ -406,20 +437,18 @@ function rebuildControls() {
     }
 }
 
+// --- MODIFIÉ : addNodeToDOM (DOM APLATI) ---
 function addNodeToDOM(node) {
     const scene = document.getElementById('scene');
     
-    // Conteneur du Nœud (reçoit la transformation LOCALE)
+    // Conteneur du Nœud
     const container = document.createElement('div');
     container.id = node.id;
     container.className = 'node-container';
     
-    // Si c'est un enfant, il est imbriqué dans le conteneur du parent
-    if (node.parentId && document.getElementById(node.parentId)) {
-        document.getElementById(node.parentId).appendChild(container);
-    } else {
-        scene.appendChild(container);
-    }
+    // Tous les nœuds sont enfants directs de la scène.
+    // L'imbrication est gérée par les matrices, pas par le DOM.
+    scene.appendChild(container);
 
     // Marqueur d'Origine Immuable (reçoit la transformation MONDIALE)
     const marker = document.createElement('div');
@@ -428,17 +457,10 @@ function addNodeToDOM(node) {
     scene.appendChild(marker);
     
     if (node.hasDiv) {
+        // La DIV visuelle est ajoutée au conteneur
         createNodeDiv(container);
     }
 }
-
-
-
-
-
-
-
-
 
 function createNodeDiv(containerEl) {
     const node = nodeMap[containerEl.id];
@@ -446,15 +468,14 @@ function createNodeDiv(containerEl) {
     div.className = 'node-div';
     
     // Centrage de la DIV sur l'origine immuable (0,0,0) du conteneur
-    // La div est positionnée de manière absolue et centrée via transform
     div.style.width = `${node.divWidth}px`;
     div.style.height = `${node.divHeight}px`;
     div.style.position = 'absolute';
     div.style.left = '0';
     div.style.top = '0';
+    // Cette transformation est relative au conteneur (qui est à 0,0,0)
     div.style.transform = `translate(-50%, -50%)`;
     
-    // Style spécifique pour l'enfant par défaut
     if (node.id === 'node-2') {
         div.style.background = 'linear-gradient(135deg, #ff00ff, #00ffff)';
         div.style.boxShadow = '0 0 10px rgba(255,0,255,0.8), 0 0 30px rgba(255,0,255,0.3)';
@@ -536,7 +557,6 @@ function addChild(parentId) {
     addNode(parentId);
     const newNode = nodeMap[`node-${nextNodeId-1}`];
     
-    // Dimensions spécifiques pour l'enfant par défaut de la démo
     newNode.divWidth = 100;
     newNode.divHeight = 200;
     
@@ -620,6 +640,8 @@ function calculateNodeMatrix(node) {
     mat4.multiply(node.matrix, tMat, rMat);
 }
 
+
+// --- MODIFIÉ : updateHierarchy (LOGIQUE CENTRALE + Application DOM) ---
 function updateHierarchy(nodeId) {
     const node = nodeMap[nodeId];
     if (!node) return;
@@ -627,57 +649,88 @@ function updateHierarchy(nodeId) {
     calculateNodeMatrix(node);
     node.pivots.forEach(calculatePivotMatrix);
 
-    // 1. Matrice Locale Accumulée (Node T*R + Pivots Chain)
-    let accumulatedMatrix = mat4.clone(node.matrix); 
+    // 1. Matrice Locale Accumulée pour Self (Node T*R + Pivots avec rotateSelf = true)
+    let accumulatedMatrixForSelf = mat4.clone(node.matrix); 
     node.pivots.forEach(pivot => {
-        mat4.multiply(accumulatedMatrix, accumulatedMatrix, pivot.matrix);
+        if (pivot.rotateSelf) {
+            mat4.multiply(accumulatedMatrixForSelf, accumulatedMatrixForSelf, pivot.matrix);
+        }
     });
 
-    // 2. Calcul de la Matrice Monde (World Matrix)
-    if (node.isRoot || !nodeMap[node.parentId]) {
-        mat4.copy(node.worldMatrix, accumulatedMatrix);
-    } else {
-        const parent = nodeMap[node.parentId];
-        // M_monde = M_parent_monde * M_accumulée_locale
-        mat4.multiply(node.worldMatrix, parent.worldMatrix, accumulatedMatrix);
-    }
+    // 2. Matrice Locale Accumulée complète (Node T*R + Tous les Pivots pour les enfants)
+    let accumulatedMatrixForChildren = mat4.clone(node.matrix); 
+    node.pivots.forEach(pivot => {
+        mat4.multiply(accumulatedMatrixForChildren, accumulatedMatrixForChildren, pivot.matrix);
+    });
 
-    // 3. Application au DOM (CORRECTION ICI)
+    // 3. Calcul de la Matrice Monde du Nœud (M_monde : position de l'origine du nœud)
+    let parentWorldMatrix = mat4.create(); // Identité par défaut (racine)
+    if (node.parentId && nodeMap[node.parentId]) {
+        // On récupère la matrice monde que le parent a préparée pour ses enfants
+        mat4.copy(parentWorldMatrix, nodeMap[node.parentId].worldMatrix);
+    }
+    
+    // M_monde = M_parent_monde * M_accumulée_locale_self
+    // C'est la matrice qui définit la position/rotation de la DIV et du marqueur origine
+    mat4.multiply(node.worldMatrix, parentWorldMatrix, accumulatedMatrixForSelf);
+
+    // 4. Matrice Monde pour les enfants (M_world_enfants)
+    // C'est la matrice que les enfants utiliseront comme base
+    // M_world_enfants = M_parent_monde * M_accumulée_locale_enfants
+    let worldMatrixForChildren = mat4.create();
+    mat4.multiply(worldMatrixForChildren, parentWorldMatrix, accumulatedMatrixForChildren);
+
+
+    // 5. Application au DOM (MODIFIÉ)
     const containerEl = document.getElementById(nodeId);
     if (containerEl) {
-        // Appliquer la MATRICE LOCALE ACCUMULÉE pour la transformation relative au parent
-        containerEl.style.transform = `matrix3d(${Array.from(accumulatedMatrix)})`;
+        // On applique la Matrice Monde COMPLÈTE (node.worldMatrix)
+        // car le conteneur est maintenant un enfant direct de la scène.
+        // node.worldMatrix a été calculée à l'étape 3 en utilisant
+        // accumulatedMatrixForSelf, ce qui est exactement ce que nous voulons.
+        containerEl.style.transform = `matrix3d(${Array.from(node.worldMatrix)})`;
     }
     
-    // 4. Mise à jour des marqueurs (utilisent la Matrice Monde pour l'absolu)
+    // 6. Mise à jour des marqueurs (utilisent la Matrice Monde pour l'absolu)
     
-    // Marqueur d'Origine Immuable (World Space)
+    // Marqueur d'Origine (suit la DIV, utilise node.worldMatrix)
     const originMarkerEl = document.getElementById(`${nodeId}-origin-marker`);
     if (originMarkerEl) {
         let worldOrigin = vec3.fromValues(0, 0, 0);
-        // Transformé par la matrice monde du nœud (son origine)
         vec3.transformMat4(worldOrigin, worldOrigin, node.worldMatrix);
         originMarkerEl.style.transform = `translate3d(${worldOrigin[0]}px,${worldOrigin[1]}px,${worldOrigin[2]}px)`;
     }
     
-    // Marqueur de Pivot (World Space)
+    // Marqueur de Pivot (suit l'espace des enfants, utilise worldMatrixForChildren)
     node.pivots.forEach(pivot => {
         const pivotMarkerEl = document.getElementById(`${pivot.id}-marker`);
         if (pivotMarkerEl) {
              let pivotLocalOffset = vec3.fromValues(pivot.tx, pivot.ty, pivot.tz);
              let pivotWorldPos = vec3.create();
              
-             // La position du pivot dans l'espace local (T_pivot) est transformée par M_world
-             vec3.transformMat4(pivotWorldPos, pivotLocalOffset, node.worldMatrix);
+             // Le pivot est positionné par rapport à l'espace qu'il crée pour les enfants
+             vec3.transformMat4(pivotWorldPos, pivotLocalOffset, worldMatrixForChildren);
              
              pivotMarkerEl.style.transform = `translate3d(${pivotWorldPos[0]}px,${pivotWorldPos[1]}px,${pivotWorldPos[2]}px)`;
         }
     });
 
-
-    // 5. Récurence pour les enfants
-    node.children.forEach(updateHierarchy);
+    // 7. Récurrence pour les enfants
+    // Astuce : On remplace temporairement node.worldMatrix par worldMatrixForChildren
+    // pour que les enfants l'utilisent comme 'parentWorldMatrix' lors de leur propre calcul.
+    
+    const originalNodeWorldMatrix = mat4.clone(node.worldMatrix);
+    mat4.copy(node.worldMatrix, worldMatrixForChildren); // On "publie" la matrice pour enfants
+    
+    node.children.forEach(childId => {
+        updateHierarchy(childId); // L'enfant lira la matrice modifiée
+    });
+    
+    // On restaure la vraie worldMatrix du nœud (celle de sa DIV)
+    mat4.copy(node.worldMatrix, originalNodeWorldMatrix);
 }
+// --- FIN DE LA MODIFICATION updateHierarchy ---
+
 
 function update() {
     const rootNodes = Object.values(nodeMap).filter(node => node.isRoot);
