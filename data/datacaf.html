@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Éditeur Avancé - Données CAF</title>
+
+    <style>
+        /* --- Styles de base (inspirés de statcaf.html) --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5; 
+            color: #333;
+            padding: 10px; /* Réduit pour les petits écrans */
+            box-sizing: border-box;
+            font-size: 0.9em; 
+        }
+
+        h1, h2, h3 {
+            color: #1e3a5f;
+            margin-top: 0;
+        }
+        
+        h1 { font-size: 1.5em; text-align: center; margin-bottom: 20px; }
+        h2 { font-size: 1.3em; margin-bottom: 15px; }
+        h3 { 
+            font-size: 1.1em; 
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* NOUVEAU : Assure que les inputs ne débordent pas */
+        select, input[type="text"], input[type="number"], button {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            font-size: 1em;
+            font-family: inherit;
+            width: 100%; /* Prend la largeur du conteneur */
+            box-sizing: border-box; /* Inclut padding/border dans la largeur */
+        }
+        
+        button, .btn {
+            background-color: #4e73df;
+            color: white;
+            padding: 8px 12px; /* MODIFIÉ : Padding réduit */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.95em;
+            transition: background-color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            width: auto; /* Les boutons s'adaptent au contenu */
+        }
+        button:hover, .btn:hover {
+            background-color: #224abe;
+        }
+        
+        button.btn-danger { background-color: #991b1b; }
+        button.btn-danger:hover { background-color: #7f1d1d; }
+
+        button.btn-success { background-color: #15803d; }
+        button.btn-success:hover { background-color: #12632d; }
+        
+        button.btn-import { background-color: #92400e; }
+        button.btn-import:hover { background-color: #7a350c; }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* --- Styles de la page (inspirés de filter-section) --- */
+        .card {
+            margin-bottom: 20px;
+            padding: 15px; /* Réduit pour les petits écrans */
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .main-editor-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: none; /* Caché jusqu'à ce que le JSON soit chargé */
+        }
+        
+        #load-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        /* --- Barre d'Import/Export --- */
+        .io-bar {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap; /* Passe à la ligne sur petit écran */
+        }
+        
+        .status-message {
+            margin-top: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+        .status-success { color: #15803d; }
+        .status-error { color: #991b1b; }
+        
+        #file-input { display: none; }
+
+        /* --- Barre de Navigation Année --- */
+        .year-nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap; /* Passe à la ligne sur petit écran */
+        }
+        .year-nav-bar select {
+            font-weight: bold;
+            font-size: 1.1em;
+            padding: 10px;
+            width: 150px;
+        }
+        .year-nav-bar button {
+            font-size: 1.1em;
+            font-weight: bold;
+            padding: 10px 15px;
+        }
+        #current-year-heading {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        /* --- CRUD : Liste des compétitions (MISE À JOUR) --- */
+        .competition-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .competition-row {
+            display: grid;
+            /* MODIFIÉ : Layout pour écrans larges */
+            grid-template-columns: 180px 1fr;
+            gap: 20px;
+            align-items: flex-start;
+            padding: 10px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            background-color: #fdfdfd;
+        }
+
+        .comp-info {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .competition-row .comp-key {
+            font-weight: bold;
+            font-size: 0.9em;
+            color: #1e3a5f;
+            word-break: break-word;
+        }
+        
+        .competition-row .delete-btn {
+            padding: 5px 8px; /* MODIFIÉ : Padding réduit */
+            font-size: 0.8em;
+            line-height: 1;
+            text-align: center;
+            width: auto;
+        }
+
+        /* --- Sélecteur de Vainqueur Dynamique --- */
+        .winner-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .winner-type-toggle {
+            display: flex;
+            flex-direction: column; /* S'empile sur petit écran */
+            gap: 5px;
+            font-size: 0.9em;
+        }
+        .winner-type-toggle label {
+            cursor: pointer;
+        }
+        
+        .winner-selector select {
+            width: 100%;
+        }
+        
+        .winner-selector .club-select,
+        .winner-selector .country-select {
+            display: none; /* Cachés par défaut, JS gère l'affichage */
+        }
+        
+        /* --- Formulaire d'ajout (MISE À JOUR) --- */
+        .add-comp-form {
+            display: grid;
+            /* MODIFIÉ : Colonne bouton en 'auto' pour la rétrécir */
+            grid-template-columns: 180px 1fr auto;
+            gap: 15px;
+            align-items: flex-end;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 2px solid #eee;
+        }
+        
+        .add-comp-form .add-btn {
+            width: auto;
+            padding: 8px 12px; /* MODIFIÉ : Padding réduit */
+        }
+
+        /* --- NOUVEAU : Media Queries pour le Responsive --- */
+
+        /* Écrans moyens (Tablettes) */
+        @media (min-width: 768px) {
+            .winner-type-toggle {
+                flex-direction: row; /* Remet les radio-boutons en ligne */
+                gap: 10px;
+            }
+        }
+        
+        /* Petits écrans (Mobiles) */
+        @media (max-width: 767px) {
+            body {
+                padding: 5px; /* Moins de marge sur mobile */
+            }
+            .card {
+                padding: 10px;
+            }
+
+            .competition-row {
+                grid-template-columns: 1fr; /* Passage à 1 colonne */
+                gap: 15px;
+            }
+            
+            .comp-info {
+                /* Sur mobile, le bouton est à côté du nom pour gagner place */
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .competition-row .delete-btn {
+                flex-shrink: 0; /* Empêche le bouton de rétrécir */
+            }
+
+            .add-comp-form {
+                grid-template-columns: 1fr; /* Passage à 1 colonne */
+                gap: 15px;
+            }
+            
+            /* S'assure que tous les éléments du form d'ajout ont une largeur pleine */
+            .add-comp-form input,
+            .add-comp-form .winner-selector,
+            .add-comp-form button {
+                width: 100%;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="load-container" class="card">
+        <h1>Éditeur de Données CAF</h1>
+        <p>Veuillez charger votre fichier <code>data_caf.json</code> pour commencer.</p>
+        <div class="io-bar" style="justify-content: center;">
+            <button id="load-import-btn" class="btn btn-import">Charger le Fichier JSON</button>
+            <input type="file" id="file-input" accept=".json">
+        </div>
+        <div id="load-status-message" class="status-message"></div>
+    </div>
+
+    <div class="main-editor-container" id="main-editor">
+        
+        <div class="card">
+            <h2>Import / Export</h2>
+            <p>Le fichier est chargé en mémoire. Utilisez "Exporter" pour sauvegarder vos modifications.</p>
+             <div class="io-bar">
+                <button id="export-btn" class="btn btn-success">Exporter JSON (data_caf.json)</button>
+                <a href="statcaf.html" class="btn">Retour aux Statistiques</a>
+            </div>
+            <div id="status-message" class="status-message"></div>
+        </div>
+
+        <div class="card">
+            <h2 id="current-year-heading">Année 1957</h2>
+            
+            <div class="year-nav-bar">
+                <button id="prev-year" title="Année précédente">&lt;&lt;</button>
+                <select id="year-select"></select>
+                <button id="next-year" title="Année suivante">&gt;&gt;</button>
+            </div>
+            
+            <div class="crud-container">
+                <h3>Modifier les compétitions</h3>
+                <div class="competition-list" id="competition-list">
+                    </div>
+                
+                <h3 style="margin-top: 25px;">Ajouter une compétition</h3>
+                <div class="add-comp-form" id="add-comp-form">
+                    
+                    <input type="text" id="new-comp-key" placeholder="Code Compétition..." list="comp-key-list">
+                    <datalist id="comp-key-list">
+                        </datalist>
+                    
+                    <div class="winner-selector" id="new-winner-selector-container">
+                        </div>
+                    <button id="add-comp-btn" class="btn btn-success add-btn">Ajouter</button>
+                </div>
+                <div id="add-status-message" class="status-message"></div>
+                
+                <h3 style="margin-top: 25px;">➕ Ajouter une Année</h3>
+                <div id="add-year-section">
+                    <label for="newYearInput">Année à ajouter :</label>
+                    <input type="number" id="newYearInput" placeholder="Ex: 2024" min="1957" max="2100">
+                    <button id="addYearButton" class="btn btn-import">Ajouter l'Année</button>
+                    <p id="addYearStatus" class="status-message"></p>
+                </div>
+                </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- 1. COPIE DE LA LOGIQUE DE STATCAF.HTML (NÉCESSAIRE) ---
+            
+            // [DEBUT] Copié de statcaf.html
+            const countryNameMap = {
+                'EGYPTE': { code: 'EG', region: 'Afrique du Nord', names: { fr: 'ÉGYPTE', en: 'EGYPT', es: 'EGIPTO' } }, 
+                'ETHIOPIE': { code: 'ET', region: 'Afrique de l\'Est', names: { fr: 'ÉTHIOPIE', en: 'ETHIOPIA', es: 'ETIOPÍA' } },
+                'GHANA': { code: 'GH', region: 'Afrique de l\'Ouest', names: { fr: 'GHANA', en: 'GHANA', es: 'GHANA' } }, 
+                'CAMEROUN': { code: 'CM', region: 'Afrique Centrale', names: { fr: 'CAMEROUN', en: 'CAMEROON', es: 'CAMERÚN' } },
+                'COTE IVOIRE': { code: 'CI', region: 'Afrique de l\'Ouest', names: { fr: 'CÔTE D\'IVOIRE', en: 'IVORY COAST', es: 'COSTA DE MARFIL' } }, 
+                'RD CONGO': { code: 'CD', region: 'Afrique Centrale', names: { fr: 'RD CONGO', en: 'DR CONGO', es: 'RD CONGO' } },
+                'SOUDAN': { code: 'SD', region: 'Afrique de l\'Est', names: { fr: 'SOUDAN', en: 'SUDAN', es: 'SUDÁN' } }, 
+                'CONGO BRAZA': { code: 'CG', region: 'Afrique Centrale', names: { fr: 'CONGO', en: 'CONGO', es: 'CONGO' } },
+                'GUINEE CONAKRY': { code: 'GN', region: 'Afrique de l\'Ouest', names: { fr: 'GUINÉE', en: 'GUINEA', es: 'GUINEA' } }, 
+                'MAROC': { code: 'MA', region: 'Afrique du Nord', names: { fr: 'MAROC', en: 'MOROCCO', es: 'MARRUECOS' } },
+                'ALGERIE': { code: 'DZ', region: 'Afrique du Nord', names: { fr: 'ALGÉRIE', en: 'ALGERIA', es: 'ARGELIA' } }, 
+                'NIGERIA': { code: 'NG', region: 'Afrique de l\'Ouest', names: { fr: 'NIGERIA', en: 'NIGERIA', es: 'NIGERIA' } },
+                'KENYA': { code: 'KE', region: 'Afrique de l\'Est', names: { fr: 'KENYA', en: 'KENYA', es: 'KENIA' } }, 
+                'TUNISIE': { code: 'TN', region: 'Afrique du Nord', names: { fr: 'TUNISIE', en: 'TUNISIA', es: 'TÚNEZ' } },
+                'ZAMBIE': { code: 'ZM', region: 'Afrique Australe', names: { fr: 'ZAMBIE', en: 'ZAMBIA', es: 'ZAMBIA' } }, 
+                'AFS': { code: 'ZA', region: 'Afrique Australe', names: { fr: 'AFS', en: 'S. AFRICA', es: 'SUDÁFRICA' } },
+                'ANGOLA': { code: 'AO', region: 'Afrique Australe', names: { fr: 'ANGOLA', en: 'ANGOLA', es: 'ANGOLA' } }, 
+                'GAMBIE': { code: 'GM', region: 'Afrique de l\'Ouest', names: { fr: 'GAMBIE', en: 'GAMBIA', es: 'GAMBIA' } },
+                'GUINEE EQUATORIALE': { code: 'GQ', region: 'Afrique Centrale', names: { fr: 'GUINÉE ÉQUAT.', en: 'EQ. GUINEA', es: 'GUINEA EC.' } }, 
+                'LIBYE': { code: 'LY', region: 'Afrique du Nord', names: { fr: 'LIBYE', en: 'LIBYA', es: 'LIBIA' } },
+                'MALI': { code: 'ML', region: 'Afrique de l\'Ouest', names: { fr: 'MALI', en: 'MALI', es: 'MALI' } }, 
+                'GABON': { code: 'GA', region: 'Afrique Centrale', names: { fr: 'GABON', en: 'GABON', es: 'GABÓN' } },
+                'BURKINA FASO': { code: 'BF', region: 'Afrique de l\'Ouest', names: { fr: 'BURKINA FASO', en: 'BURKINA', es: 'BURKINA FASO' } }, 
+                'MADAGASCAR': { code: 'MG', region: 'Afrique Australe', names: { fr: 'MADAGASCAR', en: 'MADAGASCAR', es: 'MADAGASCAR' } },
+                'SENEGAL': { code: 'SN', region: 'Afrique de l\'Ouest', names: { fr: 'SÉNÉGAL', en: 'SENEGAL', es: 'SENEGAL' } }
+            };
+
+            function getWinnerInfo(winnerString) {
+                if (!winnerString) return { countryKey: null, clubName: null, code: null, count: 0, displayCount: '', isClub: false };
+
+                let count = 1;
+                const countMatch = winnerString.match(/\(x(\d+)\)/i);
+                if (countMatch) {
+                    count = parseInt(countMatch[1]);
+                }
+                const displayCount = count > 1 ? ` (x${count})` : '';
+
+                const cleanString = winnerString.toUpperCase().replace(/\(X\d+\)/, '').trim();
+                const parts = cleanString.split(/\s+/).filter(p => p.length > 0);
+
+                let countryKeyClean = null;
+                let clubName = winnerString.trim().split('\n')[0].trim();
+
+                for (let i = parts.length - 1; i >= 0; i--) {
+                    let potentialKey = parts[i];
+
+                    if (i > 0) {
+                        const compoundKey = `${parts[i - 1]} ${parts[i]}`;
+                        if (countryNameMap[compoundKey]) {
+                            countryKeyClean = compoundKey;
+                            clubName = parts.slice(0, i - 1).join(' ');
+                            break;
+                        }
+                    }
+
+                    if (countryNameMap[potentialKey]) {
+                        countryKeyClean = potentialKey;
+                        clubName = parts.slice(0, i).join(' ');
+                        break;
+                    }
+                }
+
+                if (!countryKeyClean && countryNameMap[cleanString]) {
+                    countryKeyClean = cleanString;
+                    clubName = cleanString;
+                }
+
+                if (clubName.trim() === '') {
+                    clubName = countryKeyClean;
+                }
+
+                const isClub = countryKeyClean && clubName.trim().toLowerCase() !== countryKeyClean.toLowerCase();
+                const info = countryNameMap[countryKeyClean];
+
+                return { 
+                    countryKey: countryKeyClean, 
+                    clubName: clubName.trim(), 
+                    code: info ? info.code : null, 
+                    count: count, 
+                    displayCount: displayCount,
+                    isClub: isClub
+                };
+            }
+            // [FIN] Copié de statcaf.html
+            
+
+            // --- 2. NOUVELLE LOGIQUE POUR L'ÉDITEUR AVANCÉ ---
+            
+            // --- État Global ---
+            let jsonData = null; // Contiendra l'objet JSON complet
+            let allCountriesList = []; // Liste pré-calculée des pays
+            let allClubsList = []; // Liste pré-calculée des clubs
+            let allCompetitionKeys = []; // NOUVEAU : Liste des clés de compétition
+            let currentYearIndex = 0; // Index de l'année en cours d'affichage
+            let dataIsDirty = false; // Pour indiquer si des modifs ont été faites
+            
+            // --- Éléments DOM ---
+            const loadContainer = document.getElementById('load-container');
+            const mainEditor = document.getElementById('main-editor');
+            const fileInput = document.getElementById('file-input');
+            const loadImportBtn = document.getElementById('load-import-btn');
+            const loadStatusMsg = document.getElementById('load-status-message');
+            
+            const exportBtn = document.getElementById('export-btn');
+            const statusMsg = document.getElementById('status-message');
+            
+            const yearSelect = document.getElementById('year-select');
+            const prevYearBtn = document.getElementById('prev-year');
+            const nextYearBtn = document.getElementById('next-year');
+            const currentYearHeading = document.getElementById('current-year-heading');
+            
+            const competitionListContainer = document.getElementById('competition-list');
+            
+            const addCompForm = document.getElementById('add-comp-form');
+            const newCompKeyInput = document.getElementById('new-comp-key');
+            const newWinnerSelectorContainer = document.getElementById('new-winner-selector-container');
+            const addCompBtn = document.getElementById('add-comp-btn');
+            const addStatusMsg = document.getElementById('add-status-message');
+            
+            // NOUVEAU : Référence au datalist
+            const compKeyDatalist = document.getElementById('comp-key-list');
+
+            // NOUVEAU : Éléments pour l'ajout d'année
+            const newYearInput = document.getElementById('newYearInput');
+            const addYearButton = document.getElementById('addYearButton');
+            const addYearStatus = document.getElementById('addYearStatus');
+
+
+            // --- Initialisation ---
+            
+            // Pré-calculer la liste des pays (triée)
+            allCountriesList = Object.keys(countryNameMap).sort((a, b) => a.localeCompare(b));
+            
+            // Attacher les écouteurs d'événements
+            loadImportBtn.addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', handleFileLoad);
+            exportBtn.addEventListener('click', handleExport);
+            
+            prevYearBtn.addEventListener('click', () => navigateYear(-1));
+            nextYearBtn.addEventListener('click', () => navigateYear(1));
+            yearSelect.addEventListener('change', (e) => {
+                currentYearIndex = parseInt(e.target.value);
+                renderCurrentYear();
+            });
+            
+            addCompBtn.addEventListener('click', handleAddCompetition);
+
+            // NOUVEAU : Gestionnaire d'événement pour l'ajout d'année
+            addYearButton.addEventListener('click', addYear);
+
+            
+            
+            // --- Fonctions d'Import / Export ---
+            
+            function handleFileLoad(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    try {
+                        jsonData = JSON.parse(e.target.result);
+                        if (!jsonData.Annees) {
+                            throw new Error("Format JSON invalide. Clé 'Annees' manquante.");
+                        }
+                        
+                        // Succès
+                        loadContainer.style.display = 'none';
+                        mainEditor.style.display = 'block';
+                        displayStatus(statusMsg, `Fichier "${file.name}" chargé. Prêt à être modifié.`, 'success');
+                        
+                        initializeEditor();
+                        
+                    } catch (error) {
+                        displayStatus(loadStatusMsg, `Erreur : ${error.message}`, 'error');
+                        jsonData = null;
+                    }
+                };
+                reader.onerror = () => {
+                     displayStatus(loadStatusMsg, `Erreur de lecture du fichier.`, 'error');
+                };
+                reader.readAsText(file);
+                fileInput.value = null; // Permet de re-charger le même fichier
+            }
+            
+            function handleExport() {
+                if (!jsonData) {
+                    displayStatus(statusMsg, "Aucune donnée à exporter.", 'error');
+                    return;
+                }
+
+                try {
+                    const finalJsonString = JSON.stringify(jsonData, null, 2);
+                    const blob = new Blob([finalJsonString], { type: 'application/json' });
+                    const url = URL.createObjectURL(blob);
+                    
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'data_caf.json';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+
+                    displayStatus(statusMsg, "Fichier exporté avec succès.", 'success');
+                    dataIsDirty = false;
+                } catch (error) {
+                    displayStatus(statusMsg, `Erreur d'exportation: ${error.message}`, 'error');
+                }
+            }
+
+            // --- Initialisation de l'Éditeur (après chargement) ---
+            
+            function initializeEditor() {
+                parseAllClubs();
+                parseAllCompetitionKeys(); // NOUVEAU
+                populateYearSelect();
+                populateCompKeyDatalist(); // NOUVEAU
+                currentYearIndex = 0;
+                renderCurrentYear();
+                renderAddFormSelector(); // Initialiser le sélecteur du formulaire d'ajout
+            }
+            
+            // Extraire tous les noms de clubs uniques du JSON
+            function parseAllClubs() {
+                const clubSet = new Map(); // Utiliser une Map pour stocker { clubName -> countryKey }
+                
+                jsonData.Annees.forEach(year => {
+                    Object.values(year.competition).forEach(winnerString => {
+                        const info = getWinnerInfo(winnerString);
+                        if (info.isClub && info.clubName && info.countryKey) {
+                            clubSet.set(info.clubName, info.countryKey);
+                        }
+                    });
+                });
+                
+                allClubsList = Array.from(clubSet.entries())
+                    .map(([name, country]) => ({ name, country }))
+                    .sort((a, b) => a.name.localeCompare(b.name));
+            }
+
+            // NOUVEAU : Extraire toutes les clés de compétition uniques
+            function parseAllCompetitionKeys() {
+                const compSet = new Set();
+                jsonData.Annees.forEach(year => {
+                    Object.keys(year.competition).forEach(key => compSet.add(key));
+                });
+                allCompetitionKeys = Array.from(compSet).sort();
+            }
+            
+            // Remplir le <select> des années
+            function populateYearSelect() {
+                yearSelect.innerHTML = '';
+             
+                jsonData.Annees.forEach((yearData, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = yearData.Annee;
+                    yearSelect.appendChild(option);
+                });
+            }
+
+            // NOUVEAU : Remplir le <datalist> des clés de compétition
+            function populateCompKeyDatalist() {
+                compKeyDatalist.innerHTML = '';
+                allCompetitionKeys.forEach(key => {
+                    compKeyDatalist.innerHTML += `<option value="${key}"></option>`;
+                });
+            }
+
+            // --- Navigation ---
+            
+            function navigateYear(direction) {
+                let newIndex = currentYearIndex + direction;
+                
+                if (newIndex >= 0 && newIndex < jsonData.Annees.length) {
+                    currentYearIndex = newIndex;
+                    yearSelect.value = currentYearIndex;
+                    renderCurrentYear();
+                }
+            }
+
+            // --- Rendu de l'UI ---
+            
+            function renderCurrentYear() {
+                const yearData = jsonData.Annees[currentYearIndex];
+                if (!yearData) return;
+                
+                currentYearHeading.textContent = `Année ${yearData.Annee}`;
+                competitionListContainer.innerHTML = ''; // Vider la liste
+                
+                const sortedCompKeys = Object.keys(yearData.competition).sort((a, b) => a.localeCompare(b));
+
+                for (const compKey of sortedCompKeys) {
+                    const winnerString = yearData.competition[compKey];
+                    const row = createCompetitionRow(yearData.Annee, compKey, winnerString);
+                    competitionListContainer.appendChild(row);
+                }
+                
+                prevYearBtn.disabled = currentYearIndex === 0;
+                nextYearBtn.disabled = currentYearIndex === jsonData.Annees.length - 1;
+            }
+            
+            // MODIFIÉ : Créer une ligne de compétition avec la nouvelle structure
+            function createCompetitionRow(year, compKey, winnerString) {
+                const row = document.createElement('div');
+                row.className = 'competition-row';
+
+                // --- 1. Colonne de Gauche (Info + Bouton Suppr) ---
+                const compInfoContainer = document.createElement('div');
+                compInfoContainer.className = 'comp-info';
+
+                const keySpan = document.createElement('span');
+                keySpan.className = 'comp-key';
+                keySpan.textContent = compKey;
+                
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-danger delete-btn';
+                deleteBtn.textContent = 'Supprimer';
+                deleteBtn.onclick = () => { 
+                    if (confirm(`Voulez-vous vraiment supprimer la compétition "${compKey}" de l'année ${year} ?`)) {
+                        deleteDataModel(year, compKey);
+                    }
+                };
+                
+                compInfoContainer.appendChild(keySpan);
+                compInfoContainer.appendChild(deleteBtn);
+
+                // --- 2. Colonne de Droite (Sélecteur) ---
+                const info = getWinnerInfo(winnerString);
+                const winnerSelectorUI = createWinnerSelector(info, (newWinnerString) => {
+                    // Callback de mise à jour
+                    updateDataModel(year, compKey, newWinnerString);
+                });
+                
+                // --- Assemblage de la Ligne ---
+                row.appendChild(compInfoContainer); // Colonne 1
+                row.appendChild(winnerSelectorUI);  // Colonne 2
+                
+                return row;
+            }
+            
+            // Créer le sélecteur dynamique (Pays / Club)
+            function createWinnerSelector(winnerInfo, updateCallback) {
+                const container = document.createElement('div');
+                container.className = 'winner-selector';
+                
+                const isClub = winnerInfo ? winnerInfo.isClub : false; // Par défaut: Pays
+                const randomId = `winner-type-${Math.random().toString(36).substring(2, 9)}`;
+
+                // 1. Toggle Pays / Club
+                const toggle = document.createElement('div');
+                toggle.className = 'winner-type-toggle';
+                toggle.innerHTML = `
+                    <label>
+                        <input type="radio" name="${randomId}" value="country" ${!isClub ? 'checked' : ''}>
+                        Pays (Sélection)
+                    </label>
+                    <label>
+                        <input type="radio" name="${randomId}" value="club" ${isClub ? 'checked' : ''}>
+                        Club
+                    </label>
+                `;
+                
+                // 2. Sélecteur de Pays
+                const countrySelect = document.createElement('select');
+                countrySelect.className = 'country-select';
+                countrySelect.innerHTML = '<option value="">-- Choisir un pays --</option>';
+                allCountriesList.forEach(countryKey => {
+                    const countryData = countryNameMap[countryKey];
+                    const flagCode = countryData.code || 'xx';
+                    countrySelect.innerHTML += `<option value="${countryKey}">
+                        [${flagCode}] ${countryKey}
+                    </option>`;
+                });
+                
+                // 3. Sélecteur de Clubs
+                const clubSelect = document.createElement('select');
+                clubSelect.className = 'club-select';
+                clubSelect.innerHTML = '<option value="">-- Choisir un club --</option>';
+                allClubsList.forEach(club => {
+                    const flagCode = countryNameMap[club.country]?.code || 'xx';
+                    clubSelect.innerHTML += `<option value="${club.name};${club.country}">
+                        ${club.name} [${flagCode} ${club.country}]
+                    </option>`;
+                });
+
+                // 4. Mettre les valeurs sélectionnées
+                if (isClub) {
+                    clubSelect.value = `${winnerInfo.clubName};${winnerInfo.countryKey}`;
+                    clubSelect.style.display = 'block';
+                    countrySelect.style.display = 'none';
+                } else {
+                    countrySelect.value = winnerInfo ? winnerInfo.countryKey : '';
+                    countrySelect.style.display = 'block';
+                    clubSelect.style.display = 'none';
+                }
+                
+                // 5. Gérer les événements
+                toggle.querySelectorAll('input[type="radio"]').forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        let newWinnerValue = null;
+                        if (e.target.value === 'club') {
+                            clubSelect.style.display = 'block';
+                            countrySelect.style.display = 'none';
+                            if (clubSelect.value) {
+                                const [clubName, countryKey] = clubSelect.value.split(';');
+                                newWinnerValue = `${clubName}\n${countryKey}`;
+                            }
+                        } else {
+                            countrySelect.style.display = 'block';
+                            clubSelect.style.display = 'none';
+                            if (countrySelect.value) {
+                                newWinnerValue = countrySelect.value;
+                            }
+                        }
+                        updateCallback(newWinnerValue);
+                    });
+                });
+                
+                countrySelect.addEventListener('change', (e) => {
+                    updateCallback(e.target.value || null);
+                });
+                
+                clubSelect.addEventListener('change', (e) => {
+                    if (e.target.value) {
+                        const [clubName, countryKey] = e.target.value.split(';');
+                        updateCallback(`${clubName}\n${countryKey}`);
+                    } else {
+                        updateCallback(null);
+                    }
+                });
+
+                // 6. Assembler
+                container.appendChild(toggle);
+                container.appendChild(countrySelect);
+                container.appendChild(clubSelect);
+                
+                return container;
+            }
+            
+            // Créer le sélecteur pour le formulaire d'ajout
+            function renderAddFormSelector() {
+                const selectorUI = createWinnerSelector(null, (newWinnerString) => {
+                    newWinnerSelectorContainer.dataset.winnerString = newWinnerString || '';
+                });
+                newWinnerSelectorContainer.innerHTML = '';
+                newWinnerSelectorContainer.appendChild(selectorUI);
+                newWinnerSelectorContainer.dataset.winnerString = '';
+            }
+            
+            // --- Logique CRUD (Modification du modèle de données) ---
+            
+            function updateDataModel(year, compKey, newWinnerString) {
+                const yearData = jsonData.Annees.find(a => a.Annee === year);
+                if (yearData) {
+                    if (newWinnerString !== null) {
+                         yearData.competition[compKey] = newWinnerString;
+                    }
+                    dataIsDirty = true;
+                    displayStatus(statusMsg, "Modifications non enregistrées. N'oubliez pas d'exporter.", 'success');
+                }
+            }
+            
+            function deleteDataModel(year, compKey) {
+                const yearData = jsonData.Annees.find(a => a.Annee === year);
+                if (yearData && yearData.competition[compKey] !== undefined) {
+                    delete yearData.competition[compKey];
+                    dataIsDirty = true;
+                    displayStatus(statusMsg, `Compétition "${compKey}" supprimée. N'oubliez pas d'exporter.`, 'success');
+                    renderCurrentYear(); // Re-rendre la vue
+                }
+            }
+            
+            function handleAddCompetition() {
+                displayStatus(addStatusMsg, '', 'success'); // Clear
+                
+                const year = jsonData.Annees[currentYearIndex].Annee;
+                const newCompKey = newCompKeyInput.value.trim().replace(/\n/g, ' '); // Nettoyer
+                const newWinnerString = newWinnerSelectorContainer.dataset.winnerString || '';
+
+                if (!newCompKey) {
+                    displayStatus(addStatusMsg, "Le code de la compétition est obligatoire.", 'error');
+                    return;
+                }
+                
+                if (!newWinnerString) {
+                    displayStatus(addStatusMsg, "Veuillez sélectionner un vainqueur.", 'error');
+                    return;
+                }
+
+                const yearData = jsonData.Annees[currentYearIndex];
+                if (yearData.competition[newCompKey] !== undefined) {
+                    displayStatus(addStatusMsg, `Erreur : La compétition "${newCompKey}" existe déjà pour cette année.`, 'error');
+                    return;
+                }
+                
+                // Ajouter au modèle
+                yearData.competition[newCompKey] = newWinnerString;
+                dataIsDirty = true;
+                displayStatus(statusMsg, `Compétition "${newCompKey}" ajoutée. N'oubliez pas d'exporter.`, 'success');
+                
+                // Réinitialiser le formulaire
+                newCompKeyInput.value = '';
+                renderAddFormSelector();
+                
+                // Mettre à jour la liste des suggestions si c'est une nouvelle clé
+                if (!allCompetitionKeys.includes(newCompKey)) {
+                    allCompetitionKeys.push(newCompKey);
+                    allCompetitionKeys.sort();
+                    populateCompKeyDatalist();
+                }
+
+                // Re-rendre l'année pour voir la nouvelle entrée
+                renderCurrentYear();
+            }
+
+            // NOUVEAU : Fonction pour ajouter une année
+            function addYear() {
+                const newYear = newYearInput.value.trim();
+                displayStatus(addYearStatus, '', ''); // Reset status
+
+                if (!newYear || isNaN(newYear) || newYear.length !== 4 || parseInt(newYear) < 1957) {
+                    displayStatus(addYearStatus, "Erreur : Veuillez entrer une année valide (4 chiffres, minimum 1957).", 'error');
+                    return;
+                }
+
+                // Vérifier si l'année existe déjà
+                const existingYear = jsonData.Annees.find(item => item.Annee === newYear);
+                if (existingYear) {
+                    displayStatus(addYearStatus, `Erreur : L'année "${newYear}" existe déjà.`, 'error');
+                    return;
+                }
+                
+                // Créer le nouvel objet Année
+                const newYearObject = {
+                    "Annee": newYear,
+                    "competition": {}
+                };
+
+                // Ajouter au modèle et maintenir l'ordre chronologique
+                jsonData.Annees.push(newYearObject);
+                jsonData.Annees.sort((a, b) => parseInt(a.Annee) - parseInt(b.Annee));
+                
+                dataIsDirty = true;
+                displayStatus(addYearStatus, `Année "${newYear}" ajoutée. N'oubliez pas d'exporter.`, 'success');
+
+                // Réinitialiser le formulaire
+                newYearInput.value = '';
+                
+                // Mettre à jour les sélecteurs et afficher la nouvelle année
+                populateYearSelect();
+                currentYearIndex = jsonData.Annees.findIndex(item => item.Annee === newYear);
+                yearSelect.value = currentYearIndex;
+                renderCurrentYear();
+                renderAddFormSelector();
+            }
+
+            // --- Utilitaire ---
+            function displayStatus(element, message, type) {
+                element.textContent = message;
+                element.className = `status-message status-${type}`;
+            }
+            
+        });
+    </script>
+</body>
+</html>
