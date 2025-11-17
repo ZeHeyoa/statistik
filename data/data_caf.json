@@ -1,0 +1,614 @@
+{
+  "Annees": [
+    {
+      "Annee": "1957",
+      "competition": {
+        "CAN H": "EGYPTE"
+      }
+    },
+    {
+      "Annee": "1959",
+      "competition": {
+        "CAN H": "EGYPTE"
+      }
+    },
+    {
+      "Annee": "1962",
+      "competition": {
+        "CAN H": "ETHIOPIE"
+      }
+    },
+    {
+      "Annee": "1963",
+      "competition": {
+        "CAN H": "GHANA"
+      }
+    },
+    {
+      "Annee": "1965",
+      "competition": {
+        "CAN H": "GHANA",
+        "LDC H": "ORYX DOUALA\nCAMEROUN"
+      }
+    },
+    {
+      "Annee": "1966",
+      "competition": {
+        "LDC H": "STADE ABIDJAN\nCOTE IVOIRE"
+      }
+    },
+    {
+      "Annee": "1967",
+      "competition": {
+        "LDC H": "TP MAZEMBE\nRD CONGO"
+      }
+    },
+    {
+      "Annee": "1968",
+      "competition": {
+        "CAN H": "RD CONGO",
+        "LDC H": "TP MAZEMBE\nRD CONGO"
+      }
+    },
+    {
+      "Annee": "1969",
+      "competition": {
+        "LDC H": "ISMAILY SC\nEGYPTE"
+      }
+    },
+    {
+      "Annee": "1970",
+      "competition": {
+        "CAN H": "SOUDAN",
+        "LDC H": "ASANTE KOTOKO\nGHANA"
+      }
+    },
+    {
+      "Annee": "1971",
+      "competition": {
+        "LDC H": "CANON YAOUNDE\nCAMEROUN"
+      }
+    },
+    {
+      "Annee": "1972",
+      "competition": {
+        "CAN H": "CONGO BRAZA",
+        "LDC H": "HAFIA FC\nGUINEE CONAKRY"
+      }
+    },
+    {
+      "Annee": "1973",
+      "competition": {
+        "LDC H": "AS VITA\nRD CONGO"
+      }
+    },
+    {
+      "Annee": "1974",
+      "competition": {
+        "CAN H": "RD CONGO",
+        "LDC H": "CARA\nCONGO BRAZA"
+      }
+    },
+    {
+      "Annee": "1975",
+      "competition": {
+        "LDC H": "HAFIA FC\nGUINEE CONAKRY",
+        "ANC. VAINQUEUR\nCOUPE\nH": "TONNERE YAOUNDE\nCAMEROUN"
+      }
+    },
+    {
+      "Annee": "1976",
+      "competition": {
+        "CAN H": "MAROC",
+        "LDC H": "MC ALGER\nALGERIE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "SHOOTING STAR\nNIGERIA"
+      }
+    },
+    {
+      "Annee": "1977",
+      "competition": {
+        "LDC H": "HAFIA FC\nGUINEE CONAKRY",
+        "ANC. VAINQUEUR\nCOUPE\nH": "ENUGU\nNIGERIA"
+      }
+    },
+    {
+      "Annee": "1978",
+      "competition": {
+        "CAN H": "GHANA",
+        "LDC H": "CANON YAOUNDE\nCAMEROUN",
+        "ANC. VAINQUEUR\nCOUPE\nH": "HOROYA AC\nGUINEE CONAKRY"
+      }
+    },
+    {
+      "Annee": "1979",
+      "competition": {
+        "CAN U20\nH": "ALGERIE",
+        "LDC H": "UNION DOUALA\nCAMEROUN",
+        "ANC. VAINQUEUR\nCOUPE\nH": "CANON YAOUNDE\nCAMEROUN"
+      }
+    },
+    {
+      "Annee": "1980",
+      "competition": {
+        "CAN H": "NIGERIA",
+        "LDC H": "CANON YAOUNDE\nCAMEROUN",
+        "ANC. VAINQUEUR\nCOUPE\nH": "TP MAZEMBE\nRD CONGO"
+      }
+    },
+    {
+      "Annee": "1981",
+      "competition": {
+        "CAN U20\nH": "EGYPTE",
+        "LDC H": "JS KABYLIE\nALGERIE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "UNION DOUALA\nCAMEROUN"
+      }
+    },
+    {
+      "Annee": "1982",
+      "competition": {
+        "CAN H": "GHANA",
+        "LDC H": "AL AHLY\nEGYPTE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "ARAB CONTRACTORS\nEGYPTE"
+      }
+    },
+    {
+      "Annee": "1983",
+      "competition": {
+        "CAN U20\nH": "NIGERIA",
+        "LDC H": "ASANTE KOTOKO\nGHANA",
+        "ANC. VAINQUEUR\nCOUPE\nH": "ARAB CONTRACTORS\nEGYPTE"
+      }
+    },
+    {
+      "Annee": "1984",
+      "competition": {
+        "CAN H": "CAMEROUN",
+        "LDC H": "ZAMALEK\nEGYPTE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "AL AHLY\nEGYPTE"
+      }
+    },
+    {
+      "Annee": "1985",
+      "competition": {
+        "CAN U20\nH": "NIGERIA",
+        "LDC H": "AS FAR\nMAROC",
+        "ANC. VAINQUEUR\nCOUPE\nH": "AL AHLY\nEGYPTE"
+      }
+    },
+    {
+      "Annee": "1986",
+      "competition": {
+        "CAN H": "EGYPTE",
+        "LDC H": "ZAMALEK\nEGYPTE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "AL AHLY\nEGYPTE"
+      }
+    },
+    {
+      "Annee": "1987",
+      "competition": {
+        "CAN U20\nH": "NIGERIA",
+        "LDC H": "AL AHLY\nEGYPTE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "GOR MAHIA\nKENYA"
+      }
+    },
+    {
+      "Annee": "1988",
+      "competition": {
+        "CAN H": "CAMEROUN",
+        "LDC H": "ES SETIF\nALGERIE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "CA BIZERTIN\nTUNISIE"
+      }
+    },
+    {
+      "Annee": "1989",
+      "competition": {
+        "CAN U20\nH": "NIGERIA",
+        "LDC H": "RAJA\nMAROC",
+        "ANC. VAINQUEUR\nCOUPE\nH": "AL MERREIKH\nSOUDAN"
+      }
+    },
+    {
+      "Annee": "1990",
+      "competition": {
+        "CAN H": "ALGERIE",
+        "LDC H": "JS KABYLIE\nALGERIE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "BBC LIONS\nNIGERIA"
+      }
+    },
+    {
+      "Annee": "1991",
+      "competition": {
+        "CAN U20\nH": "EGYPTE",
+        "LDC H": "CLUB AFRICAIN\nTUNISIE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "POWER DYNAMO\nZAMBIE"
+      }
+    },
+    {
+      "Annee": "1992",
+      "competition": {
+        "CAN H": "COTE IVOIRE",
+        "LDC H": "WIDAD\nMAROC",
+        "ANC. CAF\nH": "SHOOTING STAR\nNIGERIA",
+        "ANC. VAINQUEUR\nCOUPE\nH": "AFRICA SPORTS\nCOTE IVOIRE"
+      }
+    },
+    {
+      "Annee": "1993",
+      "competition": {
+        "CAN U20\nH": "GHANA",
+        "LDC H": "ZAMALEK\nEGYPTE",
+        "SUPER \nH": "AFRICA SPORTS\nCOTE IVOIRE",
+        "ANC. CAF\nH": "STELLA CLUB\nCOTE IVOIRE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "AL AHLY\nEGYPTE"
+      }
+    },
+    {
+      "Annee": "1994",
+      "competition": {
+        "CAN H": "NIGERIA",
+        "LDC H": "ES TUNIS\nTUNISIE",
+        "SUPER \nH": "ZAMALEK\nEGYPTE",
+        "ANC. CAF\nH": "BENDEL INSURANCE\nNIGERIA",
+        "ANC. VAINQUEUR\nCOUPE\nH": "MOTEMA PEMBE\nRD CONGO"
+      }
+    },
+    {
+      "Annee": "1995",
+      "competition": {
+        "CAN U20\nH": "CAMEROUN",
+        "CAN U17\nH": "GHANA",
+        "LDC H": "ORLONDO\nAFS",
+        "SUPER \nH": "ES TUNIS\nTUNISIE",
+        "ANC. CAF\nH": "ETOILE SAHEL\nTUNISIE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "JS KABYLIE\nALGERIE"
+      }
+    },
+    {
+      "Annee": "1996",
+      "competition": {
+        "CAN H": "AFS",
+        "FOOTSAL\nH": "EGYPTE",
+        "LDC H": "ZAMALEK\nEGYPTE",
+        "SUPER \nH": "ORLONDO\nAFS",
+        "ANC. CAF\nH": "KAC MARRAKECH\nMAROC",
+        "ANC. VAINQUEUR\nCOUPE\nH": "ARAB CONTRACTORS\nEGYPTE"
+      }
+    },
+    {
+      "Annee": "1997",
+      "competition": {
+        "CAN U20\nH": "MAROC",
+        "CAN U17\nH": "EGYPTE",
+        "LDC H": "RAJA\nMAROC",
+        "SUPER \nH": "ZAMALEK\nEGYPTE",
+        "ANC. CAF\nH": "ES TUNIS\nTUNISIE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "ETOILE SAHEL\nTUNISIE"
+      }
+    },
+    {
+      "Annee": "1998",
+      "competition": {
+        "CAN H": "EGYPTE",
+        "CAN\nF": "NIGERIA",
+        "LDC H": "ASEC MIMOSAS\nCOTE IVOIRE",
+        "SUPER \nH": "ETOILE SAHEL\nTUNISIE",
+        "ANC. CAF\nH": "CS SFAXIEN\nTUNISIE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "ETOILE SAHEL\nTUNISIE"
+      }
+    },
+    {
+      "Annee": "1999",
+      "competition": {
+        "CAN U20\nH": "GHANA",
+        "CAN U17\nH": "GHANA",
+        "LDC H": "RAJA\nMAROC",
+        "SUPER \nH": "ASEC MIMOSAS\nCOTE IVOIRE",
+        "ANC. CAF\nH": "ETOILE SAHEL\nTUNISIE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "AFRICA SPORTS\nCOTE IVOIRE"
+      }
+    },
+    {
+      "Annee": "2000",
+      "competition": {
+        "CAN H": "CAMEROUN",
+        "CAN\nF": "NIGERIA",
+        "FOOTSAL\nH": "EGYPTE",
+        "LDC H": "HEART OF OAK\nGHANA",
+        "SUPER \nH": "RAJA\nMAROC",
+        "ANC. CAF\nH": "JS KABYLIE\nALGERIE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "ZAMALEK\nEGYPTE"
+      }
+    },
+    {
+      "Annee": "2001",
+      "competition": {
+        "CAN U20\nH": "ANGOLA",
+        "CAN U17\nH": "NIGERIA",
+        "LDC H": "AL AHLY\nEGYPTE",
+        "SUPER \nH": "HEART OF OAK\nGHANA",
+        "ANC. CAF\nH": "JS KABYLIE\nALGERIE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "KAIZER CHIEFS\nAFS"
+      }
+    },
+    {
+      "Annee": "2002",
+      "competition": {
+        "CAN H": "CAMEROUN",
+        "CAN\nF": "NIGERIA",
+        "CAN U20\nF": "NIGERIA",
+        "LDC H": "ZAMALEK\nEGYPTE",
+        "SUPER \nH": "AL AHLY\nEGYPTE",
+        "ANC. CAF\nH": "JS KABYLIE\nALGERIE",
+        "ANC. VAINQUEUR\nCOUPE\nH": "WIDAD\nMAROC"
+      }
+    },
+    {
+      "Annee": "2003",
+      "competition": {
+        "CAN U20\nH": "EGYPTE",
+        "CAN U17\nH": "CAMEROUN",
+        "LDC H": "ENYIMBA\nNIGERIA",
+        "SUPER \nH": "ZAMALEK\nEGYPTE",
+        "ANC. CAF\nH": "RAJA\nMAROC",
+        "ANC. VAINQUEUR\nCOUPE\nH": "ETOILE SAHEL\nTUNISIE"
+      }
+    },
+    {
+      "Annee": "2004",
+      "competition": {
+        "CAN H": "TUNISIE",
+        "CAN\nF": "NIGERIA",
+        "FOOTSAL\nH": "EGYPTE",
+        "LDC H": "ENYIMBA\nNIGERIA",
+        "SUPER \nH": "ENYIMBA\nNIGERIA",
+        "CAF  H": "HEART OF OAK\nGHANA"
+      }
+    },
+    {
+      "Annee": "2005",
+      "competition": {
+        "CAN U20\nH": "NIGERIA",
+        "CAN U17\nH": "GAMBIE",
+        "LDC H": "AL AHLY\nEGYPTE",
+        "SUPER \nH": "ENYIMBA\nNIGERIA",
+        "CAF  H": "AS FAR\nMAROC"
+      }
+    },
+    {
+      "Annee": "2006",
+      "competition": {
+        "CAN H": "EGYPTE",
+        "CAN\nF": "NIGERIA",
+        "BEACH\n H": "CAMEROUN",
+        "LDC H": "AL AHLY\nEGYPTE",
+        "SUPER \nH": "AL AHLY\nEGYPTE",
+        "CAF  H": "ETOILE SAHEL\nTUNISIE"
+      }
+    },
+    {
+      "Annee": "2007",
+      "competition": {
+        "CAN U20\nH": "CONGO BRAZA",
+        "CAN U17\nH": "NIGERIA",
+        "BEACH\n H": "NIGERIA",
+        "LDC H": "ETOILE SAHEL\nTUNISIE",
+        "SUPER \nH": "AL AHLY\nEGYPTE",
+        "CAF  H": "CS SFAXIEN\nTUNISIE"
+      }
+    },
+    {
+      "Annee": "2008",
+      "competition": {
+        "CAN H": "EGYPTE",
+        "CAN\nF": "GUINEE EQUATORIALE",
+        "CAN U17\nF": "NIGERIA",
+        "FOOTSAL\nH": "LIBYE",
+        "BEACH\n H": "SENEGAL",
+        "LDC H": "AL AHLY\nEGYPTE",
+        "SUPER \nH": "ETOILE SAHEL\nTUNISIE",
+        "CAF  H": "CS SFAXIEN\nTUNISIE"
+      }
+    },
+    {
+      "Annee": "2009",
+      "competition": {
+        "CHAN\nH": "RD CONGO",
+        "CAN U20\nH": "GHANA",
+        "CAN U17\nH": "GAMBIE",
+        "BEACH\n H": "NIGERIA",
+        "LDC H": "TP MAZEMBE\nRD CONGO",
+        "SUPER \nH": "AL AHLY\nEGYPTE",
+        "CAF  H": "CLUB MALIEN\nMALI"
+      }
+    },
+    {
+      "Annee": "2010",
+      "competition": {
+        "CAN H": "EGYPTE",
+        "CAN\nF": "NIGERIA",
+        "LDC H": "TP MAZEMBE\nRD CONGO",
+        "SUPER \nH": "TP MAZEMBE\nRD CONGO",
+        "CAF  H": "FUS\nMAROC"
+      }
+    },
+    {
+      "Annee": "2011",
+      "competition": {
+        "CHAN\nH": "TUNISIE",
+        "CAN U23\nH": "GABON",
+        "CAN U20\nH": "NIGERIA",
+        "CAN U17\nH": "BURKINA FASO",
+        "BEACH\n H": "SENEGAL",
+        "LDC H": "ES TUNIS\nTUNISIE",
+        "SUPER \nH": "TP MAZEMBE\nRD CONGO",
+        "CAF  H": "MAGHREB FES\nMAROC"
+      }
+    },
+    {
+      "Annee": "2012",
+      "competition": {
+        "CAN H": "ZAMBIE",
+        "CAN\nF": "GUINEE EQUATORIALE",
+        "LDC H": "AL AHLY\nEGYPTE",
+        "SUPER \nH": "MAGHREB FES\nMAROC",
+        "CAF  H": "AC LEOPARDS\nCONGO BRAZA"
+      }
+    },
+    {
+      "Annee": "2013",
+      "competition": {
+        "CAN H": "NIGERIA",
+        "CAN U20\nH": "EGYPTE",
+        "CAN U17\nH": "COTE IVOIRE",
+        "BEACH\n H": "SENEGAL",
+        "LDC H": "AL AHLY\nEGYPTE",
+        "SUPER \nH": "AL AHLY\nEGYPTE",
+        "CAF  H": "CS SFAXIEN\nTUNISIE"
+      }
+    },
+    {
+      "Annee": "2014",
+      "competition": {
+        "CAN\nF": "NIGERIA",
+        "CHAN\nH": "LIBYE",
+        "LDC H": "ES SETIF\nALGERIE",
+        "SUPER \nH": "AL AHLY\nEGYPTE",
+        "CAF  H": "AL AHLY\nEGYPTE"
+      }
+    },
+    {
+      "Annee": "2015",
+      "competition": {
+        "CAN H": "COTE IVOIRE",
+        "CAN U23\nH": "NIGERIA",
+        "CAN U20\nH": "NIGERIA",
+        "CAN U17\nH": "MALI",
+        "BEACH\n H": "MADAGASCAR",
+        "LDC H": "TP MAZEMBE\nRD CONGO",
+        "SUPER \nH": "ES SETIF\nALGERIE",
+        "CAF  H": "ETOILE SAHEL\nTUNISIE"
+      }
+    },
+    {
+      "Annee": "2016",
+      "competition": {
+        "CAN\nF": "NIGERIA",
+        "CHAN\nH": "RD CONGO",
+        "FOOTSAL\nH": "MAROC",
+        "BEACH\n H": "SENEGAL",
+        "LDC H": "MAMELODI SUNDOWNS\nAFS",
+        "SUPER \nH": "TP MAZEMBE\nRD CONGO",
+        "CAF  H": "TP MAZEMBE\nRD CONGO"
+      }
+    },
+    {
+      "Annee": "2017",
+      "competition": {
+        "CAN H": "CAMEROUN",
+        "CAN U20\nH": "ZAMBIE",
+        "CAN U17\nH": "MALI",
+        "LDC H": "WIDAD\nMAROC",
+        "SUPER \nH": "MAMELODI SUNDOWNS\nAFS",
+        "CAF  H": "TP MAZEMBE\nRD CONGO"
+      }
+    },
+    {
+      "Annee": "2018",
+      "competition": {
+        "CAN\nF": "NIGERIA",
+        "CHAN\nH": "MAROC",
+        "BEACH\n H": "SENEGAL",
+        "LDC H": "ES TUNIS\nTUNISIE",
+        "SUPER \nH": "WIDAD\nMAROC",
+        "CAF  H": "RAJA\nMAROC"
+      }
+    },
+    {
+      "Annee": "2019",
+      "competition": {
+        "CAN H": "ALGERIE",
+        "CAN U23\nH": "EGYPTE",
+        "CAN U20\nH": "MALI",
+        "CAN U17\nH": "CAMEROUN",
+        "LDC H": "ES TUNIS\nTUNISIE",
+        "SUPER \nH": "RAJA\nMAROC",
+        "CAF  H": "ZAMALEK\nEGYPTE"
+      }
+    },
+    {
+      "Annee": "2020",
+      "competition": {
+        "CHAN\nH": "MAROC",
+        "FOOTSAL\nH": "MAROC",
+        "LDC H": "AL AHLY\nEGYPTE",
+        "SUPER \nH": "ZAMALEK\nEGYPTE",
+        "CAF  H": "BERKANE\nMAROC"
+      }
+    },
+    {
+      "Annee": "2021",
+      "competition": {
+        "CAN H": "SENEGAL",
+        "CAN U20\nH": "GHANA",
+        "BEACH\n H": "SENEGAL",
+        "LDC H": "AL AHLY\nEGYPTE",
+        "LDC F": "MAMELODI SUNDOWNS\nAFS",
+        "SUPER \nH": "AL AHLY\nEGYPTE (x2)",
+        "CAF  H": "RAJA\nMAROC"
+      }
+    },
+    {
+      "Annee": "2022",
+      "competition": {
+        "CAN\nF": "AFS",
+        "CHAN\nH": "SENEGAL",
+        "BEACH\n H": "SENEGAL",
+        "LDC H": "WIDAD\nMAROC",
+        "LDC F": "AS FAR\nMAROC",
+        "SUPER \nH": "BERKANE\nMAROC",
+        "CAF  H": "BERKANE\nMAROC"
+      }
+    },
+    {
+      "Annee": "2023",
+      "competition": {
+        "CAN H": "COTE IVOIRE",
+        "CAN U23\nH": "MAROC",
+        "CAN U20\nH": "SENEGAL",
+        "CAN U17\nH": "SENEGAL",
+        "LDC H": "AL AHLY\nEGYPTE",
+        "LDC F": "MAMELODI SUNDOWNS\nAFS",
+        "SUPER \nH": "USM ALGER\nALGERIE",
+        "CAF  H": "USM ALGER\nALGERIE"
+      }
+    },
+    {
+      "Annee": "2024",
+      "competition": {
+        "CAN\nF": "NIGERIA",
+        "CHAN\nH": "MAROC",
+        "FOOTSAL\nH": "MAROC",
+        "BEACH\n H": "SENEGAL",
+        "LDC H": "AL AHLY\nEGYPTE",
+        "LDC F": "TP MAZEMBE\nRD CONGO",
+        "SUPER \nH": "ZAMALEK\nEGYPTE",
+        "CAF  H": "ZAMALEK\nEGYPTE"
+      }
+    },
+    {
+      "Annee": "2025",
+      "competition": {
+        "CAN U20\nH": "AFS",
+        "CAN U17\nH": "MAROC",
+        "FOOTSAL\nF": "MAROC",
+        "LDC H": "PYRAMID FC\nEGYPTE",
+        "CAF  H": "BERKANE\nMAROC",
+        "SUPER H": "PYRAMID FC\nEGYPTE"
+      }
+    },
+    {
+      "Annee": "2026",
+      "competition": {}
+    }
+  ]
+}
