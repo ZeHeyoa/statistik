@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Trophy Ranking (Gold, Silver, Bronze)</title>
+
+    <style>
+        /* --- General Style --- */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f0f2f5; 
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: 3px 20px 10px 20px; 
+            box-sizing: border-box;
+            overflow-x: hidden;
+            font-size: 0.8em; 
+        }
+
+        .main-content-wrapper {
+            display: flex;
+            gap: 15px; 
+            width: 100%;
+            align-items: flex-start;
+            min-height: calc(100vh - 13px); 
+            /* Rendre le wrapper cliquable pour la pause */
+            cursor: pointer; 
+        }
+
+        /* --- Screens Styles --- */
+        .overlay-screen {
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%; 
+            /* Rendu opaque: Fond blanc-cassé */
+            background-color: #f0f2f5; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            z-index: 100; 
+            /* *** AUCUN BACKDROP-FILTER OU FILTRE BLEU ICI *** */
+            text-align: center; 
+            padding: 20px; 
+            box-sizing: border-box;
+            transition: opacity 0.3s, visibility 0.3s;
+        }
+
+        .screen-content {
+            background-color: rgba(255,255,255,0.9); 
+            padding: 15px 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1); 
+            max-width: 800px; 
+            width: 100%;
+            text-align: left;
+            max-height: 90vh; 
+            overflow-y: auto; 
+        }
+
+        .screen-title {
+            color: #1e3a5f; 
+            font-size: 1.5em; 
+            margin-bottom: 25px;
+            text-align: center;
+        }
+
+        .next-btn {
+            background-color: #4e73df;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+        .next-btn:hover {
+            background-color: #224abe;
+        }
+
+        /* Style spécifique pour l'écran de langue */
+        #language-screen .screen-content {
+            max-width: 400px;
+            text-align: center;
+        }
+        #language-select {
+            padding: 10px;
+            font-size: 1.1em;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            margin-top: 15px;
+            width: 80%;
+        }
+
+        /* --- Filtering Styles --- */
+        .filter-section {
+            margin-bottom: 20px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #fff;
+        }
+
+        .filter-section h3 {
+            color: #1e3a5f;
+            font-size: 1.1em;
+            margin-top: 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 10px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.9em;
+        }
+
+        .filter-item label {
+            margin-left: 5px;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .edition-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .edition-group {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+
+        .edition-group label {
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #4e73df;
+        }
+
+        .edition-group select {
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            background-color: #f9f9f9;
+            font-size: 1em;
+        }
+
+        /* --- Left Column: Competitions and Year --- */
+        .competitions-column {
+            width: 110px; 
+            flex-shrink: 0;
+            padding-top: 3px; 
+            display: flex;
+            flex-direction: column;
+            min-height: calc(100vh - 13px - 3px); 
+        }
+
+        #year-display-in-column {
+            font-size: 1.725em; 
+            color: #1e3a5f;
+            margin: 0 0 0 0; 
+            font-weight: 800;
+            text-align: center;
+            line-height: 1; 
+        }
+
+        /* Style pour l'indicateur de pause */
+        #pause-indicator {
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #ff0000;
+            text-align: center;
+            margin: 3px 0 5px 0;
+            display: none; /* Caché par défaut */
+        }
+
+        .competitions-display {
+            display: flex;
+            flex-direction: column; 
+            gap: 6px; 
+            max-height: 100vh; 
+            flex-grow: 1; 
+            overflow: hidden; 
+            align-items: flex-start;
+            position: relative; 
+        }
+
+        #all-competitions-scroll-container {
+            position: relative;
+            top: 0; 
+            left: 0;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Container for competitions of a year */
+        .year-group-container {
+            position: relative; 
+            width: 100%;
+            margin-bottom: 6px; 
+            flex-shrink: 0; 
+        }
+
+        /* --- Style : Year Separator --- */
+        .year-separator {
+            width: 100%;
+            height: 20px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 3px 0; 
+            position: relative;
+            flex-shrink: 0; 
+        }
+
+        .year-separator::before,
+        .year-separator::after {
+            content: '';
+            flex-grow: 1;
+            height: 1px;
+            background-color: #ccc;
+            margin: 0 5px;
+        }
+
+        .year-separator-text {
+            font-size: 0.8em;
+            font-weight: bold;
+            color: #666;
+            padding: 0 5px;
+        }
+
+        /* --- COMPETITION BOX STRUCTURE --- */
+        .competition-box {
+            position: relative; 
+            width: 100%;
+            height: 38px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+            border-radius: 3px; 
+            overflow: hidden; 
+            transition: transform 0.2s ease;
+            display: flex; 
+            margin-bottom: 6px; 
+            flex-shrink: 0; 
+        }
+
+        .year-group-container .competition-box:last-child {
+            margin-bottom: 0;
+        }
+
+        .competition-box:hover {
+            transform: scale(1.03); 
+            z-index: 5;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+        }
+
+        /* --- Internal Columns --- */
+        #flag-column {
+            width: 35%; 
+            flex-shrink: 0;
+            background-color: #000; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #flag-column img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            padding: 0; 
+        }
+
+        #right-column {
+            width: 65%; 
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column; 
+            height: 100%;
+        }
+
+        #comp-info-case {
+            height: 50%; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6em; 
+            font-weight: bold;
+            color: #fff;
+            padding: 0 1px; 
+            text-align: center;
+            line-height: 1.1;
+        }
+
+        #winner-name-case {
+            height: 50%; 
+            background-color: #000; 
+            color: #ccc; 
+            font-size: 0.6em; 
+            font-weight: 600; 
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 1px; 
+            text-align: center;
+            line-height: 1.1; 
+        }
+
+        /* --- RANKING BASE STYLES --- */
+        .no-competitions { font-size: 0.7em; margin-top: 5px; }
+        .chart-container { flex-grow: 1; max-width: 600px; flex-shrink: 0; padding-top: 0; }
+        #ranking-chart { position: relative; width: 100%; }
+
+        .country-row {
+            position: absolute;
+            width: 100%;
+            height: 35px; 
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px; 
+            opacity: 0; 
+            visibility: hidden; 
+            background-color: transparent; 
+            border-radius: 0; 
+            padding-right: 8px; 
+        }
+
+        .country-info { position: relative; width: 100%; display: flex; align-items: center; }
+
+        /* Styles pour les pays */
+        .country-name { 
+            position: absolute; 
+            top: 0px; 
+            left: 40px; 
+            font-size: 0.7em; 
+            font-weight: bold; 
+            color: #444; 
+            white-space: nowrap; 
+        }
+        .flag { 
+            width: 35px; 
+            height: 35px; 
+            border-radius: 50%; 
+            border: 2px solid #fff; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            margin-right: 1px; 
+            flex-shrink: 0; 
+        }
+        .progress-container { 
+            flex-grow: 1; 
+            height: 6px; 
+            background-color: transparent; 
+            border-radius: 3px; 
+            overflow: hidden; 
+            margin-top: 15px; 
+        }
+        .progress-bar { 
+            width: 0%; 
+            height: 100%; 
+            border-radius: 3px; 
+        }
+        .trophy-count { 
+            font-size: 1.1em; 
+            font-weight: bold; 
+            color: #1e3a5f; 
+            margin-left: 10px; 
+            width: 40px; 
+            text-align: center; 
+            flex-shrink: 0; 
+        }
+
+        /* --- Region Specific Styles (Identique aux pays) --- */
+        .country-row.is-region .country-info {
+            background-color: transparent;
+            border: none;
+            box-shadow: none;
+            height: 35px;
+        }
+
+        .country-row.is-region .country-name {
+            position: absolute; 
+            top: 0px;          
+            left: 40px;        
+            font-size: 0.7em;  
+            color: #444;       
+            font-weight: bold;
+            white-space: nowrap;
+        }
+
+        .country-row.is-region .flag {
+            width: 35px; 
+            height: 35px; 
+            border-radius: 50%; 
+            border: 2px solid #fff; 
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15); 
+            flex-shrink: 0; 
+        }
+
+        /* Couleurs spécifiques aux régions */
+        .country-row.is-region .flag[data-region-code="AN"] { background-color: #36454F; }
+        .country-row.is-region .flag[data-region-code="AO"] { background-color: #FFA500; }
+        .country-row.is-region .flag[data-region-code="AE"] { background-color: #008000; }
+        .country-row.is-region .flag[data-region-code="AC"] { background-color: #FF0000; }
+        .country-row.is-region .flag[data-region-code="AA"] { background-color: #0000FF; }
+
+        .country-row.is-region .progress-container {
+            flex-grow: 1;
+            height: 6px; 
+            background-color: transparent; 
+            margin-top: 15px; 
+            margin-left: 0; 
+            margin-right: 0; 
+            border-radius: 3px;
+        }
+
+        .country-row.is-region .trophy-count {
+            color: #1e3a5f; 
+            font-size: 1.1em;
+            margin-left: 10px; 
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="language-screen" class="overlay-screen">
+        <div class="screen-content">
+            <h1 class="screen-title" data-lang-key="select_language_title">Select Language</h1>
+            <p data-lang-key="select_language_instruction">Please choose your preferred language to continue.</p>
+            <select id="language-select">
+                <option value="fr">Français</option>
+                <option value="en" selected>English</option>
+                <option value="es">Español</option>
+            </select>
+            <button class="next-btn" data-lang-key="select_language_button" onclick="showIntroScreen()">Continue</button>
+        </div>
+    </div>
+
+    <div id="start-screen" class="overlay-screen" style="visibility: hidden; opacity: 0; display: none;">
+        <div class="intro-screen-content">
+            <h1 data-lang-key="welcome_title">🏆 CAF All-Time Trophy Ranking</h1>
+            <p data-lang-key="welcome_instruction">Click to set up the region, competition, and year filters before launching the animation.</p>
+            <button class="next-btn" data-lang-key="welcome_button" onclick="showFilterScreen()">Start Configuration</button>
+        </div>
+    </div>
+
+    <div id="filter-screen" class="overlay-screen" style="visibility: hidden; opacity: 0; display: none;">
+        <h1 class="screen-title" data-lang-key="filter_title">Filter CAF Trophies</h1>
+        <div class="screen-content">
+
+            <div class="filter-section">
+                <h3 data-lang-key="filter_region_title">1. Filter by CAF Region</h3>
+                <p style="font-size: 0.75em; color: #777; margin-bottom: 10px;" data-lang-key="filter_region_instruction">Select the regions whose countries will be included in the ranking.</p>
+                <div class="filter-grid" id="region-filters">
+                    </div>
+
+                <hr style="margin: 15px 0;">
+
+                <div class="filter-item" style="justify-content: center;">
+                    <input type="checkbox" id="displayRegionRankCheckbox">
+                    <label for="displayRegionRankCheckbox" style="font-weight: bold; color: #007bff;" data-lang-key="filter_region_rank_label">Display Region Ranking (Country Accumulation)</label>
+                </div>
+            </div>
+
+            <div class="filter-section">
+                <h3 data-lang-key="filter_competition_title">2. Filter by Competition</h3>
+                <p style="font-size: 0.75em; color: #777; margin-bottom: 10px;" data-lang-key="filter_competition_instruction">Select the trophies that will be counted (Clubs and National Teams).</p>
+                <div class="filter-grid" id="competition-filters">
+                    </div>
+            </div>
+
+            <div class="filter-section">
+                <h3 data-lang-key="filter_period_title">3. Filter by Period</h3>
+                <div class="edition-controls">
+                    <div class="edition-group">
+                        <label for="startYearSelect" data-lang-key="filter_start_year_label">Start Year</label>
+                        <select id="startYearSelect"></select>
+                    </div>
+                    <div class="edition-group">
+                        <label for="endYearSelect" data-lang-key="filter_end_year_label">End Year</label>
+                        <select id="endYearSelect"></select>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align: center;">
+                <button class="next-btn" data-lang-key="filter_start_button" onclick="launchRankingFromFilter()">Launch Ranking Animation</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content-wrapper" id="main-content-wrapper"> 
+
+        <div class="competitions-column">
+            <h2 id="year-display-in-column">1956</h2> 
+            <p id="pause-indicator" data-lang-key="paused_label">PAUSE</p> 
+            <div id="competitions-display" class="competitions-display">
+                <p class="no-competitions" data-lang-key="loading_data">Loading data...</p>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <div id="ranking-chart">
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- TRANSLATION DATA ---
+            const translations = {
+                'fr': {
+                    // Language Screen
+                    'select_language_title': 'Sélectionner la Langue',
+                    'select_language_instruction': 'Veuillez choisir votre langue préférée pour continuer.',
+                    'select_language_button': 'Continuer',
+                    // Intro Screen
+                    'welcome_title': '🏆 Classement Historique des Trophées CAF',
+                    'welcome_instruction': 'Cliquez pour configurer les filtres de région, de compétition et d\'année avant de lancer l\'animation.',
+                    'welcome_button': 'Commencer la configuration',
+                    // Filter Screen
+                    'filter_title': 'Filtrer les Trophées CAF',
+                    'filter_region_title': '1. Filtrer par Région CAF',
+                    'filter_region_instruction': 'Sélectionnez les régions dont les pays seront inclus dans le classement.',
+                    'filter_region_rank_label': 'Afficher le classement des régions (Cumul des pays)',
+                    'filter_competition_title': '2. Filtrer par Compétition',
+                    'filter_competition_instruction': 'Sélectionnez les trophées qui seront comptabilisés (Clubs et Sélections).',
+                    'filter_period_title': '3. Filtrer par Période',
+                    'filter_start_year_label': 'Année de Départ',
+                    'filter_end_year_label': 'Année de Fin',
+                    'filter_start_button': 'Lancer l\'Animation du Classement',
+                    // Animation Text
+                    'loading_data': 'Chargement des données...',
+                    'no_events_filtered': 'Aucun événement filtré.',
+                    'no_competitions_filtered': 'Aucun événement ne correspond aux filtres.',
+                    'final_year': 'FINAL',
+                    'paused_label': 'PAUSE'
+                },
+                'en': {
+                    // Language Screen
+                    'select_language_title': 'Select Language',
+                    'select_language_instruction': 'Please choose your preferred language to continue.',
+                    'select_language_button': 'Continue',
+                    // Intro Screen
+                    'welcome_title': '🏆 CAF All-Time Trophy Ranking',
+                    'welcome_instruction': 'Click to set up the region, competition, and year filters before launching the animation.',
+                    'welcome_button': 'Start Configuration',
+                    // Filter Screen
+                    'filter_title': 'Filter CAF Trophies',
+                    'filter_region_title': '1. Filter by CAF Region',
+                    'filter_region_instruction': 'Select the regions whose countries will be included in the ranking.',
+                    'filter_region_rank_label': 'Display Region Ranking (Country Accumulation)',
+                    'filter_competition_title': '2. Filter by Competition',
+                    'filter_competition_instruction': 'Select the trophies that will be counted (Clubs and National Teams).',
+                    'filter_period_title': '3. Filter by Period',
+                    'filter_start_year_label': 'Start Year',
+                    'filter_end_year_label': 'End Year',
+                    'filter_start_button': 'Launch Ranking Animation',
+                    // Animation Text
+                    'loading_data': 'Loading data...',
+                    'no_events_filtered': 'No filtered events.',
+                    'no_competitions_filtered': 'No events match the filters.',
+                    'final_year': 'FINAL',
+                    'paused_label': 'PAUSE'
+                },
+                'es': {
+                    // Language Screen
+                    'select_language_title': 'Seleccionar Idioma',
+                    'select_language_instruction': 'Por favor, elija su idioma preferido para continuar.',
+                    'select_language_button': 'Continuar',
+                    // Intro Screen
+                    'welcome_title': '🏆 Clasificación Histórica de Trofeos CAF',
+                    'welcome_instruction': 'Haga clic para configurar los filtros de región, competición y año antes de iniciar la animación.',
+                    'welcome_button': 'Empezar la Configuración',
+                    // Filter Screen
+                    'filter_title': 'Filtrar Trofeos CAF',
+                    'filter_region_title': '1. Filtrar por Región CAF',
+                    'filter_region_instruction': 'Seleccione las regiones cuyos países serán incluidos en la clasificación.',
+                    'filter_region_rank_label': 'Mostrar Clasificación de Regiones (Acumulación por País)',
+                    'filter_competition_title': '2. Filtrar por Competición',
+                    'filter_competition_instruction': 'Seleccione los trofeos que se contarán (Clubes y Selecciones Nacionales).',
+                    'filter_period_title': '3. Filtrar por Período',
+                    'filter_start_year_label': 'Año de Inicio',
+                    'filter_end_year_label': 'Año de Fin',
+                    'filter_start_button': 'Lanzar Animación de Clasificación',
+                    // Animation Text
+                    'loading_data': 'Cargando datos...',
+                    'no_events_filtered': 'Ningún evento filtrado.',
+                    'no_competitions_filtered': 'Ningún evento coincide con los filtros.',
+                    'final_year': 'FINAL',
+                    'paused_label': 'PAUSA'
+                }
+            };
+
+            let currentLang = 'fr'; // Défaut Français selon la demande initiale
+
+            function setLanguage(lang) {
+                currentLang = lang;
+                document.querySelectorAll('[data-lang-key]').forEach(element => {
+                    const key = element.getAttribute('data-lang-key');
+                    if (translations[lang] && translations[lang][key]) {
+                        // Pour les champs de formulaire (label, button)
+                        if (element.tagName === 'BUTTON' || element.tagName === 'LABEL') {
+                            element.textContent = translations[lang][key];
+                        } else if (element.tagName === 'H1' || element.tagName === 'H3' || element.tagName === 'P') {
+                            element.textContent = translations[lang][key];
+                        } else if (element.tagName === 'LABEL' && element.htmlFor && element.htmlFor.includes('YearSelect')) {
+                             element.textContent = translations[lang][key];
+                        } else if (element.id === 'pause-indicator') { // utilisation de pause-indicator
+                             element.textContent = translations[lang][key];
+                        }
+                    }
+                });
+                // Mettre à jour les labels des filtres de région/compétition si déjà affichés
+                if(regionFiltersDiv.children.length > 0) {
+                     initFilterElements(false); 
+                }
+
+                // Mettre à jour l'affichage "Aucun événement filtré" si présent
+                if(competitionsDisplayContainer.querySelector('.no-competitions')) {
+                    competitionsDisplayContainer.querySelector('.no-competitions').textContent = translations[lang].loading_data;
+                }
+
+                document.title = translations[lang].welcome_title.replace('🏆 ', '');
+            }
+
+            // --- CONFIGURATION ---
+            const JSON_FILE_PATH = 'data_caf.json';
+            const BASE_SECONDS_PER_YEAR = 1; 
+            const SLOWDOWN_PER_COMPETITION = 0.5; 
+            const COMPETITION_THRESHOLD = 2; 
+            const ROW_HEIGHT = 38; 
+            const COMP_BOX_HEIGHT = 38;
+            const COMP_BOX_GAP = 6;
+            const SEPARATOR_HEIGHT = 26; 
+
+            // COMPETITION COLORS
+            const COMPETITION_COLORS = [
+                '#1e3a5f', '#991b1b', '#15803d', '#92400e', '#4c1d95'
+            ];
+            let competitionColorMap = {}; 
+            let colorIndex = 0;
+
+            // --- DOM ELEMENTS ---
+            const chart = document.getElementById('ranking-chart');
+            const yearDisplay = document.getElementById('year-display-in-column'); 
+            const competitionsDisplayContainer = document.getElementById('competitions-display'); 
+            const regionFiltersDiv = document.getElementById('region-filters');
+            const competitionFiltersDiv = document.getElementById('competition-filters');
+            const startYearSelect = document.getElementById('startYearSelect');
+            const endYearSelect = document.getElementById('endYearSelect');
+            const displayRegionRankCheckbox = document.getElementById('displayRegionRankCheckbox'); 
+            const languageSelect = document.getElementById('language-select');
+            const mainContentWrapper = document.getElementById('main-content-wrapper'); 
+            const pauseIndicator = document.getElementById('pause-indicator'); 
+
+            let allCompetitionsContainer = null;
+
+            // --- GLOBAL ANIMATION STATE ---
+            let allCountries = {};
+            let allRegions = {}; 
+            let yearlyWins = {};
+            let rawYearlyData = {}; 
+            let sortedYears = [];
+            let timer = null; 
+            let yearIndex = 0; // Index de l'année en cours dans filteredYears
+            let filteredYears = []; // Les années filtrées
+            let isPaused = false; 
+
+            // --- FILTER STATE ---
+            let startYear = 1957;
+            let endYear = 2025;
+            let selectedRegions = new Set();
+            let selectedCompetitions = new Set();
+            let displayRegionRank = false; 
+
+
+            // --- CAF REGION MAPPING ---
+            const regions = {
+                'Afrique du Nord': { countries: ['EGYPTE', 'MAROC', 'ALGERIE', 'TUNISIE', 'LIBYE'], flagCode: 'AN', isRegion: true, color: '#36454F', nameShort: 'NORD' }, 
+                'Afrique de l\'Ouest': { countries: ['GHANA', 'COTE IVOIRE', 'NIGERIA', 'GAMBIE', 'GUINEE CONAKRY', 'MALI', 'SENEGAL', 'BURKINA FASO'], flagCode: 'AO', isRegion: true, color: '#FFA500', nameShort: 'OUEST' }, 
+                'Afrique de l\'Est': { countries: ['ETHIOPIE', 'SOUDAN', 'KENYA'], flagCode: 'AE', isRegion: true, color: '#008000', nameShort: 'EST' }, 
+                'Afrique Centrale': { countries: ['CAMEROUN', 'RD CONGO', 'CONGO BRAZA', 'GABON', 'GUINEE EQUATORIALE'], flagCode: 'AC', isRegion: true, color: '#FF0000', nameShort: 'CENTRALE' }, 
+                'Afrique Australe': { countries: ['ZAMBIE', 'AFS', 'ANGOLA', 'MADAGASCAR'], flagCode: 'AA', isRegion: true, color: '#0000FF', nameShort: 'AUSTRALE' } 
+            };
+
+            // Initialiser allRegions
+            for (const regionName in regions) {
+                allRegions[regionName] = { 
+                    key: regionName, 
+                    name: regions[regionName].nameShort, 
+                    code: regions[regionName].flagCode, 
+                    color: regions[regionName].color,
+                    totalTrophies: 0, 
+                    element: null, 
+                    hasAppeared: false,
+                    isRegion: true, 
+                    countries: regions[regionName].countries
+                };
+            }
+
+            // --- COUNTRY MAPPING & TRANSLATION ---
+            const countryNameMap = {
+                'EGYPTE': { code: 'EG', region: 'Afrique du Nord', names: { fr: 'ÉGYPTE', en: 'EGYPT', es: 'EGIPTO' } }, 
+                'ETHIOPIE': { code: 'ET', region: 'Afrique de l\'Est', names: { fr: 'ÉTHIOPIE', en: 'ETHIOPIA', es: 'ETIOPÍA' } },
+                'GHANA': { code: 'GH', region: 'Afrique de l\'Ouest', names: { fr: 'GHANA', en: 'GHANA', es: 'GHANA' } }, 
+                'CAMEROUN': { code: 'CM', region: 'Afrique Centrale', names: { fr: 'CAMEROUN', en: 'CAMEROON', es: 'CAMERÚN' } },
+                'COTE IVOIRE': { code: 'CI', region: 'Afrique de l\'Ouest', names: { fr: 'CÔTE D\'IVOIRE', en: 'IVORY COAST', es: 'COSTA DE MARFIL' } }, 
+                'RD CONGO': { code: 'CD', region: 'Afrique Centrale', names: { fr: 'RD CONGO', en: 'DR CONGO', es: 'RD CONGO' } },
+                'SOUDAN': { code: 'SD', region: 'Afrique de l\'Est', names: { fr: 'SOUDAN', en: 'SUDAN', es: 'SUDÁN' } }, 
+                'CONGO BRAZA': { code: 'CG', region: 'Afrique Centrale', names: { fr: 'CONGO', en: 'CONGO', es: 'CONGO' } },
+                'GUINEE CONAKRY': { code: 'GN', region: 'Afrique de l\'Ouest', names: { fr: 'GUINÉE', en: 'GUINEA', es: 'GUINEA' } }, 
+                'MAROC': { code: 'MA', region: 'Afrique du Nord', names: { fr: 'MAROC', en: 'MOROCCO', es: 'MARRUECOS' } },
+                'ALGERIE': { code: 'DZ', region: 'Afrique du Nord', names: { fr: 'ALGÉRIE', en: 'ALGERIA', es: 'ARGELIA' } }, 
+                'NIGERIA': { code: 'NG', region: 'Afrique de l\'Ouest', names: { fr: 'NIGERIA', en: 'NIGERIA', es: 'NIGERIA' } },
+                'KENYA': { code: 'KE', region: 'Afrique de l\'Est', names: { fr: 'KENYA', en: 'KENYA', es: 'KENIA' } }, 
+                'TUNISIE': { code: 'TN', region: 'Afrique du Nord', names: { fr: 'TUNISIE', en: 'TUNISIA', es: 'TÚNEZ' } },
+                'ZAMBIE': { code: 'ZM', region: 'Afrique Australe', names: { fr: 'ZAMBIE', en: 'ZAMBIA', es: 'ZAMBIA' } }, 
+                'AFS': { code: 'ZA', region: 'Afrique Australe', names: { fr: 'AFS', en: 'S. AFRICA', es: 'SUDÁFRICA' } },
+                'ANGOLA': { code: 'AO', region: 'Afrique Australe', names: { fr: 'ANGOLA', en: 'ANGOLA', es: 'ANGOLA' } }, 
+                'GAMBIE': { code: 'GM', region: 'Afrique de l\'Ouest', names: { fr: 'GAMBIE', en: 'GAMBIA', es: 'GAMBIA' } },
+                'GUINEE EQUATORIALE': { code: 'GQ', region: 'Afrique Centrale', names: { fr: 'GUINÉE ÉQUAT.', en: 'EQ. GUINEA', es: 'GUINEA EC.' } }, 
+                'LIBYE': { code: 'LY', region: 'Afrique du Nord', names: { fr: 'LIBYE', en: 'LIBYA', es: 'LIBIA' } },
+                'MALI': { code: 'ML', region: 'Afrique de l\'Ouest', names: { fr: 'MALI', en: 'MALI', es: 'MALI' } }, 
+                'GABON': { code: 'GA', region: 'Afrique Centrale', names: { fr: 'GABON', en: 'GABON', es: 'GABÓN' } },
+                'BURKINA FASO': { code: 'BF', region: 'Afrique de l\'Ouest', names: { fr: 'BURKINA FASO', en: 'BURKINA', es: 'BURKINA FASO' } }, 
+                'MADAGASCAR': { code: 'MG', region: 'Afrique Australe', names: { fr: 'MADAGASCAR', en: 'MADAGASCAR', es: 'MADAGASCAR' } },
+                'SENEGAL': { code: 'SN', region: 'Afrique de l\'Ouest', names: { fr: 'SÉNÉGAL', en: 'SENEGAL', es: 'SENEGAL' } }
+            };
+
+            function getTranslatedCountryName(key, lang) {
+                const map = countryNameMap[key];
+                return map && map.names[lang] ? map.names[lang] : key;
+            }
+
+            // Fonction pour obtenir le nom traduit du gagnant (Club ou Pays/Sélection) pour l'affichage dans la colonne
+            function getTranslatedWinnerDisplay(winnerString, countryKey, clubName, lang) {
+                const translatedCountry = getTranslatedCountryName(countryKey, lang);
+
+                if (winnerString.includes(' ') && clubName.toLowerCase() !== countryKey.toLowerCase()) {
+                    // C'est un club. On affiche le nom du club.
+                    return clubName;
+                } else {
+                    // C'est une sélection nationale ou le nom du club est le même que le pays.
+                    return translatedCountry;
+                }
+            }
+
+
+            // --- COMPETITION MAPPING & TRANSLATION ---
+            const competitionNameMap = {
+                'CAN H': { fr: 'CAN H', en: 'AFCON M', es: 'CNA M' },
+                'CAN F': { fr: 'CAN F', en: 'AFCON W', es: 'CNA F' },
+                'CAN U23 H': { fr: 'CAN U23 H', en: 'AFCON U23M', es: 'CNA U23M' },
+                'CAN U20 H': { fr: 'CAN U20 H', en: 'AFCON U20M', es: 'CNA U20M' },
+                'CAN U20 F': { fr: 'CAN U20 F', en: 'AFCON U20W', es: 'CNA U20F' },
+                'CAN U17 H': { fr: 'CAN U17 H', en: 'AFCON U17M', es: 'CNA U17M' },
+                'CAN U17 F': { fr: 'CAN U17 F', en: 'AFCON U17W', es: 'CNA U17F' },
+                'CHAN H': { fr: 'CHAN', en: 'CHAN', es: 'CHAN' },
+                'LDC H': { fr: 'LDC H', en: 'CL MEN', es: 'LDC M' },
+                'LDC F': { fr: 'LDC F', en: 'CL WOMEN', es: 'LDC F' },
+                'SUPER': { fr: 'SUPERCOUPE', en: 'SUPER CUP', es: 'SUPERCOPA' },
+                'ANC. CAF': { fr: 'ANC. CAF', en: 'CAF CUP', es: 'ANT. CAF' },
+                'VAINQUEUR COUPE': { fr: 'VAINQ. COUPE', en: 'CWC', es: 'Copa C.' },
+                'CAF H': { fr: 'COUPE CAF', en: 'CAF CONF', es: 'Copa CAF' },
+                'FUTSAL H': { fr: 'FUTSAL H', en: 'FUTSAL M', es: 'FUTSAL M' },
+                'FUTSAL F': { fr: 'FUTSAL F', en: 'FUTSAL W', es: 'FUTSAL F' },
+                'BEACH': { fr: 'BEACH SOC', en: 'BEACH SOC', es: 'FÚTBOL PLAYA' }
+            };
+
+            function getTranslatedCompName(key, lang) {
+                const map = competitionNameMap[key];
+                return map && map[lang] ? map[lang] : key;
+            }
+
+            // --- WINNER INFO EXTRACTION ---
+            function getWinnerInfo(winnerString) {
+                if (!winnerString) return { countryKey: null, clubName: null, code: null, count: 0, displayCount: '', isClub: false };
+
+                let count = 1;
+                const countMatch = winnerString.match(/\(x(\d+)\)/i);
+                if (countMatch) {
+                    count = parseInt(countMatch[1]);
+                }
+                const displayCount = count > 1 ? ` (x${count})` : '';
+
+                const cleanString = winnerString.toUpperCase().replace(/\(X\d+\)/, '').trim();
+                const parts = cleanString.split(/\s+/).filter(p => p.length > 0);
+
+                let countryKeyClean = null;
+                let clubName = winnerString.trim().split('\n')[0].trim();
+
+                for (let i = parts.length - 1; i >= 0; i--) {
+                    let potentialKey = parts[i];
+
+                    // Vérifier si le pays est en deux mots (ex: RD CONGO, COTE IVOIRE)
+                    if (i > 0) {
+                        const compoundKey = `${parts[i - 1]} ${parts[i]}`;
+                        if (countryNameMap[compoundKey]) {
+                            countryKeyClean = compoundKey;
+                            clubName = parts.slice(0, i - 1).join(' ');
+                            break;
+                        }
+                    }
+
+                    // Vérifier si le pays est en un mot (ex: EGYPTE, MAROC)
+                    if (countryNameMap[potentialKey]) {
+                        countryKeyClean = potentialKey;
+                        clubName = parts.slice(0, i).join(' ');
+                        break;
+                    }
+                }
+
+                if (!countryKeyClean && countryNameMap[cleanString]) {
+                    // Cas où le vainqueur est le nom du pays seul
+                    countryKeyClean = cleanString;
+                    clubName = cleanString;
+                }
+
+                // Fallback pour le nom du club s'il est vide, on utilise le pays (pour les sélections)
+                if (clubName.trim() === '') {
+                    clubName = countryKeyClean;
+                }
+
+                // Déterminer si c'est un club
+                const isClub = countryKeyClean && clubName.trim().toLowerCase() !== countryKeyClean.toLowerCase();
+
+                const info = countryNameMap[countryKeyClean];
+
+                return { 
+                    countryKey: countryKeyClean, 
+                    clubName: clubName.trim(), 
+                    code: info ? info.code : null, 
+                    count: count, 
+                    displayCount: displayCount,
+                    isClub: isClub
+                };
+            }
+            // --- END WINNER INFO EXTRACTION ---
+
+            function cleanCompetitionName(name) { return name.replace(/\n/g, ' ').trim(); }
+            function getCompetitionColor(compName) {
+                if (!competitionColorMap[compName]) {
+                    competitionColorMap[compName] = COMPETITION_COLORS[colorIndex % COMPETITION_COLORS.length];
+                    colorIndex++;
+                }
+                return competitionColorMap[compName];
+            }
+
+            let animationStarted = false;
+
+            // --- SCREEN/FILTER NAVIGATION ---
+
+            window.showIntroScreen = function() {
+                const lang = languageSelect.value;
+                setLanguage(lang); 
+
+                const langScreen = document.getElementById('language-screen');
+                const startScreen = document.getElementById('start-screen');
+
+                gsap.to(langScreen, { opacity: 0, visibility: 'hidden', duration: 0.3, onComplete: () => {
+                    langScreen.style.display = 'none';
+                    startScreen.style.display = 'flex';
+                    gsap.to(startScreen, { opacity: 1, visibility: 'visible', duration: 0.3 });
+                }});
+            }
+
+            window.showFilterScreen = function() {
+                const startScreen = document.getElementById('start-screen');
+                gsap.to(startScreen, { opacity: 0, visibility: 'hidden', duration: 0.3, onComplete: () => {
+                    startScreen.style.display = 'none';
+
+                    const filterScreen = document.getElementById('filter-screen');
+                    filterScreen.style.display = 'flex';
+                    gsap.to(filterScreen, { opacity: 1, visibility: 'visible', duration: 0.3 });
+
+                    if (regionFiltersDiv.children.length === 0) {
+                        initFilterElements(true); 
+                    } else {
+                        initFilterElements(false); 
+                    }
+                }});
+            }
+
+            window.launchRankingFromFilter = function() {
+                applyFilters();
+
+                const filterScreen = document.getElementById('filter-screen');
+                gsap.to(filterScreen, { opacity: 0, visibility: 'hidden', duration: 0.3, onComplete: () => {
+                    filterScreen.style.display = 'none';
+
+                    if (!animationStarted) {
+                        startAll(); 
+                        animationStarted = true;
+                    } else {
+                         clearTimeout(timer);
+                         // Réinitialisation de l'état pour une nouvelle animation
+                         allCountries = {}; 
+                         for(const key in allRegions) { 
+                             allRegions[key].totalTrophies = 0; 
+                             allRegions[key].element = null; 
+                             allRegions[key].hasAppeared = false; 
+                         } 
+                         yearlyWins = {}; 
+                         createDOMElements(); 
+                         startAnimation();
+                    }
+                }});
+            }
+
+            async function init() {
+                try {
+                    const response = await fetch(JSON_FILE_PATH);
+                    if (!response.ok) {
+                        throw new Error(`Erreur de chargement du JSON: ${response.statusText}`);
+                    }
+                    const rawJSON = await response.json();
+
+                    await parseRawData(rawJSON); 
+                    initEditionFilters();
+
+                    languageSelect.value = currentLang; 
+                    setLanguage(currentLang); 
+
+                    document.getElementById('start-screen').style.display = 'none';
+                    document.getElementById('filter-screen').style.display = 'none';
+                    document.getElementById('language-screen').style.display = 'flex';
+
+                    // Listener de pause/reprise sur le contenu principal
+                    mainContentWrapper.addEventListener('click', togglePauseResume); 
+
+                } catch (error) {
+                    console.error("Échec de l'initialisation:", error);
+                    alert(`Erreur de chargement des données. Assurez-vous que le fichier ${JSON_FILE_PATH} est présent et valide.`);
+                }
+            }
+
+            // --- PAUSE/RESUME LOGIC (CORRIGÉE) ---
+            window.togglePauseResume = function() {
+                if (!animationStarted) return; 
+
+                isPaused = !isPaused;
+
+                if (isPaused) {
+                    // Pause: Arrêter le timer et les animations GSAP
+                    clearTimeout(timer);
+                    gsap.globalTimeline.pause(); // Utiliser la timeline globale pour tout mettre en pause
+
+                    pauseIndicator.style.display = 'block'; // Afficher l'indicateur
+                } else {
+                    // Resume: Cacher l'indicateur, reprendre GSAP, et relancer le timer
+                    pauseIndicator.style.display = 'none'; 
+
+                    gsap.globalTimeline.resume(); 
+
+                    // Relancer le timer si l'animation n'est pas terminée
+                    if (yearIndex < filteredYears.length) {
+                        // Utiliser setTimeout 0 pour garantir la relance au plus tôt après la reprise de GSAP
+                        setTimeout(runNextYear, 0);
+                    }
+                }
+            }
+
+
+            // --- FILTER INITIALIZATION & LOGIC ---
+
+            function initFilterElements(checkAllByDefault) {
+                // 1. Régions
+                let firstInit = regionFiltersDiv.children.length === 0;
+                if (firstInit) regionFiltersDiv.innerHTML = ''; 
+
+                const regionFragment = document.createDocumentFragment();
+                for (const regionName in regions) {
+                    const id = `region-${regionName.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                    const translatedRegionName = translateRegionName(regionName, currentLang);
+
+                    let isChecked = checkAllByDefault || selectedRegions.has(regionName);
+                    if (checkAllByDefault && firstInit) {
+                        selectedRegions.add(regionName); // Cocher par défaut
+                    }
+                    if (!checkAllByDefault && firstInit) {
+                        // S'assurer que selectedRegions contient les valeurs s'ils sont cochés lors du 1er affichage (pour le cas où on init sans checkAllByDefault)
+                        isChecked = true; 
+                        selectedRegions.add(regionName);
+                    }
+
+                    const item = document.createElement('div');
+                    item.className = 'filter-item';
+                    item.innerHTML = `
+                        <input type="checkbox" id="${id}" data-filter-type="region" data-filter-value="${regionName}" ${isChecked ? 'checked' : ''}>
+                        <label for="${id}">${translatedRegionName}</label>
+                    `;
+                    regionFragment.appendChild(item);
+                }
+                if (firstInit) regionFiltersDiv.appendChild(regionFragment);
+                else {
+                    // Mettre à jour les labels et l'état checked
+                    regionFiltersDiv.querySelectorAll('input[data-filter-type="region"]').forEach(input => {
+                        const regionName = input.dataset.filterValue;
+                        input.checked = selectedRegions.has(regionName);
+                        input.nextElementSibling.textContent = translateRegionName(regionName, currentLang);
+                    });
+                }
+
+                // 2. Compétitions
+                const allCompKeys = new Set();
+                Object.values(rawYearlyData).forEach(comps => {
+                    Object.keys(comps).forEach(key => allCompKeys.add(key));
+                });
+
+                if (firstInit) competitionFiltersDiv.innerHTML = '';
+                const compFragment = document.createDocumentFragment();
+
+                Array.from(allCompKeys).sort().forEach(compKey => {
+                    const translatedName = getTranslatedCompName(compKey, currentLang);
+                    const id = `comp-${compKey.replace(/[^a-zA-Z0-9]/g, '-')}`;
+
+                    let isChecked = checkAllByDefault || selectedCompetitions.has(compKey);
+                    if (checkAllByDefault && firstInit) {
+                        selectedCompetitions.add(compKey); // Cocher par défaut
+                    }
+                    if (!checkAllByDefault && firstInit) {
+                        // S'assurer que selectedCompetitions contient les valeurs
+                        isChecked = true;
+                        selectedCompetitions.add(compKey);
+                    }
+
+                    const item = document.createElement('div');
+                    item.className = 'filter-item';
+                    item.innerHTML = `
+                        <input type="checkbox" id="${id}" data-filter-type="competition" data-filter-value="${compKey}" ${isChecked ? 'checked' : ''}>
+                        <label for="${id}">${translatedName} (${compKey})</label>
+                    `;
+                    compFragment.appendChild(item);
+                });
+                if (firstInit) competitionFiltersDiv.appendChild(compFragment);
+                else {
+                    // Mettre à jour les labels et l'état checked
+                    competitionFiltersDiv.querySelectorAll('input[data-filter-type="competition"]').forEach(input => {
+                        const compKey = input.dataset.filterValue;
+                        input.checked = selectedCompetitions.has(compKey);
+                        input.nextElementSibling.textContent = `${getTranslatedCompName(compKey, currentLang)} (${compKey})`;
+                    });
+                }
+
+                // 3. Listeners (Ne sont ajoutés qu'une seule fois)
+                if (!regionFiltersDiv.dataset.listenersAdded) {
+                    document.getElementById('filter-screen').addEventListener('change', (e) => {
+                        if (e.target.dataset.filterType === 'region') {
+                            const value = e.target.dataset.filterValue;
+                            if (e.target.checked) {
+                                selectedRegions.add(value);
+                            } else {
+                                selectedRegions.delete(value);
+                            }
+                        } else if (e.target.dataset.filterType === 'competition') {
+                            const value = e.target.dataset.filterValue;
+                            if (e.target.checked) {
+                                selectedCompetitions.add(value);
+                            } else {
+                                selectedCompetitions.delete(value);
+                            }
+                        } else if (e.target.id === 'displayRegionRankCheckbox') {
+                            displayRegionRank = e.target.checked;
+                        }
+                    });
+                    regionFiltersDiv.dataset.listenersAdded = 'true';
+                }
+
+                displayRegionRankCheckbox.checked = displayRegionRank;
+                displayRegionRankCheckbox.nextElementSibling.textContent = translations[currentLang].filter_region_rank_label;
+            }
+
+            function translateRegionName(name, lang) {
+                 const names = {
+                    'Afrique du Nord': { fr: 'Afrique du Nord', en: 'North Africa', es: 'África del Norte' },
+                    'Afrique de l\'Ouest': { fr: 'Afrique de l\'Ouest', en: 'West Africa', es: 'África Occidental' },
+                    'Afrique de l\'Est': { fr: 'Afrique de l\'Est', en: 'East Africa', es: 'África Oriental' },
+                    'Afrique Centrale': { fr: 'Afrique Centrale', en: 'Central Africa', es: 'África Central' },
+                    'Afrique Australe': { fr: 'Afrique Australe', en: 'Southern Africa', es: 'África Austral' }
+                };
+                return names[name] ? names[name][lang] || name : name;
+            }
+
+            function initEditionFilters() {
+                startYearSelect.innerHTML = '';
+                endYearSelect.innerHTML = '';
+
+                sortedYears.forEach((year, index) => {
+                    const startOption = document.createElement('option');
+                    startOption.value = year;
+                    startOption.textContent = year;
+                    startYearSelect.appendChild(startOption);
+
+                    const endOption = document.createElement('option');
+                    endOption.value = year;
+                    endOption.textContent = year;
+                    endYearSelect.appendChild(endOption);
+
+                    if (index === 0) startOption.selected = true;
+                    if (index === sortedYears.length - 1) endOption.selected = true;
+                });
+
+                // Sync listeners
+                startYearSelect.addEventListener('change', () => {
+                    const startY = parseInt(startYearSelect.value);
+                    const endY = parseInt(endYearSelect.value);
+                    if (startY > endY) endYearSelect.value = startYearSelect.value;
+                    startYear = startY;
+                });
+
+                endYearSelect.addEventListener('change', () => {
+                    const startY = parseInt(startYearSelect.value);
+                    const endY = parseInt(endYearSelect.value);
+                    if (endY < startY) startYearSelect.value = endYearSelect.value;
+                    endYear = endY;
+                });
+
+                startYear = parseInt(startYearSelect.value);
+                endYear = parseInt(endYearSelect.value);
+            }
+
+            function applyFilters() {
+                // Les valeurs sont déjà mises à jour par les listeners
+                // On réinitialise l'état avant de parser les données
+                allCountries = {};
+                for(const key in allRegions) { 
+                    allRegions[key].totalTrophies = 0; 
+                    allRegions[key].element = null; 
+                    allRegions[key].hasAppeared = false; 
+                } 
+                yearlyWins = {};
+
+                parseFilteredData();
+
+                createDOMElements(); 
+            }
+
+            // --- DATA PARSING & FILTERING ---
+
+            function parseRawData(data) {
+                data.Annees.forEach(yearData => {
+                    rawYearlyData[yearData.Annee] = yearData.competition;
+                });
+                sortedYears = Object.keys(rawYearlyData).sort((a, b) => parseInt(a) - parseInt(b));
+            }
+
+            function parseFilteredData() {
+                filteredYears = sortedYears.filter(year => 
+                    parseInt(year) >= startYear && parseInt(year) <= endYear
+                );
+
+                filteredYears.forEach(year => {
+                    const yearData = rawYearlyData[year];
+                    const winsThisYear = {};
+
+                    for (const compKey in yearData) {
+                        // Filtre 1: Compétition
+                        if (!selectedCompetitions.has(compKey)) {
+                            continue; 
+                        }
+
+                        const winnerRaw = yearData[compKey];
+                        const winnerInfo = getWinnerInfo(winnerRaw);
+                        const countryKey = winnerInfo.countryKey;
+                        const count = winnerInfo.count;
+
+                        if (countryKey && countryNameMap[countryKey]) {
+                            const countryRegion = countryNameMap[countryKey].region;
+
+                            // Filtre 2: Région
+                            if (!selectedRegions.has(countryRegion)) {
+                                continue;
+                            }
+
+                            // 1. Initialiser le pays si nécessaire
+                            if (!allCountries[countryKey]) {
+                                const info = countryNameMap[countryKey];
+                                allCountries[countryKey] = { 
+                                    key: countryKey, 
+                                    name: getTranslatedCountryName(countryKey, currentLang), 
+                                    code: info.code, 
+                                    totalTrophies: 0, 
+                                    element: null, 
+                                    hasAppeared: false,
+                                    region: info.region,
+                                    isRegion: false 
+                                };
+                            }
+
+                            // 2. Accumulation des trophées pour le pays
+                            allCountries[countryKey].totalTrophies += count;
+
+                            // 3. Accumulation des trophées pour la région
+                            if (allRegions[countryRegion]) {
+                                allRegions[countryRegion].totalTrophies += count;
+                            }
+
+                            // Stocker l'information complète du vainqueur pour l'affichage de la compétition
+                            winsThisYear[compKey] = winnerInfo; 
+                        }
+                    }
+                    if (Object.keys(winsThisYear).length > 0) { yearlyWins[year] = winsThisYear; }
+                });
+
+                // Réinitialiser les trophées à 0 pour l'animation
+                Object.values(allCountries).forEach(c => c.totalTrophies = 0);
+                Object.values(allRegions).forEach(r => r.totalTrophies = 0);
+            }
+
+            // --- ANIMATION CORE ---
+
+            function createDOMElements() {
+                chart.innerHTML = ''; 
+
+                let rankingEntities = [];
+
+                if (!displayRegionRank) {
+                    Object.values(allCountries)
+                        .filter(c => selectedRegions.has(c.region))
+                        .forEach(c => rankingEntities.push(c));
+                }
+
+                if (displayRegionRank) {
+                    Object.values(allRegions)
+                        .filter(r => selectedRegions.has(r.key)) 
+                        .forEach(r => rankingEntities.push(r));
+                }
+
+                // Sorter par nom pour garantir une position initiale stable
+                rankingEntities.sort((a, b) => {
+                    const nameA = a.isRegion ? translateRegionName(a.key, currentLang) : getTranslatedCountryName(a.key, currentLang);
+                    const nameB = b.isRegion ? translateRegionName(b.key, currentLang) : getTranslatedCountryName(b.key, currentLang);
+                    return nameA.localeCompare(nameB);
+                });
+
+                rankingEntities.forEach((entity) => {
+                    const row = document.createElement('div');
+                    row.className = 'country-row' + (entity.isRegion ? ' is-region' : '');
+
+                    const flagCode = entity.code ? entity.code.toLowerCase() : 'xx';
+
+                    let flagHtml = '';
+                    let displayName = entity.isRegion ? translateRegionName(entity.key, currentLang) : getTranslatedCountryName(entity.key, currentLang);
+
+                    if (entity.isRegion) {
+                        flagHtml = `<div class="flag" data-region-code="${entity.code}"></div>`;
+                    } else {
+                        const flagSrc = `https://flagcdn.com/${flagCode}.svg`;
+                        flagHtml = `<img src="${flagSrc}" onerror="this.src='https://flagcdn.com/xx.svg'" alt="Flag ${displayName}" class="flag">`;
+                    }
+
+                    gsap.set(row, { opacity: 0, visibility: 'hidden' }); 
+
+                    row.innerHTML = `<div class="country-info">
+                            ${flagHtml}
+                            <span class="country-name">${displayName}</span>
+                            <div class="progress-container"><div class="progress-bar"></div></div>
+                            <span class="trophy-count">0</span>
+                        </div>`;
+                    chart.appendChild(row);
+
+                    if (entity.isRegion) {
+                        allRegions[entity.key].element = row;
+                    } else {
+                        // Mise à jour de la référence de l'élément DOM et du nom traduit dans l'objet global
+                        allCountries[entity.key].element = row;
+                        allCountries[entity.key].name = displayName;
+                    }
+                });
+
+
+                if (!allCompetitionsContainer) {
+                    allCompetitionsContainer = document.createElement('div');
+                    allCompetitionsContainer.id = 'all-competitions-scroll-container';
+                    competitionsDisplayContainer.innerHTML = '';
+                    competitionsDisplayContainer.appendChild(allCompetitionsContainer);
+                }
+                allCompetitionsContainer.innerHTML = ''; 
+                gsap.set(allCompetitionsContainer, { position: 'relative', y: 0 }); 
+            }
+
+            function startAll() {
+                document.getElementById('start-screen').style.display = 'none';
+                startAnimation();
+            }
+
+            function startAnimation() {
+                yearIndex = 0; // Réinitialiser l'index
+
+                if (filteredYears.length > 0) { 
+                    // Mise à jour initiale pour la première année
+                    updateCompetitionsDisplay(filteredYears[0], false);
+                    updateRankingForYear(filteredYears[0]);
+                    yearIndex++; 
+                    const firstYearDelay = BASE_SECONDS_PER_YEAR * 1000;
+                    timer = setTimeout(runNextYear, firstYearDelay);
+                } else {
+                    yearDisplay.textContent = `${startYear}`; 
+                    competitionsDisplayContainer.innerHTML = `<p class="no-competitions">${translations[currentLang].no_competitions_filtered}</p>`;
+                }
+            }
+
+            // Fonction récursive pour l'animation année par année 
+            function runNextYear() {
+                if (isPaused) return; // Si l'état de pause est activé, on arrête ici.
+
+                if (yearIndex >= filteredYears.length) { 
+                    yearDisplay.textContent = translations[currentLang].final_year;
+                    return;
+                }
+
+                const currentYear = filteredYears[yearIndex];
+                const competitionsInYear = yearlyWins[currentYear];
+
+                const numCompetitions = competitionsInYear ? Object.keys(competitionsInYear).length : 0;
+
+                let delay = BASE_SECONDS_PER_YEAR;
+                if (numCompetitions > COMPETITION_THRESHOLD) {
+                    delay += (numCompetitions - COMPETITION_THRESHOLD) * SLOWDOWN_PER_COMPETITION;
+                }
+
+                updateRankingForYear(currentYear);
+                updateCompetitionsDisplay(currentYear, true);
+
+                yearIndex++; 
+
+                // Relance la fonction si elle n'est pas en pause
+                timer = setTimeout(runNextYear, delay * 1000);
+            }
+
+            function updateRankingForYear(year) {
+                yearDisplay.textContent = `${year}`; 
+
+                if (yearlyWins[year]) {
+                    for (const compKey in yearlyWins[year]) { 
+                        const winnerInfo = yearlyWins[year][compKey];
+                        const countryKey = winnerInfo.countryKey;
+                        const winCount = winnerInfo.count;
+
+                        if(allCountries[countryKey]) {
+                             allCountries[countryKey].totalTrophies += winCount; 
+
+                             const regionKey = allCountries[countryKey].region;
+                             if(allRegions[regionKey]) {
+                                 allRegions[regionKey].totalTrophies += winCount;
+                             }
+                        }
+                    }
+                }
+
+                let rankedEntities = [];
+
+                if (displayRegionRank) {
+                    Object.values(allRegions)
+                        .filter(region => region.totalTrophies > 0 && selectedRegions.has(region.key))
+                        .forEach(region => rankedEntities.push(region));
+                } else {
+                    Object.values(allCountries)
+                        .filter(country => country.totalTrophies > 0 && selectedRegions.has(country.region))
+                        .forEach(country => rankedEntities.push(country));
+                }
+
+                rankedEntities.sort((a, b) => {
+                    if (b.totalTrophies !== a.totalTrophies) {
+                        return b.totalTrophies - a.totalTrophies;
+                    }
+                    // Tri alphabétique basé sur le nom traduit
+                    const nameA = a.isRegion ? translateRegionName(a.key, currentLang) : getTranslatedCountryName(a.key, currentLang);
+                    const nameB = b.isRegion ? translateRegionName(b.key, currentLang) : getTranslatedCountryName(b.key, currentLang);
+                    return nameA.localeCompare(nameB); 
+                });
+
+                const maxTrophies = Math.max(1, rankedEntities[0] ? rankedEntities[0].totalTrophies : 0);
+
+                chart.style.height = `${rankedEntities.length * ROW_HEIGHT}px`;
+
+                rankedEntities.forEach((entity, index) => {
+                    const countryRow = entity.element;
+                    if (!countryRow) return;
+
+                    const progressBar = countryRow.querySelector('.progress-bar');
+                    const trophyCount = countryRow.querySelector('.trophy-count');
+                    const countryNameSpan = countryRow.querySelector('.country-name');
+
+                    // Mise à jour du nom (important pour la traduction dynamique)
+                    const displayName = entity.isRegion ? translateRegionName(entity.key, currentLang) : getTranslatedCountryName(entity.key, currentLang);
+                    countryNameSpan.textContent = displayName;
+
+                    const newY = index * ROW_HEIGHT;
+                    const rank = index + 1; 
+
+                    let progressBarBackground = 'linear-gradient(90deg, #FFD700, #DAA520)'; 
+
+                    if (entity.isRegion) {
+                        progressBarBackground = `linear-gradient(90deg, ${entity.color}, ${entity.color}AA)`; 
+                    } else {
+                        if (rank === 2) {
+                            progressBarBackground = 'linear-gradient(90deg, #C0C0C0, #A9A9A9)'; 
+                        } else if (rank === 3) {
+                            progressBarBackground = 'linear-gradient(90deg, #CD7F32, #B87333)'; 
+                        } else if (rank > 3) {
+                            progressBarBackground = 'linear-gradient(90deg, #4e73df, #224abe)'; 
+                        }
+                    }
+
+
+                    if (entity.totalTrophies > 0 && !entity.hasAppeared) {
+                        entity.hasAppeared = true;
+                        gsap.fromTo(countryRow, { y: newY, opacity: 0, visibility: 'visible' }, { y: newY, opacity: 1, duration: 0.8, ease: 'power3.out' });
+                    } 
+                    else if (entity.hasAppeared) {
+                        gsap.to(countryRow, { y: newY, duration: .5, ease: 'power3.inOut' });
+                        gsap.set(countryRow, { visibility: 'visible', opacity: 1 });
+                    }
+
+                    if (entity.hasAppeared) {
+                        gsap.to(progressBar, { 
+                            width: `${(entity.totalTrophies / maxTrophies) * 100}%`, 
+                            background: progressBarBackground, 
+                            duration: 0.5, 
+                            ease: 'power3.inOut' 
+                        });
+                        gsap.to(trophyCount, { 
+                            innerText: entity.totalTrophies, 
+                            duration: 0.8, 
+                            snap: { innerText: 1 }, 
+                            ease: 'power1.inOut' 
+                        });
+                    }
+                });
+
+                Object.values(allCountries).forEach(country => {
+                    const isVisible = !displayRegionRank && country.totalTrophies > 0 && selectedRegions.has(country.region);
+                    if (!isVisible && country.element && country.hasAppeared) {
+                        gsap.to(country.element, { opacity: 0, visibility: 'hidden', duration: 0.3 });
+                        country.hasAppeared = false; 
+                    } else if (isVisible && country.element) {
+                        gsap.set(country.element, { visibility: 'visible', opacity: 1 });
+                        country.hasAppeared = true; 
+                    }
+                });
+
+                 Object.values(allRegions).forEach(region => {
+                    const isVisible = displayRegionRank && region.totalTrophies > 0 && selectedRegions.has(region.key);
+                    if (!isVisible && region.element && region.hasAppeared) {
+                        gsap.to(region.element, { opacity: 0, visibility: 'hidden', duration: 0.3 });
+                        region.hasAppeared = false; 
+                    } else if (isVisible && region.element) {
+                        gsap.set(region.element, { visibility: 'visible', opacity: 1 });
+                        region.hasAppeared = true; 
+                    }
+                });
+            }
+
+            function updateCompetitionsDisplay(year, animate = true) {
+                const competitions = yearlyWins[year] || {}; // Utiliser yearlyWins qui est déjà filtré
+
+                const compKeys = Object.keys(competitions); // Clés des compétitions qui ont un vainqueur filtré cette année
+
+                const yearContainer = document.createElement('div');
+                yearContainer.className = 'year-group-container';
+
+                let totalYearHeight = 0; 
+
+                const separator = document.createElement('div');
+                separator.className = 'year-separator';
+                separator.innerHTML = `<span class="year-separator-text">${year}</span>`;
+                yearContainer.appendChild(separator);
+                totalYearHeight += SEPARATOR_HEIGHT; 
+
+                let validCompetitionsCount = 0;
+
+                const currentLanguage = languageSelect.value;
+
+                compKeys.forEach((compNameKey) => {
+                    const winnerInfo = competitions[compNameKey];
+
+                    const translatedCompName = getTranslatedCompName(compNameKey, currentLanguage); 
+                    const competitionColor = getCompetitionColor(translatedCompName); 
+
+                    // Traduire le nom du vainqueur
+                    let winnerDisplay;
+
+                    if (winnerInfo.isClub) {
+                        // Pour les clubs: "Nom du Club" (ex: AL AHLY, TP MAZEMBE) + le count si > 1
+                        winnerDisplay = `${winnerInfo.clubName}${winnerInfo.displayCount}`;
+                    } else {
+                        // Pour les sélections nationales: Traduction du Pays + le count si > 1
+                        const translatedCountry = getTranslatedCountryName(winnerInfo.countryKey, currentLanguage);
+                        winnerDisplay = `${translatedCountry}${winnerInfo.displayCount}`;
+                    }
+
+                    // Déterminer le pays pour le drapeau
+                    const flagCode = winnerInfo.code ? winnerInfo.code.toLowerCase() : 'xx';
+                    const flagSrc = `https://flagcdn.com/${flagCode}.svg`;
+
+                    const box = document.createElement('div');
+                    box.className = 'competition-box';
+                    box.innerHTML = `
+                        <div id="flag-column">
+                            <img src="${flagSrc}" onerror="this.src='https://flagcdn.com/xx.svg'" alt="Flag ${winnerInfo.countryKey || 'N/A'}">
+                        </div>
+                        <div id="right-column">
+                            <div id="comp-info-case" style="background-color: ${competitionColor};">
+                                ${translatedCompName}
+                            </div>
+                            <div id="winner-name-case">
+                                <span>${winnerDisplay}</span>
+                            </div>
+                        </div>
+                    `;
+
+                    yearContainer.appendChild(box);
+                    totalYearHeight += COMP_BOX_HEIGHT + COMP_BOX_GAP;
+                    validCompetitionsCount++;
+                });
+
+                if (validCompetitionsCount === 0) {
+                    yearContainer.innerHTML += `<p class="no-competitions" style="margin: 5px 0 0 0;">${translations[currentLanguage].no_events_filtered}</p>`;
+                    totalYearHeight += 35; 
+                } else {
+                    totalYearHeight -= COMP_BOX_GAP; 
+                }
+
+                yearContainer.style.marginBottom = `${COMP_BOX_GAP}px`;
+                totalYearHeight += COMP_BOX_GAP; 
+
+                const scrollDistance = totalYearHeight; 
+
+                gsap.set(yearContainer, { height: totalYearHeight - COMP_BOX_GAP }); 
+
+                allCompetitionsContainer.prepend(yearContainer);
+
+                if (animate) {
+                    gsap.set(allCompetitionsContainer, { y: -scrollDistance });
+
+                    gsap.to(allCompetitionsContainer, {
+                        y: 0, 
+                        duration: BASE_SECONDS_PER_YEAR * 0.9, 
+                        ease: 'power3.out'
+                    });
+                }
+            }
+
+            // Initialisation et écouteur de langue
+            languageSelect.addEventListener('change', (e) => {
+                setLanguage(e.target.value);
+                // Si l'animation est lancée, on relance avec la nouvelle langue
+                if (animationStarted) {
+                    clearTimeout(timer);
+                    // S'assurer que les animations GSAP sont arrêtées avant de relancer
+                    gsap.globalTimeline.pause(); 
+
+                    applyFilters(); // Ceci va recharger les données filtrées avec le nom traduit
+                    startAnimation();
+                } else {
+                    // Sinon, si on est sur l'écran filtre, on met juste à jour l'UI
+                    if (document.getElementById('filter-screen').style.display !== 'none') {
+                        initFilterElements(false);
+                    }
+                }
+            });
+
+            init();
+        });
+    </script>
+</body>
+</html>
