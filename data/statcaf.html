@@ -134,6 +134,15 @@
             cursor: pointer;
             width: 100%;
         }
+        
+        /* NOUVEAU: Style pour les points dans la section 2 */
+        .competition-points-display {
+            font-size: 0.85em;
+            font-weight: bold;
+            color: #007bff; /* Bleu pour attirer l'oeil */
+            margin-left: 8px;
+            display: none; /* Caché par défaut */
+        }
 
         .edition-controls {
             display: flex;
@@ -155,7 +164,9 @@
             color: #4e73df;
         }
 
-        .edition-group select {
+        .edition-group select,
+        /* Style pour les inputs de points */
+        .edition-group input[type="number"] {
             padding: 8px;
             border: 1px solid #ccc;
             border-radius: 4px;
@@ -302,14 +313,24 @@
         #comp-info-case {
             height: 50%; 
             display: flex;
+            flex-direction: column; /* MODIFIÉ: Garder en colonne */
             align-items: center;
             justify-content: center;
-            font-size: 0.6em; 
+            font-size: 0.7em; /* MODIFIÉ: Augmenté */
             font-weight: bold;
             color: #fff;
-            padding: 0 1px; 
+            padding: 0 3px; /* MODIFIÉ: Ajout de padding */
             text-align: center;
-            line-height: 1.1;
+            line-height: 1; /* MODIFIÉ: Rapprocher les lignes */
+        }
+        
+        /* NOUVEAU: Pour forcer le nom de la comp sur 1 ligne */
+        .comp-name-line {
+            display: block;
+            width: 100%;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         #winner-name-case {
@@ -329,8 +350,53 @@
 
         /* --- RANKING BASE STYLES --- */
         .no-competitions { font-size: 0.7em; margin-top: 5px; }
-        .chart-container { flex-grow: 1; max-width: 600px; flex-shrink: 0; padding-top: 0; }
-        #ranking-chart { position: relative; width: 100%; }
+        .chart-container { 
+            flex-grow: 1; 
+            max-width: 600px; 
+            flex-shrink: 0; 
+            padding-top: 0;
+            position: relative; 
+        }
+        
+        #ranking-chart { 
+            position: relative; 
+            width: 100%; 
+            z-index: 2; 
+        }
+        
+        /* MODIFIÉ: Conteneur pour les pastilles de barème */
+        #background-pills-container {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            z-index: 1; /* Derrière le classement */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 5px; /* MODIFIÉ */
+            opacity: 0.2; /* MODIFIÉ: Effet plus effacé */
+            pointer-events: none; /* Ne pas bloquer les clics */
+            overflow: hidden;
+            max-height: 100px; /* MODIFIÉ: Plus de place */
+            filter: blur(0.5px); /* MODIFIÉ: Effet effacé */
+        }
+
+        /* MODIFIÉ: Style des pastilles */
+        .point-pill {
+            padding: 2px; /* MODIFIÉ */
+            border-radius: 50%; /* MODIFIÉ: Circulaire */
+            font-weight: bold;
+            color: #fff;
+            display: flex; /* MODIFIÉ */
+            align-items: center; /* MODIFIÉ */
+            justify-content: center; /* MODIFIÉ */
+            text-align: center; /* MODIFIÉ */
+            line-height: 1.1; /* MODIFIÉ */
+            box-sizing: border-box; /* MODIFIÉ */
+            flex-shrink: 0; /* MODIFIÉ */
+        }
 
         .country-row {
             position: absolute;
@@ -366,6 +432,8 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.15);
             margin-right: 1px; 
             flex-shrink: 0; 
+            object-fit: cover; 
+            background-color: #eee; 
         }
         .progress-container { 
             flex-grow: 1; 
@@ -388,6 +456,7 @@
             width: 40px; 
             text-align: center; 
             flex-shrink: 0; 
+            transition: width 0.3s, font-size 0.3s; 
         }
 
         /* --- Region Specific Styles (Identique aux pays) --- */
@@ -503,7 +572,7 @@
                     </div>
                 </div>
             </div>
-
+            
             <div style="text-align: center;">
                 <button class="next-btn" data-lang-key="filter_start_button" onclick="launchRankingFromFilter()">Launch Ranking Animation</button>
             </div>
@@ -521,8 +590,10 @@
         </div>
 
         <div class="chart-container">
+            <div id="background-pills-container"></div>
+            
             <div id="ranking-chart">
-            </div>
+                </div>
         </div>
 
     </div>
@@ -677,6 +748,7 @@
             const languageSelect = document.getElementById('language-select');
             const mainContentWrapper = document.getElementById('main-content-wrapper'); 
             const pauseIndicator = document.getElementById('pause-indicator'); 
+            const backgroundPillsContainer = document.getElementById('background-pills-container'); // NOUVEAU
 
             let allCompetitionsContainer = null;
 
@@ -772,6 +844,7 @@
 
 
             // --- COMPETITION MAPPING & TRANSLATION ---
+            // Clés canoniques utilisées dans le JSON et pour la pondération
             const competitionNameMap = {
                 'CAN H': { fr: 'CAN H', en: 'AFCON M', es: 'CNA M' },
                 'CAN F': { fr: 'CAN F', en: 'AFCON W', es: 'CNA F' },
@@ -783,18 +856,46 @@
                 'CHAN H': { fr: 'CHAN', en: 'CHAN', es: 'CHAN' },
                 'LDC H': { fr: 'LDC H', en: 'CL MEN', es: 'LDC M' },
                 'LDC F': { fr: 'LDC F', en: 'CL WOMEN', es: 'LDC F' },
-                'SUPER': { fr: 'SUPERCOUPE', en: 'SUPER CUP', es: 'SUPERCOPA' },
-                'ANC. CAF': { fr: 'ANC. CAF', en: 'CAF CUP', es: 'ANT. CAF' },
-                'VAINQUEUR COUPE': { fr: 'VAINQ. COUPE', en: 'CWC', es: 'Copa C.' },
+                'SUPER H': { fr: 'SUPERCOUPE', en: 'SUPER CUP', es: 'SUPERCOPA' }, // Clé modifiée pour correspondre au JSON
+                'ANC. CAF H': { fr: 'ANC. CAF', en: 'CAF CUP', es: 'ANT. CAF' },
+                'ANC. VAINQUEUR COUPE H': { fr: 'VAINQ. COUPE', en: 'CWC', es: 'Copa C.' },
                 'CAF H': { fr: 'COUPE CAF', en: 'CAF CONF', es: 'Copa CAF' },
                 'FUTSAL H': { fr: 'FUTSAL H', en: 'FUTSAL M', es: 'FUTSAL M' },
                 'FUTSAL F': { fr: 'FUTSAL F', en: 'FUTSAL W', es: 'FUTSAL F' },
-                'BEACH': { fr: 'BEACH SOC', en: 'BEACH SOC', es: 'FÚTBOL PLAYA' }
+                'BEACH H': { fr: 'BEACH SOC', en: 'BEACH SOC', es: 'FÚTBOL PLAYA' }
             };
 
+            // Mapping des clés du JSON (parfois sales) vers les clés canoniques de competitionNameMap
+            const jsonKeyToCanonicalKey = {
+                'CAN H': 'CAN H',
+                'CAN\nF': 'CAN F',
+                'CAN U23\nH': 'CAN U23 H',
+                'CAN U20\nH': 'CAN U20 H',
+                'CAN U20\nF': 'CAN U20 F',
+                'CAN U17\nH': 'CAN U17 H',
+                'CAN U17\nF': 'CAN U17 F',
+                'CHAN\nH': 'CHAN H',
+                'LDC H': 'LDC H',
+                'LDC F': 'LDC F',
+                'SUPER \nH': 'SUPER H',
+                'SUPER H': 'SUPER H', // Pour 2025
+                'ANC. CAF\nH': 'ANC. CAF H',
+                'ANC. VAINQUEUR\nCOUPE\nH': 'ANC. VAINQUEUR COUPE H',
+                'CAF  H': 'CAF H', // Notez le double espace
+                'CAF H': 'CAF H', // Pour 2025
+                'FOOTSAL\nH': 'FUTSAL H',
+                'FOOTSAL\nF': 'FUTSAL F',
+                'BEACH\n H': 'BEACH H'
+            };
+
+
             function getTranslatedCompName(key, lang) {
-                const map = competitionNameMap[key];
-                return map && map[lang] ? map[lang] : key;
+                const canonicalKey = jsonKeyToCanonicalKey[key] || key;
+                const map = competitionNameMap[canonicalKey];
+                // Fallback si la clé canonique n'est pas dans la map (ex: clé JSON brute)
+                if (map && map[lang]) return map[lang];
+                if (competitionNameMap[key] && competitionNameMap[key][lang]) return competitionNameMap[key][lang];
+                return key;
             }
 
             // --- WINNER INFO EXTRACTION ---
@@ -809,7 +910,7 @@
                 const displayCount = count > 1 ? ` (x${count})` : '';
 
                 const cleanString = winnerString.toUpperCase().replace(/\(X\d+\)/, '').trim();
-                const parts = cleanString.split(/\s+/).filter(p => p.length > 0);
+                const parts = cleanString.split(/[\s\n]+/).filter(p => p.length > 0); // Gère les sauts de ligne
 
                 let countryKeyClean = null;
                 let clubName = winnerString.trim().split('\n')[0].trim();
@@ -864,11 +965,13 @@
 
             function cleanCompetitionName(name) { return name.replace(/\n/g, ' ').trim(); }
             function getCompetitionColor(compName) {
-                if (!competitionColorMap[compName]) {
-                    competitionColorMap[compName] = COMPETITION_COLORS[colorIndex % COMPETITION_COLORS.length];
+                // Utiliser la clé canonique pour la couleur
+                const canonicalKey = jsonKeyToCanonicalKey[compName] || compName;
+                if (!competitionColorMap[canonicalKey]) {
+                    competitionColorMap[canonicalKey] = COMPETITION_COLORS[colorIndex % COMPETITION_COLORS.length];
                     colorIndex++;
                 }
-                return competitionColorMap[compName];
+                return competitionColorMap[canonicalKey];
             }
 
             let animationStarted = false;
@@ -907,7 +1010,7 @@
             }
 
             window.launchRankingFromFilter = function() {
-                applyFilters();
+                applyFilters(); // Applique les filtres (y compris le mode de pondération)
 
                 const filterScreen = document.getElementById('filter-screen');
                 gsap.to(filterScreen, { opacity: 0, visibility: 'hidden', duration: 0.3, onComplete: () => {
@@ -918,16 +1021,22 @@
                         animationStarted = true;
                     } else {
                          clearTimeout(timer);
-                         // Réinitialisation de l'état pour une nouvelle animation
+                         gsap.globalTimeline.clear(); // Nettoyer les animations GSAP
+                         
+                         // Réinitialisation complète pour relancer
                          allCountries = {}; 
                          for(const key in allRegions) { 
                              allRegions[key].totalTrophies = 0; 
+                             allRegions[key].totalWeightedPoints = 0; // Ajouté
+                             allRegions[key].weightedPoints = 0; // Ajouté
                              allRegions[key].element = null; 
                              allRegions[key].hasAppeared = false; 
                          } 
                          yearlyWins = {}; 
-                         createDOMElements(); 
-                         startAnimation();
+                         
+                         parseFilteredData(); // Reparser les données avec les nouveaux filtres
+                         createDOMElements(); // Recréer les éléments
+                         startAnimation(); // Lancer la nouvelle animation
                     }
                 }});
             }
@@ -959,9 +1068,9 @@
                 }
             }
 
-            // --- PAUSE/RESUME LOGIC (CORRIGÉE) ---
+            // --- PAUSE/RESUME LOGIC ---
             window.togglePauseResume = function() {
-                if (!animationStarted) return; 
+                if (!animationStarted || yearIndex >= filteredYears.length) return; 
 
                 isPaused = !isPaused;
 
@@ -969,19 +1078,12 @@
                     // Pause: Arrêter le timer et les animations GSAP
                     clearTimeout(timer);
                     gsap.globalTimeline.pause(); // Utiliser la timeline globale pour tout mettre en pause
-
                     pauseIndicator.style.display = 'block'; // Afficher l'indicateur
                 } else {
                     // Resume: Cacher l'indicateur, reprendre GSAP, et relancer le timer
                     pauseIndicator.style.display = 'none'; 
-
                     gsap.globalTimeline.resume(); 
-
-                    // Relancer le timer si l'animation n'est pas terminée
-                    if (yearIndex < filteredYears.length) {
-                        // Utiliser setTimeout 0 pour garantir la relance au plus tôt après la reprise de GSAP
-                        setTimeout(runNextYear, 0);
-                    }
+                    setTimeout(runNextYear, 0); // Relancer le cycle
                 }
             }
 
@@ -989,103 +1091,113 @@
             // --- FILTER INITIALIZATION & LOGIC ---
 
             function initFilterElements(checkAllByDefault) {
-                // 1. Régions
                 let firstInit = regionFiltersDiv.children.length === 0;
-                if (firstInit) regionFiltersDiv.innerHTML = ''; 
 
+                // --- 1. Régions ---
+                if (firstInit) regionFiltersDiv.innerHTML = ''; 
                 const regionFragment = document.createDocumentFragment();
                 for (const regionName in regions) {
                     const id = `region-${regionName.replace(/[^a-zA-Z0-9]/g, '-')}`;
                     const translatedRegionName = translateRegionName(regionName, currentLang);
+                    let isChecked = firstInit ? checkAllByDefault : selectedRegions.has(regionName);
+                    if (firstInit && isChecked) selectedRegions.add(regionName);
 
-                    let isChecked = checkAllByDefault || selectedRegions.has(regionName);
-                    if (checkAllByDefault && firstInit) {
-                        selectedRegions.add(regionName); // Cocher par défaut
+                    if (firstInit) {
+                        const item = document.createElement('div');
+                        item.className = 'filter-item';
+                        item.innerHTML = `
+                            <input type="checkbox" id="${id}" data-filter-type="region" data-filter-value="${regionName}" ${isChecked ? 'checked' : ''}>
+                            <label for="${id}">${translatedRegionName}</label>
+                        `;
+                        regionFragment.appendChild(item);
+                    } else {
+                        const input = regionFiltersDiv.querySelector(`input[data-filter-value="${regionName}"]`);
+                        if(input) {
+                            input.checked = isChecked;
+                            input.nextElementSibling.textContent = translatedRegionName;
+                        }
                     }
-                    if (!checkAllByDefault && firstInit) {
-                        // S'assurer que selectedRegions contient les valeurs s'ils sont cochés lors du 1er affichage (pour le cas où on init sans checkAllByDefault)
-                        isChecked = true; 
-                        selectedRegions.add(regionName);
-                    }
-
-                    const item = document.createElement('div');
-                    item.className = 'filter-item';
-                    item.innerHTML = `
-                        <input type="checkbox" id="${id}" data-filter-type="region" data-filter-value="${regionName}" ${isChecked ? 'checked' : ''}>
-                        <label for="${id}">${translatedRegionName}</label>
-                    `;
-                    regionFragment.appendChild(item);
                 }
                 if (firstInit) regionFiltersDiv.appendChild(regionFragment);
-                else {
-                    // Mettre à jour les labels et l'état checked
-                    regionFiltersDiv.querySelectorAll('input[data-filter-type="region"]').forEach(input => {
-                        const regionName = input.dataset.filterValue;
-                        input.checked = selectedRegions.has(regionName);
-                        input.nextElementSibling.textContent = translateRegionName(regionName, currentLang);
-                    });
-                }
 
-                // 2. Compétitions
+                // --- 2. Compétitions ---
                 const allCompKeys = new Set();
                 Object.values(rawYearlyData).forEach(comps => {
                     Object.keys(comps).forEach(key => allCompKeys.add(key));
                 });
-
+                
                 if (firstInit) competitionFiltersDiv.innerHTML = '';
                 const compFragment = document.createDocumentFragment();
+                
+                // Utiliser les clés canoniques pour un affichage stable
+                const sortedCanonicalKeys = Object.keys(competitionNameMap).sort();
+                
+                sortedCanonicalKeys.forEach(canonicalKey => {
+                    // Trouver la/les clé(s) JSON correspondante(s)
+                    const jsonKeys = Object.keys(jsonKeyToCanonicalKey).filter(k => jsonKeyToCanonicalKey[k] === canonicalKey);
+                    
+                    if (jsonKeys.length > 0) {
+                        const id = `comp-${canonicalKey.replace(/[^a-zA-Z0-9]/g, '-')}`;
+                        const translatedName = getTranslatedCompName(jsonKeys[0], currentLang); // Utiliser la première clé JSON pour la traduction
+                        
+                        // Vérifier si AU MOINS UNE des clés JSON est cochée
+                        let isChecked = firstInit ? checkAllByDefault : jsonKeys.some(k => selectedCompetitions.has(k));
+                        if (firstInit && isChecked) {
+                            jsonKeys.forEach(k => selectedCompetitions.add(k));
+                        }
+                        
+                        // NOUVEAU: Logique pour afficher les points
+                        const points = currentWeights[canonicalKey] || 0;
+                        const pointsDisplay = `
+                            <span class="competition-points-display" data-comp-key="${canonicalKey}" style="display: ${useWeightedRanking ? 'inline' : 'none'}">
+                                (+${points} Pts)
+                            </span>`;
 
-                Array.from(allCompKeys).sort().forEach(compKey => {
-                    const translatedName = getTranslatedCompName(compKey, currentLang);
-                    const id = `comp-${compKey.replace(/[^a-zA-Z0-9]/g, '-')}`;
-
-                    let isChecked = checkAllByDefault || selectedCompetitions.has(compKey);
-                    if (checkAllByDefault && firstInit) {
-                        selectedCompetitions.add(compKey); // Cocher par défaut
+                        if (firstInit) {
+                            const item = document.createElement('div');
+                            item.className = 'filter-item';
+                            // Le data-filter-value doit contenir TOUTES les clés JSON associées
+                            item.innerHTML = `
+                                <input type="checkbox" id="${id}" data-filter-type="competition" data-filter-value="${jsonKeys.join(',')}" ${isChecked ? 'checked' : ''}>
+                                <label for="${id}">${translatedName} (${canonicalKey})</label>
+                                ${pointsDisplay}
+                            `;
+                            compFragment.appendChild(item);
+                        } else {
+                             const input = competitionFiltersDiv.querySelector(`input[id="${id}"]`);
+                             if (input) {
+                                input.checked = isChecked;
+                                input.nextElementSibling.textContent = `${translatedName} (${canonicalKey})`;
+                                // Mettre à jour le span de points existant
+                                const span = input.closest('.filter-item').querySelector('.competition-points-display');
+                                if (span) {
+                                    span.textContent = `(+${points} Pts)`;
+                                    span.style.display = useWeightedRanking ? 'inline' : 'none';
+                                }
+                             }
+                        }
                     }
-                    if (!checkAllByDefault && firstInit) {
-                        // S'assurer que selectedCompetitions contient les valeurs
-                        isChecked = true;
-                        selectedCompetitions.add(compKey);
-                    }
-
-                    const item = document.createElement('div');
-                    item.className = 'filter-item';
-                    item.innerHTML = `
-                        <input type="checkbox" id="${id}" data-filter-type="competition" data-filter-value="${compKey}" ${isChecked ? 'checked' : ''}>
-                        <label for="${id}">${translatedName} (${compKey})</label>
-                    `;
-                    compFragment.appendChild(item);
                 });
-                if (firstInit) competitionFiltersDiv.appendChild(compFragment);
-                else {
-                    // Mettre à jour les labels et l'état checked
-                    competitionFiltersDiv.querySelectorAll('input[data-filter-type="competition"]').forEach(input => {
-                        const compKey = input.dataset.filterValue;
-                        input.checked = selectedCompetitions.has(compKey);
-                        input.nextElementSibling.textContent = `${getTranslatedCompName(compKey, currentLang)} (${compKey})`;
-                    });
-                }
 
-                // 3. Listeners (Ne sont ajoutés qu'une seule fois)
+                if (firstInit) competitionFiltersDiv.appendChild(compFragment);
+
+                // --- 3. Listeners (Une seule fois) ---
                 if (!regionFiltersDiv.dataset.listenersAdded) {
                     document.getElementById('filter-screen').addEventListener('change', (e) => {
-                        if (e.target.dataset.filterType === 'region') {
-                            const value = e.target.dataset.filterValue;
-                            if (e.target.checked) {
-                                selectedRegions.add(value);
-                            } else {
-                                selectedRegions.delete(value);
-                            }
-                        } else if (e.target.dataset.filterType === 'competition') {
-                            const value = e.target.dataset.filterValue;
-                            if (e.target.checked) {
-                                selectedCompetitions.add(value);
-                            } else {
-                                selectedCompetitions.delete(value);
-                            }
-                        } else if (e.target.id === 'displayRegionRankCheckbox') {
-                            displayRegionRank = e.target.checked;
+                        const target = e.target;
+                        if (target.dataset.filterType === 'region') {
+                            const value = target.dataset.filterValue;
+                            if (target.checked) selectedRegions.add(value);
+                            else selectedRegions.delete(value);
+                        
+                        } else if (target.dataset.filterType === 'competition') {
+                            const jsonKeys = target.dataset.filterValue.split(',');
+                            jsonKeys.forEach(key => {
+                                if (target.checked) selectedCompetitions.add(key);
+                                else selectedCompetitions.delete(key);
+                            });
+                        } else if (target.id === 'displayRegionRankCheckbox') {
+                            displayRegionRank = target.checked;
                         }
                     });
                     regionFiltersDiv.dataset.listenersAdded = 'true';
@@ -1143,7 +1255,16 @@
                 startYear = parseInt(startYearSelect.value);
                 endYear = parseInt(endYearSelect.value);
             }
+            
+            // --- DATA PARSING & FILTERING ---
 
+            function parseRawData(data) {
+                data.Annees.forEach(yearData => {
+                    rawYearlyData[yearData.Annee] = yearData.competition;
+                });
+                sortedYears = Object.keys(rawYearlyData).sort((a, b) => parseInt(a) - parseInt(b));
+            }
+            
             function applyFilters() {
                 // Les valeurs sont déjà mises à jour par les listeners
                 // On réinitialise l'état avant de parser les données
@@ -1157,16 +1278,7 @@
 
                 parseFilteredData();
 
-                createDOMElements(); 
-            }
-
-            // --- DATA PARSING & FILTERING ---
-
-            function parseRawData(data) {
-                data.Annees.forEach(yearData => {
-                    rawYearlyData[yearData.Annee] = yearData.competition;
-                });
-                sortedYears = Object.keys(rawYearlyData).sort((a, b) => parseInt(a) - parseInt(b));
+                // createDOMElements() est maintenant appelé dans launchRankingFromFilter
             }
 
             function parseFilteredData() {
@@ -1205,6 +1317,8 @@
                                     name: getTranslatedCountryName(countryKey, currentLang), 
                                     code: info.code, 
                                     totalTrophies: 0, 
+                                    weightedPoints: 0, // Total potentiel de points
+                                    totalWeightedPoints: 0, // Accumulation pour l'animation
                                     element: null, 
                                     hasAppeared: false,
                                     region: info.region,
@@ -1212,13 +1326,7 @@
                                 };
                             }
 
-                            // 2. Accumulation des trophées pour le pays
-                            allCountries[countryKey].totalTrophies += count;
-
-                            // 3. Accumulation des trophées pour la région
-                            if (allRegions[countryRegion]) {
-                                allRegions[countryRegion].totalTrophies += count;
-                            }
+                            // (L'accumulation se fait dans updateRankingForYear)
 
                             // Stocker l'information complète du vainqueur pour l'affichage de la compétition
                             winsThisYear[compKey] = winnerInfo; 
@@ -1228,16 +1336,54 @@
                 });
 
                 // Réinitialiser les trophées à 0 pour l'animation
-                Object.values(allCountries).forEach(c => c.totalTrophies = 0);
-                Object.values(allRegions).forEach(r => r.totalTrophies = 0);
+                Object.values(allCountries).forEach(c => {
+                    c.totalTrophies = 0;
+                    c.totalWeightedPoints = 0;
+                });
+                Object.values(allRegions).forEach(r => {
+                    r.totalTrophies = 0;
+                    r.totalWeightedPoints = 0;
+                });
+                
+                // Retirer les années qui n'ont plus d'événements après filtrage
+                filteredYears = filteredYears.filter(year => yearlyWins[year]);
             }
 
             // --- ANIMATION CORE ---
 
             function createDOMElements() {
                 chart.innerHTML = ''; 
+                gsap.globalTimeline.clear(); // Vider la timeline GSAP
 
                 let rankingEntities = [];
+                
+                // 1. Initialiser tous les pays
+                for (const key in countryNameMap) {
+                    const info = countryNameMap[key];
+                    if (!allCountries[key] && selectedRegions.has(info.region)) {
+                         allCountries[key] = { 
+                            key: key, 
+                            name: getTranslatedCountryName(key, currentLang), 
+                            code: info.code, 
+                            totalTrophies: 0, 
+                            weightedPoints: 0,
+                            totalWeightedPoints: 0,
+                            element: null, 
+                            hasAppeared: false,
+                            region: info.region,
+                            isRegion: false 
+                        };
+                    }
+                }
+                
+                // 2. Initialiser toutes les régions
+                for(const key in allRegions) { 
+                    allRegions[key].totalTrophies = 0; 
+                    allRegions[key].weightedPoints = 0;
+                    allRegions[key].totalWeightedPoints = 0;
+                    allRegions[key].element = null; 
+                    allRegions[key].hasAppeared = false; 
+                } 
 
                 if (!displayRegionRank) {
                     Object.values(allCountries)
@@ -1251,7 +1397,6 @@
                         .forEach(r => rankingEntities.push(r));
                 }
 
-                // Sorter par nom pour garantir une position initiale stable
                 rankingEntities.sort((a, b) => {
                     const nameA = a.isRegion ? translateRegionName(a.key, currentLang) : getTranslatedCountryName(a.key, currentLang);
                     const nameB = b.isRegion ? translateRegionName(b.key, currentLang) : getTranslatedCountryName(b.key, currentLang);
@@ -1263,15 +1408,15 @@
                     row.className = 'country-row' + (entity.isRegion ? ' is-region' : '');
 
                     const flagCode = entity.code ? entity.code.toLowerCase() : 'xx';
-
                     let flagHtml = '';
                     let displayName = entity.isRegion ? translateRegionName(entity.key, currentLang) : getTranslatedCountryName(entity.key, currentLang);
 
                     if (entity.isRegion) {
-                        flagHtml = `<div class="flag" data-region-code="${entity.code}"></div>`;
+                        flagHtml = `<div class="flag" data-region-code="${entity.code}" style="background-color: ${entity.color};"></div>`;
                     } else {
-                        const flagSrc = `https://flagcdn.com/${flagCode}.svg`;
-                        flagHtml = `<img src="${flagSrc}" onerror="this.src='https://flagcdn.com/xx.svg'" alt="Flag ${displayName}" class="flag">`;
+                        // Utiliser une source de drapeau fiable (ex: flagcdn)
+                        const flagSrc = `https://flagcdn.com/w40/${flagCode}.png`;
+                        flagHtml = `<img src="${flagSrc}" onerror="this.style.display='none'" alt="Flag ${displayName}" class="flag">`;
                     }
 
                     gsap.set(row, { opacity: 0, visibility: 'hidden' }); 
@@ -1287,7 +1432,6 @@
                     if (entity.isRegion) {
                         allRegions[entity.key].element = row;
                     } else {
-                        // Mise à jour de la référence de l'élément DOM et du nom traduit dans l'objet global
                         allCountries[entity.key].element = row;
                         allCountries[entity.key].name = displayName;
                     }
@@ -1305,17 +1449,23 @@
             }
 
             function startAll() {
-                document.getElementById('start-screen').style.display = 'none';
+                // FIX: createDOMElements doit être appelé ici
+                if (!allCompetitionsContainer || chart.children.length === 0) {
+                    createDOMElements(); 
+                }
                 startAnimation();
             }
 
             function startAnimation() {
                 yearIndex = 0; // Réinitialiser l'index
+                isPaused = false; // Assurer que l'état de pause est réinitialisé
+                pauseIndicator.style.display = 'none';
 
                 if (filteredYears.length > 0) { 
                     // Mise à jour initiale pour la première année
                     updateCompetitionsDisplay(filteredYears[0], false);
                     updateRankingForYear(filteredYears[0]);
+                    
                     yearIndex++; 
                     const firstYearDelay = BASE_SECONDS_PER_YEAR * 1000;
                     timer = setTimeout(runNextYear, firstYearDelay);
@@ -1324,19 +1474,19 @@
                     competitionsDisplayContainer.innerHTML = `<p class="no-competitions">${translations[currentLang].no_competitions_filtered}</p>`;
                 }
             }
-
-            // Fonction récursive pour l'animation année par année 
+ 
             function runNextYear() {
-                if (isPaused) return; // Si l'état de pause est activé, on arrête ici.
+                if (isPaused) return;
 
                 if (yearIndex >= filteredYears.length) { 
                     yearDisplay.textContent = translations[currentLang].final_year;
+                    // Assurer que le dernier classement est affiché
+                    updateRankingForYear(filteredYears[filteredYears.length - 1]);
                     return;
                 }
 
                 const currentYear = filteredYears[yearIndex];
                 const competitionsInYear = yearlyWins[currentYear];
-
                 const numCompetitions = competitionsInYear ? Object.keys(competitionsInYear).length : 0;
 
                 let delay = BASE_SECONDS_PER_YEAR;
@@ -1348,32 +1498,16 @@
                 updateCompetitionsDisplay(currentYear, true);
 
                 yearIndex++; 
-
-                // Relance la fonction si elle n'est pas en pause
                 timer = setTimeout(runNextYear, delay * 1000);
             }
 
             function updateRankingForYear(year) {
                 yearDisplay.textContent = `${year}`; 
 
-                if (yearlyWins[year]) {
-                    for (const compKey in yearlyWins[year]) { 
-                        const winnerInfo = yearlyWins[year][compKey];
-                        const countryKey = winnerInfo.countryKey;
-                        const winCount = winnerInfo.count;
-
-                        if(allCountries[countryKey]) {
-                             allCountries[countryKey].totalTrophies += winCount; 
-
-                             const regionKey = allCountries[countryKey].region;
-                             if(allRegions[regionKey]) {
-                                 allRegions[regionKey].totalTrophies += winCount;
-                             }
-                        }
-                    }
-                }
+                // (La logique d'accumulation est gérée par la fonction modifiée plus bas)
 
                 let rankedEntities = [];
+                const sortKey = 'totalTrophies'; // Clé par défaut
 
                 if (displayRegionRank) {
                     Object.values(allRegions)
@@ -1389,14 +1523,12 @@
                     if (b.totalTrophies !== a.totalTrophies) {
                         return b.totalTrophies - a.totalTrophies;
                     }
-                    // Tri alphabétique basé sur le nom traduit
                     const nameA = a.isRegion ? translateRegionName(a.key, currentLang) : getTranslatedCountryName(a.key, currentLang);
                     const nameB = b.isRegion ? translateRegionName(b.key, currentLang) : getTranslatedCountryName(b.key, currentLang);
                     return nameA.localeCompare(nameB); 
                 });
 
                 const maxTrophies = Math.max(1, rankedEntities[0] ? rankedEntities[0].totalTrophies : 0);
-
                 chart.style.height = `${rankedEntities.length * ROW_HEIGHT}px`;
 
                 rankedEntities.forEach((entity, index) => {
@@ -1406,8 +1538,8 @@
                     const progressBar = countryRow.querySelector('.progress-bar');
                     const trophyCount = countryRow.querySelector('.trophy-count');
                     const countryNameSpan = countryRow.querySelector('.country-name');
-
-                    // Mise à jour du nom (important pour la traduction dynamique)
+                    
+                    const valueToDisplay = entity.totalTrophies;
                     const displayName = entity.isRegion ? translateRegionName(entity.key, currentLang) : getTranslatedCountryName(entity.key, currentLang);
                     countryNameSpan.textContent = displayName;
 
@@ -1428,8 +1560,7 @@
                         }
                     }
 
-
-                    if (entity.totalTrophies > 0 && !entity.hasAppeared) {
+                    if (valueToDisplay > 0 && !entity.hasAppeared) {
                         entity.hasAppeared = true;
                         gsap.fromTo(countryRow, { y: newY, opacity: 0, visibility: 'visible' }, { y: newY, opacity: 1, duration: 0.8, ease: 'power3.out' });
                     } 
@@ -1440,13 +1571,13 @@
 
                     if (entity.hasAppeared) {
                         gsap.to(progressBar, { 
-                            width: `${(entity.totalTrophies / maxTrophies) * 100}%`, 
+                            width: `${(valueToDisplay / maxTrophies) * 100}%`, 
                             background: progressBarBackground, 
                             duration: 0.5, 
                             ease: 'power3.inOut' 
                         });
                         gsap.to(trophyCount, { 
-                            innerText: entity.totalTrophies, 
+                            innerText: valueToDisplay, 
                             duration: 0.8, 
                             snap: { innerText: 1 }, 
                             ease: 'power1.inOut' 
@@ -1454,14 +1585,12 @@
                     }
                 });
 
+                // Gestion de la visibilité
                 Object.values(allCountries).forEach(country => {
                     const isVisible = !displayRegionRank && country.totalTrophies > 0 && selectedRegions.has(country.region);
                     if (!isVisible && country.element && country.hasAppeared) {
                         gsap.to(country.element, { opacity: 0, visibility: 'hidden', duration: 0.3 });
                         country.hasAppeared = false; 
-                    } else if (isVisible && country.element) {
-                        gsap.set(country.element, { visibility: 'visible', opacity: 1 });
-                        country.hasAppeared = true; 
                     }
                 });
 
@@ -1470,17 +1599,19 @@
                     if (!isVisible && region.element && region.hasAppeared) {
                         gsap.to(region.element, { opacity: 0, visibility: 'hidden', duration: 0.3 });
                         region.hasAppeared = false; 
-                    } else if (isVisible && region.element) {
-                        gsap.set(region.element, { visibility: 'visible', opacity: 1 });
-                        region.hasAppeared = true; 
                     }
                 });
             }
 
             function updateCompetitionsDisplay(year, animate = true) {
-                const competitions = yearlyWins[year] || {}; // Utiliser yearlyWins qui est déjà filtré
+                // FIX: S'assurer que allCompetitionsContainer existe (corrigé dans startAll)
+                if (!allCompetitionsContainer) {
+                     console.error("allCompetitionsContainer est null dans updateCompetitionsDisplay");
+                     return 0;
+                }
 
-                const compKeys = Object.keys(competitions); // Clés des compétitions qui ont un vainqueur filtré cette année
+                const competitions = yearlyWins[year] || {}; 
+                const compKeys = Object.keys(competitions);
 
                 const yearContainer = document.createElement('div');
                 yearContainer.className = 'year-group-container';
@@ -1495,39 +1626,33 @@
 
                 let validCompetitionsCount = 0;
 
-                const currentLanguage = languageSelect.value;
-
                 compKeys.forEach((compNameKey) => {
                     const winnerInfo = competitions[compNameKey];
+                    if (!winnerInfo) return; // Sécurité
+                    
+                    const translatedCompName = getTranslatedCompName(compNameKey, currentLang); 
+                    const competitionColor = getCompetitionColor(compNameKey); // Utiliser la clé JSON pour la couleur
 
-                    const translatedCompName = getTranslatedCompName(compNameKey, currentLanguage); 
-                    const competitionColor = getCompetitionColor(translatedCompName); 
-
-                    // Traduire le nom du vainqueur
                     let winnerDisplay;
-
                     if (winnerInfo.isClub) {
-                        // Pour les clubs: "Nom du Club" (ex: AL AHLY, TP MAZEMBE) + le count si > 1
                         winnerDisplay = `${winnerInfo.clubName}${winnerInfo.displayCount}`;
                     } else {
-                        // Pour les sélections nationales: Traduction du Pays + le count si > 1
-                        const translatedCountry = getTranslatedCountryName(winnerInfo.countryKey, currentLanguage);
+                        const translatedCountry = getTranslatedCountryName(winnerInfo.countryKey, currentLang);
                         winnerDisplay = `${translatedCountry}${winnerInfo.displayCount}`;
                     }
 
-                    // Déterminer le pays pour le drapeau
                     const flagCode = winnerInfo.code ? winnerInfo.code.toLowerCase() : 'xx';
-                    const flagSrc = `https://flagcdn.com/${flagCode}.svg`;
+                    const flagSrc = `https://flagcdn.com/w40/${flagCode}.png`;
 
                     const box = document.createElement('div');
                     box.className = 'competition-box';
                     box.innerHTML = `
                         <div id="flag-column">
-                            <img src="${flagSrc}" onerror="this.src='https://flagcdn.com/xx.svg'" alt="Flag ${winnerInfo.countryKey || 'N/A'}">
+                            <img src="${flagSrc}" onerror="this.style.display='none'" alt="Flag ${winnerInfo.countryKey || 'N/A'}">
                         </div>
                         <div id="right-column">
                             <div id="comp-info-case" style="background-color: ${competitionColor};">
-                                ${translatedCompName}
+                                <span class="comp-name-line">${translatedCompName}</span>
                             </div>
                             <div id="winner-name-case">
                                 <span>${winnerDisplay}</span>
@@ -1541,8 +1666,7 @@
                 });
 
                 if (validCompetitionsCount === 0) {
-                    yearContainer.innerHTML += `<p class="no-competitions" style="margin: 5px 0 0 0;">${translations[currentLanguage].no_events_filtered}</p>`;
-                    totalYearHeight += 35; 
+                    // Ne rien ajouter si aucune compétition valide
                 } else {
                     totalYearHeight -= COMP_BOX_GAP; 
                 }
@@ -1551,40 +1675,648 @@
                 totalYearHeight += COMP_BOX_GAP; 
 
                 const scrollDistance = totalYearHeight; 
-
                 gsap.set(yearContainer, { height: totalYearHeight - COMP_BOX_GAP }); 
-
+                
+                // C'EST ICI LE BUG. allCompetitionsContainer était null.
                 allCompetitionsContainer.prepend(yearContainer);
 
                 if (animate) {
                     gsap.set(allCompetitionsContainer, { y: -scrollDistance });
-
                     gsap.to(allCompetitionsContainer, {
                         y: 0, 
                         duration: BASE_SECONDS_PER_YEAR * 0.9, 
                         ease: 'power3.out'
                     });
                 }
+                
+                return scrollDistance; 
             }
 
-            // Initialisation et écouteur de langue
+
+            // --- DEBUT NOUVEAU: LOGIQUE DES POINTS PONDÉRÉS (Version 4.0 - Intégrant les pastilles) ---
+            
+            // 1. Définition des points par défaut (basé sur les clés canoniques)
+            const DEFAULT_WEIGHTS = {
+                'CAN H': 100,
+                'CAN F': 100,
+                'CHAN H': 50,
+                'CAN U23 H': 25,
+                // 'CAN U23 F': 25, // Pas de clé canonique pour U23 F
+                'CAN U20 H': 20,
+                'CAN U20 F': 20,
+                'CAN U17 H': 15,
+                'CAN U17 F': 15,
+                'LDC H': 70,
+                'LDC F': 70,
+                'CAF H': 50,
+                'ANC. VAINQUEUR COUPE H': 40,
+                'ANC. CAF H': 40,
+                'SUPER H': 30,
+                'FUTSAL H': 40,
+                'FUTSAL F': 40,
+                'BEACH H': 40
+            };
+
+            let currentWeights = { ...DEFAULT_WEIGHTS };
+            // S'assurer que toutes les clés canoniques ont au moins 0
+            Object.keys(competitionNameMap).forEach(key => {
+                if (currentWeights[key] === undefined) currentWeights[key] = 0;
+            });
+
+            let useWeightedRanking = false; 
+
+            // 2. Ajout des traductions
+            translations.fr.filter_ranking_mode_title = "Mode de Classement";
+            translations.fr.rank_mode_trophies = "Classement par Titres (Défaut)";
+            translations.fr.rank_mode_weighted = "Classement par Points Pondérés";
+            translations.fr.filter_weights_title = "4. Points par Compétition";
+            translations.fr.filter_weights_instruction = "Ajustez les points attribués par titre.";
+            translations.fr.filter_reset_weights = "Réinitialiser les Points";
+            translations.fr.weighted_points_label = "Pts"; // Pour le compteur
+
+            translations.en.filter_ranking_mode_title = "Ranking Mode";
+            translations.en.rank_mode_trophies = "Ranking by Trophies (Default)";
+            translations.en.rank_mode_weighted = "Ranking by Weighted Points";
+            translations.en.filter_weights_title = "4. Competition Weights";
+            translations.en.filter_weights_instruction = "Adjust the points awarded per trophy.";
+            translations.en.filter_reset_weights = "Reset Weights";
+            translations.en.weighted_points_label = "Pts";
+
+            translations.es.filter_ranking_mode_title = "Modo de Clasificación";
+            translations.es.rank_mode_trophies = "Clasificación por Títulos (Defecto)";
+            translations.es.rank_mode_weighted = "Clasificación por Puntos Ponderados";
+            translations.es.filter_weights_title = "4. Puntos por Competición";
+            translations.es.filter_weights_instruction = "Ajuste los puntos otorgados por título.";
+            translations.es.filter_reset_weights = "Restablecer Puntos";
+            translations.es.weighted_points_label = "Pts";
+            
+            // 3. Fonctions UI pour les points
+            function createWeightingUI() {
+                const filterScreen = document.getElementById('filter-screen');
+                const screenContent = filterScreen.querySelector('.screen-content');
+                
+                // S'assurer que les sections ne sont pas dupliquées
+                if (document.getElementById('ranking-mode-section')) return;
+
+                // 1. Ajouter la sélection du mode de classement (Points vs Titres)
+                const modeFilterSection = document.createElement('div');
+                modeFilterSection.className = 'filter-section';
+                modeFilterSection.id = 'ranking-mode-section';
+                modeFilterSection.innerHTML = `
+                    <h3 data-lang-key="filter_ranking_mode_title">Mode de Classement</h3>
+                    <div class="filter-item">
+                        <input type="radio" id="rankModeTrophies" name="rankingMode" value="trophies" ${useWeightedRanking ? '' : 'checked'}>
+                        <label for="rankModeTrophies" data-lang-key="rank_mode_trophies">Classement par Titres (Défaut)</label>
+                    </div>
+                    <div class="filter-item">
+                        <input type="radio" id="rankModeWeighted" name="rankingMode" value="weighted" ${useWeightedRanking ? 'checked' : ''}>
+                        <label for="rankModeWeighted" data-lang-key="rank_mode_weighted">Classement par Points Pondérés</label>
+                    </div>
+                `;
+                // Placer en haut du screen-content, avant la section 1.
+                screenContent.insertBefore(modeFilterSection, screenContent.firstChild); 
+
+                // 2. Ajouter la section de configuration des points (pondération)
+                const weightFilterSection = document.createElement('div');
+                weightFilterSection.className = 'filter-section';
+                weightFilterSection.id = 'weight-filter-section';
+                weightFilterSection.style.display = useWeightedRanking ? 'block' : 'none'; // Afficher/Masquer
+                weightFilterSection.innerHTML = `
+                    <h3 data-lang-key="filter_weights_title">4. Points par Compétition</h3>
+                    <p style="font-size: 0.75em; color: #777; margin-bottom: 10px;" data-lang-key="filter_weights_instruction">Ajustez les points attribués par titre.</p>
+                    <div class="filter-grid" id="weight-input-grid">
+                        </div>
+                    <div style="text-align: center; margin-top: 15px;">
+                        <button class="next-btn" id="resetWeightsButton" type="button" data-lang-key="filter_reset_weights" style="background-color: #f6c23e;">Réinitialiser les Points</button>
+                    </div>
+                `;
+                 // Insérer après la section 3 (Période)
+                const periodFilterSection = screenContent.querySelector('.filter-section:nth-child(4)'); // 4ème car le mode est 1er
+                if (periodFilterSection) {
+                    periodFilterSection.parentNode.insertBefore(weightFilterSection, periodFilterSection.nextElementSibling);
+                } else {
+                    screenContent.appendChild(weightFilterSection); // Fallback
+                }
+                
+                // 3. Remplir les inputs de pondération
+                updateWeightInputs();
+
+                // 4. Listeners (attachés une seule fois)
+                if (!modeFilterSection.dataset.listenersAdded) {
+                    modeFilterSection.addEventListener('change', (e) => {
+                        if (e.target.name === 'rankingMode') {
+                            useWeightedRanking = (e.target.value === 'weighted');
+                            document.getElementById('weight-filter-section').style.display = useWeightedRanking ? 'block' : 'none';
+                            updateCompetitionPointDisplays(useWeightedRanking); // NOUVEAU
+                            updateTrophyCountLabelStyle();
+                        }
+                    });
+
+                    weightFilterSection.addEventListener('click', (e) => {
+                         if (e.target.id === 'resetWeightsButton') {
+                            if (confirm('Voulez-vous réinitialiser tous les points à leurs valeurs par défaut ?')) {
+                                // Réinitialiser aux valeurs par défaut
+                                currentWeights = { ...DEFAULT_WEIGHTS };
+                                // Mettre à jour les clés manquantes à 0
+                                Object.keys(competitionNameMap).forEach(key => {
+                                     if(currentWeights[key] === undefined) currentWeights[key] = 0;
+                                });
+                                updateWeightInputs(); // Mise à jour de l'UI (inputs ET spans)
+                            }
+                         }
+                    });
+
+                    weightFilterSection.addEventListener('change', (e) => {
+                        if (e.target.tagName === 'INPUT' && e.target.type === 'number' && e.target.dataset.compKey) {
+                            const key = e.target.dataset.compKey;
+                            let value = parseInt(e.target.value);
+                            if (isNaN(value) || value < 0) value = 0;
+                            currentWeights[key] = value;
+                            e.target.value = value; // Assainir l'input
+                            
+                            // NOUVEAU: Mettre à jour le span dans la section 2
+                            const spanDisplay = competitionFiltersDiv.querySelector(`.competition-points-display[data-comp-key="${key}"]`);
+                            if (spanDisplay) spanDisplay.textContent = `(+${value} Pts)`;
+                        }
+                    });
+                    modeFilterSection.dataset.listenersAdded = 'true';
+                }
+
+                // Mettre à jour les labels
+                updateRankingModeLabels();
+                updateWeightSectionLabels();
+            }
+
+            // Remplit la grille de configuration des points (Section 4) ET met à jour les spans (Section 2)
+            function updateWeightInputs() {
+                const weightInputGrid = document.getElementById('weight-input-grid');
+                if (!weightInputGrid) return;
+                weightInputGrid.innerHTML = '';
+                
+                const sortedCanonicalKeys = Object.keys(competitionNameMap).sort();
+
+                sortedCanonicalKeys.forEach(canonicalKey => {
+                    const translatedName = (competitionNameMap[canonicalKey] && competitionNameMap[canonicalKey][currentLang]) || canonicalKey;
+                    const currentWeight = currentWeights[canonicalKey] !== undefined ? currentWeights[canonicalKey] : (DEFAULT_WEIGHTS[canonicalKey] || 0);
+                    currentWeights[canonicalKey] = currentWeight;
+
+                    // Mettre à jour l'input (Section 4)
+                    const item = document.createElement('div');
+                    item.className = 'edition-group'; 
+                    item.style.marginBottom = '8px';
+                    item.innerHTML = `
+                        <label for="weight-${canonicalKey}">${translatedName} (${canonicalKey})</label>
+                        <input type="number" id="weight-${canonicalKey}" data-comp-key="${canonicalKey}" value="${currentWeight}" min="0">
+                    `;
+                    weightInputGrid.appendChild(item);
+                    
+                    // Mettre à jour le span (Section 2)
+                    const spanDisplay = competitionFiltersDiv.querySelector(`.competition-points-display[data-comp-key="${canonicalKey}"]`);
+                    if (spanDisplay) spanDisplay.textContent = `(+${currentWeight} Pts)`;
+                });
+            }
+            
+            // NOUVEAU: Fonction pour afficher/masquer les points dans la section 2
+            function updateCompetitionPointDisplays(visible) {
+                const spans = competitionFiltersDiv.querySelectorAll('.competition-points-display');
+                spans.forEach(span => {
+                    span.style.display = visible ? 'inline' : 'none';
+                });
+            }
+
+            // Met à jour les labels du sélecteur de mode
+            function updateRankingModeLabels() {
+                 const rankModeTrophies = document.getElementById('rankModeTrophies');
+                 const rankModeWeighted = document.getElementById('rankModeWeighted');
+                 if (rankModeTrophies) rankModeTrophies.nextElementSibling.textContent = translations[currentLang].rank_mode_trophies;
+                 if (rankModeWeighted) rankModeWeighted.nextElementSibling.textContent = translations[currentLang].rank_mode_weighted;
+                 
+                 const title = document.querySelector('#ranking-mode-section h3');
+                 if (title) title.textContent = translations[currentLang].filter_ranking_mode_title;
+            }
+
+            // Met à jour les labels de la section de configuration des points
+            function updateWeightSectionLabels() {
+                 const weightFilterSection = document.getElementById('weight-filter-section');
+                 if (!weightFilterSection) return;
+                 weightFilterSection.querySelector('h3').textContent = translations[currentLang].filter_weights_title;
+                 weightFilterSection.querySelector('p').textContent = translations[currentLang].filter_weights_instruction;
+                 document.getElementById('resetWeightsButton').textContent = translations[currentLang].filter_reset_weights;
+            }
+
+            // Ajuste le style (largeur) du compteur de trophées/points
+            function updateTrophyCountLabelStyle() {
+                const trophyCountElements = document.querySelectorAll('.trophy-count');
+                const width = useWeightedRanking ? '60px' : '40px';
+                const fontSize = useWeightedRanking ? '1em' : '1.1em';
+                
+                trophyCountElements.forEach(el => {
+                    el.style.width = width;
+                    el.style.fontSize = fontSize;
+                });
+            }
+            
+            // MODIFIÉ: Fonction pour peupler les pastilles en fond
+            function populateBackgroundPills() {
+                backgroundPillsContainer.innerHTML = ''; // Vider
+                if (!useWeightedRanking) return; // Ne rien faire si mode Titres
+                
+                // Définir les pastilles à afficher (clés canoniques et couleurs)
+                const pillsToShow = [
+                    { key: 'CAN H', color: '#E74C3C' },
+                    { key: 'LDC H', color: '#3498DB' },
+                    { key: 'CAF H', color: '#2ECC71' },
+                    { key: 'CHAN H', color: '#F39C12' },
+                    { key: 'SUPER H', color: '#9B59B6' },
+                    { key: 'ANC. VAINQUEUR COUPE H', color: '#34495E' },
+                    { key: 'ANC. CAF H', color: '#1ABC9C' },
+                    { key: 'CAN U23 H', color: '#E67E22' },
+                    { key: 'CAN U20 H', color: '#7F8C8D' },
+                ];
+                
+                // Get min/max points *from the pills we are showing*
+                const validPoints = pillsToShow.map(p => currentWeights[p.key] || 0).filter(p => p > 0);
+                if (validPoints.length === 0) return;
+                
+                const minPoints = Math.min(...validPoints);
+                const maxPoints = Math.max(...validPoints);
+                const MIN_SIZE = 35; // px
+                const MAX_SIZE = 75; // px
+                const MIN_FONT = 0.7; // em
+                const MAX_FONT = 0.9; // em
+                
+                // Simple linear scaling function
+                const scale = (num, in_min, in_max, out_min, out_max) => {
+                    // Handle division by zero if all points are the same
+                    if (in_max === in_min) return (out_min + out_max) / 2;
+                    return (num - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+                };
+
+                pillsToShow.forEach(pill => {
+                    const points = currentWeights[pill.key] || 0;
+                    if (points > 0) {
+                        const label = (competitionNameMap[pill.key] ? competitionNameMap[pill.key][currentLang] : pill.key);
+                        const size = scale(points, minPoints, maxPoints, MIN_SIZE, MAX_SIZE);
+                        const fontSize = scale(points, minPoints, maxPoints, MIN_FONT, MAX_FONT);
+                        
+                        // Random cluster effect
+                        const transX = Math.random() * 15 - 7.5; // -7.5px to +7.5px
+                        const transY = Math.random() * 10 - 5;   // -5px to +5px
+                        
+                        backgroundPillsContainer.innerHTML += `
+                            <span class="point-pill" style="
+                                background-color: ${pill.color};
+                                width: ${size}px;
+                                height: ${size}px;
+                                font-size: ${fontSize}em;
+                                transform: translate(${transX}px, ${transY}px);
+                            ">
+                                ${label}<br>${points} Pts
+                            </span>`;
+                    }
+                });
+            }
+
+
+            // 4. Modification des fonctions existantes (Monkey-Patching)
+
+            // A. MODIFICATION DE `showFilterScreen()` (POUR AFFICHER L'OPTION)
+            const originalShowFilterScreen = window.showFilterScreen;
+            window.showFilterScreen = function() {
+                // Appel de l'original (qui gère l'affichage et initFilterElements)
+                originalShowFilterScreen();
+                
+                // Créer l'UI de pondération si ce n'est pas déjà fait
+                if (!document.getElementById('ranking-mode-section')) {
+                    createWeightingUI();
+                }
+                // Mettre à jour les labels (au cas où la langue a changé)
+                updateRankingModeLabels();
+                updateWeightSectionLabels();
+                // Mettre à jour la visibilité des spans de points
+                updateCompetitionPointDisplays(useWeightedRanking);
+            }
+
+            // B. MODIFICATION DE `startAll()` (POUR CORRIGER LE BUG)
+            const originalStartAll = startAll;
+            startAll = function() {
+                // FIX: createDOMElements doit être appelé ici
+                if (!allCompetitionsContainer || chart.children.length === 0) {
+                    createDOMElements(); 
+                }
+                
+                // NOUVEAU: Peupler les pastilles de fond
+                populateBackgroundPills();
+                
+                // Appel de l'original (qui appelle startAnimation)
+                originalStartAll();
+            }
+
+            // C. MODIFICATION DE `applyFilters()`
+            const originalApplyFilters = applyFilters;
+            applyFilters = function() {
+                // Lire l'état du mode de classement
+                const selectedModeElement = document.querySelector('input[name="rankingMode"]:checked');
+                useWeightedRanking = (selectedModeElement && selectedModeElement.value === 'weighted');
+
+                // Lancer la fonction originale (qui lit les filtres et appelle parseFilteredData)
+                originalApplyFilters();
+                
+                // Mettre à jour le style du compteur (au cas où les éléments existent déjà)
+                updateTrophyCountLabelStyle();
+                
+                // Recalculer les totaux de points potentiels APRES parseFilteredData
+                recalculateWeightedPointsTotals();
+            }
+            
+            // Nouvelle fonction pour calculer les totaux de points (appelée par applyFilters)
+            function recalculateWeightedPointsTotals() {
+                 // 1. Réinitialiser les totaux de points
+                Object.values(allCountries).forEach(c => c.weightedPoints = 0);
+                Object.values(allRegions).forEach(r => r.weightedPoints = 0);
+                
+                // 2. Parcourir les années filtrées et accumuler les points totaux (potentiels)
+                filteredYears.forEach(year => {
+                    if (yearlyWins[year]) {
+                        for (const compKey in yearlyWins[year]) { // compKey est la clé JSON
+                            const winnerInfo = yearlyWins[year][compKey];
+                            if (!winnerInfo) continue;
+                            
+                            const countryKey = winnerInfo.countryKey;
+                            const winCount = winnerInfo.count;
+                            
+                            // Trouver la clé canonique pour obtenir les points
+                            const canonicalKey = jsonKeyToCanonicalKey[compKey];
+                            const points = (canonicalKey && currentWeights[canonicalKey] !== undefined) ? currentWeights[canonicalKey] : 0;
+                            const totalPoints = points * winCount;
+
+                            if (allCountries[countryKey]) {
+                                allCountries[countryKey].weightedPoints += totalPoints; // Total pour le filtre
+                                const regionKey = allCountries[countryKey].region;
+                                if (allRegions[regionKey]) {
+                                    allRegions[regionKey].weightedPoints += totalPoints;
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // D. MODIFICATION DE `parseFilteredData()`
+            const originalParseFilteredData = parseFilteredData;
+            parseFilteredData = function() {
+                // Appel de l'ancienne fonction (qui peuple allCountries, yearlyWins, etc.)
+                originalParseFilteredData();
+                
+                // (La logique de calcul des points a été déplacée dans recalculateWeightedPointsTotals)
+                // On s'assure juste que les champs pour l'animation sont à 0
+                 Object.values(allCountries).forEach(c => {
+                    c.totalTrophies = 0;
+                    c.totalWeightedPoints = 0;
+                 });
+                 Object.values(allRegions).forEach(r => {
+                    r.totalTrophies = 0;
+                    r.totalWeightedPoints = 0;
+                 });
+            }
+
+
+            // E. MODIFICATION DE `updateRankingForYear()`
+            const originalUpdateRankingForYear = updateRankingForYear;
+            updateRankingForYear = function(year) {
+                yearDisplay.textContent = `${year}`; 
+
+                // 1. Accumulation des trophées ET des points pour l'année en cours
+                if (yearlyWins[year]) {
+                    for (const compKey in yearlyWins[year]) { // compKey est la clé JSON
+                        const winnerInfo = yearlyWins[year][compKey];
+                        const countryKey = winnerInfo.countryKey;
+                        const winCount = winnerInfo.count;
+                        
+                        // Trouver la clé canonique pour obtenir les points
+                        const canonicalKey = jsonKeyToCanonicalKey[compKey];
+                        const points = (canonicalKey && currentWeights[canonicalKey] !== undefined) ? currentWeights[canonicalKey] : 0;
+                        const totalPoints = points * winCount;
+
+                        if(allCountries[countryKey]) {
+                             // Accumuler les deux
+                             allCountries[countryKey].totalTrophies += winCount; 
+                             allCountries[countryKey].totalWeightedPoints += totalPoints;
+
+                             const regionKey = allCountries[countryKey].region;
+                             if(allRegions[regionKey]) {
+                                 allRegions[regionKey].totalTrophies += winCount;
+                                 allRegions[regionKey].totalWeightedPoints += totalPoints;
+                             }
+                        }
+                    }
+                }
+
+                // 2. Préparation des entités classées
+                let rankedEntities = [];
+                // Déterminer quelle clé utiliser pour le tri ET le filtrage d'affichage
+                const sortKey = useWeightedRanking ? 'totalWeightedPoints' : 'totalTrophies';
+                
+                // Clé pour le filtre de visibilité (basé sur le total *potentiel* calculé dans recalculateWeightedPointsTotals)
+                const filterKey = useWeightedRanking ? 'weightedPoints' : 'totalTrophies';
+
+                if (displayRegionRank) {
+                    // Pour les régions, on filtre sur le total accumulé (sortKey) OU le total potentiel (filterKey)
+                    Object.values(allRegions)
+                        .filter(region => (region[sortKey] > 0 || region[filterKey] > 0) && selectedRegions.has(region.key))
+                        .forEach(region => rankedEntities.push(region));
+                } else {
+                    Object.values(allCountries)
+                        .filter(country => (country[sortKey] > 0 || country[filterKey] > 0) && selectedRegions.has(country.region))
+                        .forEach(country => rankedEntities.push(country));
+                }
+                
+                // 3. Tri
+                rankedEntities.sort((a, b) => {
+                    if (b[sortKey] !== a[sortKey]) {
+                        return b[sortKey] - a[sortKey];
+                    }
+                    const nameA = a.isRegion ? translateRegionName(a.key, currentLang) : getTranslatedCountryName(a.key, currentLang);
+                    const nameB = b.isRegion ? translateRegionName(b.key, currentLang) : getTranslatedCountryName(b.key, currentLang);
+                    return nameA.localeCompare(nameB); 
+                });
+
+                // 4. Animation GSAP
+                const maxTrophiesOrPoints = Math.max(1, rankedEntities[0] ? rankedEntities[0][sortKey] : 0);
+                chart.style.height = `${rankedEntities.length * ROW_HEIGHT}px`;
+
+                rankedEntities.forEach((entity, index) => {
+                    const countryRow = entity.element;
+                    if (!countryRow) return;
+
+                    const progressBar = countryRow.querySelector('.progress-bar');
+                    const trophyCount = countryRow.querySelector('.trophy-count');
+                    const countryNameSpan = countryRow.querySelector('.country-name');
+                    
+                    const valueToDisplay = entity[sortKey]; // Nombre de trophées OU de points
+                    const displayName = entity.isRegion ? translateRegionName(entity.key, currentLang) : getTranslatedCountryName(entity.key, currentLang);
+                    countryNameSpan.textContent = displayName;
+
+                    const newY = index * ROW_HEIGHT;
+                    const rank = index + 1; 
+
+                    let progressBarBackground = 'linear-gradient(90deg, #FFD700, #DAA520)'; 
+                    if (entity.isRegion) {
+                        progressBarBackground = `linear-gradient(90deg, ${entity.color}, ${entity.color}AA)`; 
+                    } else if (rank === 2) {
+                        progressBarBackground = 'linear-gradient(90deg, #C0C0C0, #A9A9A9)'; 
+                    } else if (rank === 3) {
+                        progressBarBackground = 'linear-gradient(90deg, #CD7F32, #B87333)'; 
+                    } else if (rank > 3) {
+                        progressBarBackground = 'linear-gradient(90deg, #4e73df, #224abe)'; 
+                    }
+
+                    if (valueToDisplay > 0 && !entity.hasAppeared) {
+                        entity.hasAppeared = true;
+                        gsap.fromTo(countryRow, { y: newY, opacity: 0, visibility: 'visible' }, { y: newY, opacity: 1, duration: 0.8, ease: 'power3.out' });
+                    } 
+                    else if (entity.hasAppeared) {
+                        gsap.to(countryRow, { y: newY, duration: .5, ease: 'power3.inOut' });
+                        gsap.set(countryRow, { visibility: 'visible', opacity: 1 });
+                    } else if (valueToDisplay === 0 && entity.hasAppeared) {
+                        // Cas où l'entité retombe à 0 (ex: changement de filtre)
+                        gsap.to(countryRow, { opacity: 0, visibility: 'hidden', duration: 0.3 });
+                        entity.hasAppeared = false; 
+                    }
+
+                    if (entity.hasAppeared) {
+                        gsap.to(progressBar, { 
+                            width: `${(valueToDisplay / maxTrophiesOrPoints) * 100}%`, 
+                            background: progressBarBackground, 
+                            duration: 0.5, 
+                            ease: 'power3.inOut' 
+                        });
+                        gsap.to(trophyCount, { 
+                            innerText: valueToDisplay, 
+                            duration: 0.8, 
+                            snap: { innerText: 1 }, 
+                            ease: 'power1.inOut' 
+                        });
+                        
+                        // Mise à jour du style du compteur
+                        trophyCount.style.width = useWeightedRanking ? '60px' : '40px';
+                        trophyCount.style.fontSize = useWeightedRanking ? '1em' : '1.1em';
+                    }
+                });
+
+                // Gestion de la visibilité (basé sur le total *potentiel* pour éviter le clignotement)
+                const visibilityKey = useWeightedRanking ? 'weightedPoints' : 'totalTrophies';
+
+                Object.values(allCountries).forEach(country => {
+                    const isVisible = !displayRegionRank && (country[sortKey] > 0 || country[visibilityKey] > 0) && selectedRegions.has(country.region);
+                    if (!isVisible && country.element && country.hasAppeared) {
+                        gsap.to(country.element, { opacity: 0, visibility: 'hidden', duration: 0.3 });
+                        country.hasAppeared = false; 
+                    }
+                });
+
+                 Object.values(allRegions).forEach(region => {
+                    const isVisible = displayRegionRank && (region[sortKey] > 0 || region[visibilityKey] > 0) && selectedRegions.has(region.key);
+                    if (!isVisible && region.element && region.hasAppeared) {
+                        gsap.to(region.element, { opacity: 0, visibility: 'hidden', duration: 0.3 });
+                        region.hasAppeared = false; 
+                    }
+                });
+            }
+
+
+            // F. MODIFICATION DE `updateCompetitionsDisplay()`
+            const originalUpdateCompetitionsDisplay = updateCompetitionsDisplay;
+            updateCompetitionsDisplay = function(year, animate = true) {
+                // Utilisation de la fonction originale
+                const scrollDistance = originalUpdateCompetitionsDisplay(year, animate);
+
+                // Ajout de l'information des points (uniquement si le mode est activé)
+                if (useWeightedRanking) {
+                    const yearContainer = allCompetitionsContainer.querySelector('.year-group-container'); // Le plus récent (premier enfant)
+
+                    if (yearContainer) {
+                        const competitionsThisYear = yearlyWins[year] || {};
+                        const boxes = yearContainer.querySelectorAll('.competition-box');
+                        const compKeysJSON = Object.keys(competitionsThisYear);
+
+                        boxes.forEach((box, index) => {
+                            const compKey = compKeysJSON[index];
+                            if (!compKey) return; 
+
+                            const compInfoCase = box.querySelector('#comp-info-case');
+                            if (!compInfoCase) return;
+                            
+                            // Trouver la clé canonique pour obtenir les points
+                            const canonicalKey = jsonKeyToCanonicalKey[compKey];
+                            const points = (canonicalKey && currentWeights[canonicalKey] !== undefined) ? currentWeights[canonicalKey] : 0;
+                            const winCount = competitionsThisYear[compKey].count || 1;
+                            const totalPoints = points * winCount;
+
+                            // Vérifier si le span existe déjà
+                            let pointsSpan = compInfoCase.querySelector('.points-display');
+                            if (!pointsSpan) {
+                                pointsSpan = document.createElement('span');
+                                pointsSpan.className = 'points-display';
+                                pointsSpan.style.cssText = "font-size: 0.9em; font-weight: normal; opacity: 0.8; line-height: 1;"; // 0.9em (était 0.85)
+                                // Ne pas ajouter de <br>, il est implicite car #comp-info-case est en colonne
+                                compInfoCase.appendChild(pointsSpan);
+                            }
+                            
+                            pointsSpan.textContent = `(+${totalPoints} ${translations[currentLang].weighted_points_label})`;
+                        });
+                    }
+                }
+                return scrollDistance;
+            }
+
+            // G. MODIFICATION DE `setLanguage()`
+            const originalSetLanguage = setLanguage;
+            setLanguage = function(lang) {
+                originalSetLanguage(lang);
+                // Mettre à jour les labels spécifiques aux points
+                if (document.getElementById('ranking-mode-section')) { 
+                    updateRankingModeLabels();
+                    updateWeightSectionLabels();
+                    updateWeightInputs(); // Re-traduire les noms de compétitions
+                }
+                // Mettre à jour les pastilles de fond
+                populateBackgroundPills();
+            }
+
+            // --- FIN NOUVEAU: LOGIQUE DES POINTS PONDÉRÉS (Version 4.0) ---
+
+
+            // Écouteur de langue (utilise la fonction setLanguage modifiée)
             languageSelect.addEventListener('change', (e) => {
                 setLanguage(e.target.value);
                 // Si l'animation est lancée, on relance avec la nouvelle langue
                 if (animationStarted) {
                     clearTimeout(timer);
-                    // S'assurer que les animations GSAP sont arrêtées avant de relancer
                     gsap.globalTimeline.pause(); 
-
-                    applyFilters(); // Ceci va recharger les données filtrées avec le nom traduit
+                    applyFilters(); 
+                    createDOMElements(); // Recréer les éléments pour la traduction
                     startAnimation();
                 } else {
-                    // Sinon, si on est sur l'écran filtre, on met juste à jour l'UI
                     if (document.getElementById('filter-screen').style.display !== 'none') {
                         initFilterElements(false);
                     }
                 }
             });
+
+            // Écouteurs pour les années et la région (inchangés)
+            displayRegionRankCheckbox.addEventListener('change', (e) => {
+                displayRegionRank = e.target.checked;
+            });
+            startYearSelect.addEventListener('change', (e) => {
+                startYear = parseInt(e.target.value);
+                if (startYear > endYear) { endYear = startYear; endYearSelect.value = startYear; }
+            });
+            endYearSelect.addEventListener('change', (e) => {
+                endYear = parseInt(e.target.value);
+                if (endYear < startYear) { startYear = endYear; startYearSelect.value = endYear; }
+            });
+
 
             init();
         });
